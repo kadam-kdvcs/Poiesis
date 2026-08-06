@@ -1,0 +1,19 @@
+package org.kdvcs.poiesis.client;
+
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.kdvcs.poiesis.Poiesis;
+import org.kdvcs.poiesis.registry.ModMenuTypes;
+import org.kdvcs.poiesis.screen.MechanicalProcessorScreen;
+
+@Mod.EventBusSubscriber(modid = Poiesis.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+public final class ClientModEvents {
+    private ClientModEvents() { }
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> MenuScreens.register(ModMenuTypes.MECHANICAL_PROCESSOR.get(), MechanicalProcessorScreen::new));
+    }
+}

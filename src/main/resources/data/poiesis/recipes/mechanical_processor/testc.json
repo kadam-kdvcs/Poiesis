@@ -1,0 +1,14 @@
+{
+  "type": "poiesis:mechanical_processing",
+  "input": {
+    "item": "minecraft:obsidian",
+    "count": 1
+  },
+  "result": {
+    "item": "minecraft:coal",
+    "count": 16
+  },
+  "required_capability": "poiesis:extrusion",
+  "duration": 140,
+  "energy_per_tick": 50
+}

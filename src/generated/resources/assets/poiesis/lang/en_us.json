@@ -1,0 +1,15 @@
+{
+  "block.poiesis.example_block": "Example Block",
+  "block.poiesis.mechanical_processor": "Processor",
+  "gui.poiesis.energy": "Energy: %s FE / %s FE",
+  "gui.poiesis.mechanical_processor.specialization_hint": "Needs a specialization module!",
+  "gui.poiesis.power": "Power: %s FE/t",
+  "item.poiesis.efficiency_module": "Efficiency Module",
+  "item.poiesis.example_item": "Example Material",
+  "item.poiesis.extrusion_module": "Extrusion Module",
+  "item.poiesis.grinding_module": "Grinding Module",
+  "item.poiesis.pressed_plate": "Pressed Plate",
+  "item.poiesis.pressing_module": "Pressing Module",
+  "item.poiesis.speed_module": "Overclock Module",
+  "itemGroup.poiesis.main": "Poiesis"
+}

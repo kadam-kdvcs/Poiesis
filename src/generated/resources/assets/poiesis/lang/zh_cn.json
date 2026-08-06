@@ -1,0 +1,15 @@
+{
+  "block.poiesis.example_block": "示例方块",
+  "block.poiesis.mechanical_processor": "加工站",
+  "gui.poiesis.energy": "能量：%s FE / %s FE",
+  "gui.poiesis.mechanical_processor.specialization_hint": "需要专业化模块！",
+  "gui.poiesis.power": "功率：%s FE/t",
+  "item.poiesis.efficiency_module": "效率模块",
+  "item.poiesis.example_item": "示例材料",
+  "item.poiesis.extrusion_module": "挤出模块",
+  "item.poiesis.grinding_module": "研磨模块",
+  "item.poiesis.pressed_plate": "压制板材",
+  "item.poiesis.pressing_module": "压制模块",
+  "item.poiesis.speed_module": "超频模块",
+  "itemGroup.poiesis.main": "Poiesis"
+}
