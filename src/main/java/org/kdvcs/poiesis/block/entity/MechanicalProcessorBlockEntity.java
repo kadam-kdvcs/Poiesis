@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kdvcs.poiesis.block.MechanicalProcessorBlock;
 import org.kdvcs.poiesis.machine.MechanicalMachineRuntime;
+import org.kdvcs.poiesis.machine.api.MachineContext;
+import org.kdvcs.poiesis.machine.io.MachineIoSpec;
 import org.kdvcs.poiesis.machine.definition.EnergySpec;
 import org.kdvcs.poiesis.machine.definition.MachineDefinition;
 import org.kdvcs.poiesis.registry.ModBlockEntities;
@@ -28,7 +30,7 @@ import org.kdvcs.poiesis.screen.MechanicalProcessorMenu;
 
 public final class MechanicalProcessorBlockEntity
         extends BlockEntity
-        implements MenuProvider {
+        implements MenuProvider, MachineContext, org.kdvcs.poiesis.machine.api.MachineIoHost {
 
     public static final MachineDefinition DEFINITION =
             new MachineDefinition(
@@ -43,7 +45,11 @@ public final class MechanicalProcessorBlockEntity
                     ),
                     1,
                     1,
-                    3
+                    3,
+                    MachineIoSpec.builder()
+                            .item()
+                            .energyInput()
+                            .build()
             );
 
     private final MechanicalMachineRuntime runtime =
@@ -97,6 +103,62 @@ public final class MechanicalProcessorBlockEntity
 
     public MechanicalMachineRuntime runtime() {
         return runtime;
+    }
+
+    @Override
+    public MechanicalMachineRuntime machineRuntime() {
+        return runtime;
+    }
+
+    @Override
+    public MachineDefinition machineDefinition() {
+        return DEFINITION;
+    }
+
+    @Override
+    public Component machineDisplayName() {
+        return getDisplayName();
+    }
+
+    @Override
+    public Level level() {
+        return level;
+    }
+
+    @Override
+    public BlockPos pos() {
+        return worldPosition;
+    }
+
+    @Override
+    public Direction facing() {
+        BlockState state = getBlockState();
+
+        if (state.hasProperty(MechanicalProcessorBlock.FACING)) {
+            return state.getValue(MechanicalProcessorBlock.FACING);
+        }
+
+        return Direction.NORTH;
+    }
+
+    @Override
+    public void markPersistentDirty() {
+        setChanged();
+    }
+
+    @Override
+    public void markSyncDirty() {
+        setChanged();
+
+        if (level != null) {
+            BlockState state = getBlockState();
+            level.sendBlockUpdated(
+                    worldPosition,
+                    state,
+                    state,
+                    3
+            );
+        }
     }
 
     public void setWorking(boolean working) {
@@ -180,12 +242,26 @@ public final class MechanicalProcessorBlockEntity
             @Nullable Direction side
     ) {
         if (capability == ForgeCapabilities.ITEM_HANDLER) {
+            if (runtime.capabilityRouter().isPresent()) {
+                return runtime.capabilityRouter()
+                        .orElseThrow()
+                        .itemCapability(side)
+                        .cast();
+            }
+
             return runtime.inventory()
                     .capability()
                     .cast();
         }
 
         if (capability == ForgeCapabilities.ENERGY) {
+            if (runtime.capabilityRouter().isPresent()) {
+                return runtime.capabilityRouter()
+                        .orElseThrow()
+                        .energyCapability(side)
+                        .cast();
+            }
+
             return runtime.energy()
                     .capability()
                     .cast();

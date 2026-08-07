@@ -37,6 +37,12 @@ public final class ModItems {
     public static final RegistryObject<Item> PRESSED_PLATE =
             registerItem("pressed_plate");
 
+    public static final RegistryObject<Item> SPECIALIZATION_MODULE_SUBSTRATE =
+            registerItem("specialization_module_substrate");
+
+    public static final RegistryObject<Item> PERFORMANCE_MODULE_SUBSTRATE =
+            registerItem("performance_module_substrate");
+
     public static final RegistryObject<MachineModuleItem> PRESSING_MODULE =
             registerModule(
                     "pressing_module",

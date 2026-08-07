@@ -1,5 +1,6 @@
 package org.kdvcs.poiesis.screen.menu;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -240,6 +241,12 @@ public abstract class AbstractMachineMenu
         }
 
         return values[ordinal];
+    }
+
+    public abstract BlockPos machinePos();
+
+    public boolean hasSideConfiguration() {
+        return true;
     }
 
     @Override

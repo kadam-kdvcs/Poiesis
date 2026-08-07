@@ -173,6 +173,18 @@ public final class MechanicalProcessorMenu
         );
     }
 
+    @Override
+    public BlockPos machinePos() {
+        return blockEntity.getBlockPos();
+    }
+
+    @Override
+    public boolean hasSideConfiguration() {
+        return blockEntity.machineDefinition()
+                .io()
+                .isEmpty() == false;
+    }
+
     public int progress() {
         return dataValue(DATA_PROGRESS);
     }

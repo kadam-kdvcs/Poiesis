@@ -2,15 +2,24 @@ package org.kdvcs.poiesis.screen.base;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import org.kdvcs.poiesis.Poiesis;
+import org.kdvcs.poiesis.network.ModNetwork;
+import org.kdvcs.poiesis.network.packet.OpenMachineConfigPacket;
 import org.kdvcs.poiesis.screen.menu.AbstractMachineMenu;
 
 public abstract class AbstractMachineScreen<M extends AbstractMachineMenu>
         extends AbstractContainerScreen<M> {
+
+    private static final int CONFIG_BUTTON_X_OFFSET = 4;
+    private static final int CONFIG_BUTTON_Y = 20;
+    private static final int CONFIG_BUTTON_WIDTH = 22;
+    private static final int CONFIG_BUTTON_HEIGHT = 18;
 
     protected AbstractMachineScreen(
             M menu,
@@ -23,6 +32,40 @@ public abstract class AbstractMachineScreen<M extends AbstractMachineMenu>
 
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        if (!menu.hasSideConfiguration()) {
+            return;
+        }
+
+        Button configButton = Button.builder(
+                        Component.translatable("gui.poiesis.io_button"),
+                        button -> ModNetwork.sendToServer(
+                                new OpenMachineConfigPacket(
+                                        menu.machinePos()
+                                )
+                        )
+                )
+                .bounds(
+                        leftPos + imageWidth + CONFIG_BUTTON_X_OFFSET,
+                        topPos + CONFIG_BUTTON_Y,
+                        CONFIG_BUTTON_WIDTH,
+                        CONFIG_BUTTON_HEIGHT
+                )
+                .tooltip(
+                        Tooltip.create(
+                                Component.translatable(
+                                        "gui.poiesis.open_side_config"
+                                )
+                        )
+                )
+                .build();
+
+        addRenderableWidget(configButton);
     }
 
     protected static ResourceLocation containerTexture(

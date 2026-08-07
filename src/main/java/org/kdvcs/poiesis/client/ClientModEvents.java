@@ -8,12 +8,23 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.registry.ModMenuTypes;
 import org.kdvcs.poiesis.screen.MechanicalProcessorScreen;
+import org.kdvcs.poiesis.screen.config.MachineSideConfigScreen;
 
 @Mod.EventBusSubscriber(modid = Poiesis.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class ClientModEvents {
     private ClientModEvents() { }
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> MenuScreens.register(ModMenuTypes.MECHANICAL_PROCESSOR.get(), MechanicalProcessorScreen::new));
+        event.enqueueWork(() -> {
+            MenuScreens.register(
+                    ModMenuTypes.MECHANICAL_PROCESSOR.get(),
+                    MechanicalProcessorScreen::new
+            );
+
+            MenuScreens.register(
+                    ModMenuTypes.MACHINE_SIDE_CONFIG.get(),
+                    MachineSideConfigScreen::new
+            );
+        });
     }
 }

@@ -32,7 +32,9 @@ public final class ModItemModelProvider extends ItemModelProvider {
                 ModItems.GRINDING_MODULE,
                 ModItems.EXTRUSION_MODULE,
                 ModItems.SPEED_MODULE,
-                ModItems.EFFICIENCY_MODULE
+                ModItems.EFFICIENCY_MODULE,
+                ModItems.PERFORMANCE_MODULE_SUBSTRATE,
+                ModItems.SPECIALIZATION_MODULE_SUBSTRATE
         );
     }
 

@@ -15,6 +15,8 @@ public final class ModCreativeTabs {
             .icon(() -> ModBlocks.MECHANICAL_PROCESSOR.get().asItem().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(ModBlocks.MECHANICAL_PROCESSOR.get());
+                output.accept(ModItems.SPECIALIZATION_MODULE_SUBSTRATE.get());
+                output.accept(ModItems.PERFORMANCE_MODULE_SUBSTRATE.get());
                 output.accept(ModItems.PRESSING_MODULE.get());
                 output.accept(ModItems.GRINDING_MODULE.get());
                 output.accept(ModItems.EXTRUSION_MODULE.get());
