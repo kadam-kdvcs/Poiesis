@@ -1,0 +1,8 @@
+{
+  "type": "poiesis:replace_surface_top_block",
+  "config": {
+    "chance": 0.2,
+    "replace": "poiesis:silica_rock",
+    "target": "minecraft:stone"
+  }
+}

@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.kdvcs.poiesis.network.ModNetwork;
 import org.kdvcs.poiesis.registry.ModRegistries;
+import org.kdvcs.poiesis.registry.ModWorldgenFeatures;
 import org.slf4j.Logger;
 
 @Mod(Poiesis.MOD_ID)

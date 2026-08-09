@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "facing=north,working=false": { "model": "poiesis:block/module_fabricator" },
+    "facing=south,working=false": { "model": "poiesis:block/module_fabricator", "y": 180 },
+    "facing=west,working=false": { "model": "poiesis:block/module_fabricator", "y": 270 },
+    "facing=east,working=false": { "model": "poiesis:block/module_fabricator", "y": 90 },
+
+    "facing=north,working=true": { "model": "poiesis:block/module_fabricator_active" },
+    "facing=south,working=true": { "model": "poiesis:block/module_fabricator_active", "y": 180 },
+    "facing=west,working=true": { "model": "poiesis:block/module_fabricator_active", "y": 270 },
+    "facing=east,working=true": { "model": "poiesis:block/module_fabricator_active", "y": 90 }
+  }
+}

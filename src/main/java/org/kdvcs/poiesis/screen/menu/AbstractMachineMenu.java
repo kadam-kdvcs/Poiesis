@@ -131,7 +131,8 @@ public abstract class AbstractMachineMenu
             return ItemStack.EMPTY;
         }
 
-        Slot sourceSlot = slots.get(index);
+        Slot sourceSlot =
+                slots.get(index);
 
         if (!sourceSlot.hasItem()) {
             return ItemStack.EMPTY;
@@ -146,13 +147,15 @@ public abstract class AbstractMachineMenu
         boolean moved;
 
         if (isMachineSlot(index)) {
-            moved = moveMachineStackToPlayer(
-                    sourceStack
-            );
+            moved =
+                    moveMachineStackToPlayer(
+                            sourceStack
+                    );
         } else {
-            moved = movePlayerStackToMachine(
-                    sourceStack
-            );
+            moved =
+                    movePlayerStackToMachine(
+                            sourceStack
+                    );
         }
 
         if (!moved) {
@@ -160,7 +163,9 @@ public abstract class AbstractMachineMenu
         }
 
         if (sourceStack.isEmpty()) {
-            sourceSlot.set(ItemStack.EMPTY);
+            sourceSlot.set(
+                    ItemStack.EMPTY
+            );
         } else {
             sourceSlot.setChanged();
         }
@@ -170,7 +175,10 @@ public abstract class AbstractMachineMenu
             return ItemStack.EMPTY;
         }
 
-        sourceSlot.onTake(player, sourceStack);
+        sourceSlot.onTake(
+                player,
+                sourceStack
+        );
 
         return originalStack;
     }
@@ -207,6 +215,12 @@ public abstract class AbstractMachineMenu
             int startInclusive,
             int endExclusive
     ) {
+        if (startInclusive < 0
+                || endExclusive > machineSlotCount
+                || startInclusive >= endExclusive) {
+            return false;
+        }
+
         return moveItemStackTo(
                 stack,
                 startInclusive,
@@ -215,17 +229,68 @@ public abstract class AbstractMachineMenu
         );
     }
 
+    protected final boolean moveToMachineSlotsReverse(
+            ItemStack stack,
+            int startInclusive,
+            int endExclusive
+    ) {
+        if (startInclusive < 0
+                || endExclusive > machineSlotCount
+                || startInclusive >= endExclusive) {
+            return false;
+        }
+
+        return moveItemStackTo(
+                stack,
+                startInclusive,
+                endExclusive,
+                true
+        );
+    }
+
+    protected final boolean moveToFirstAvailableMachineRange(
+            ItemStack stack,
+            int... ranges
+    ) {
+        if (ranges.length % 2 != 0) {
+            throw new IllegalArgumentException(
+                    "Machine slot ranges must be start/end pairs"
+            );
+        }
+
+        for (int i = 0; i < ranges.length; i += 2) {
+            int startInclusive =
+                    ranges[i];
+
+            int endExclusive =
+                    ranges[i + 1];
+
+            if (moveToMachineSlots(
+                    stack,
+                    startInclusive,
+                    endExclusive
+            )) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     protected final boolean isMachineSlot(
             int menuSlotIndex
     ) {
-        return menuSlotIndex < machineSlotCount;
+        return menuSlotIndex >= 0
+                && menuSlotIndex < machineSlotCount;
     }
 
     protected final int machineSlotCount() {
         return machineSlotCount;
     }
 
-    protected final int dataValue(int index) {
+    protected final int dataValue(
+            int index
+    ) {
         return data.get(index);
     }
 
@@ -234,9 +299,11 @@ public abstract class AbstractMachineMenu
             E[] values,
             E fallback
     ) {
-        int ordinal = data.get(dataIndex);
+        int ordinal =
+                data.get(dataIndex);
 
-        if (ordinal < 0 || ordinal >= values.length) {
+        if (ordinal < 0
+                || ordinal >= values.length) {
             return fallback;
         }
 
@@ -250,7 +317,9 @@ public abstract class AbstractMachineMenu
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(
+            Player player
+    ) {
         return AbstractContainerMenu.stillValid(
                 access,
                 player,

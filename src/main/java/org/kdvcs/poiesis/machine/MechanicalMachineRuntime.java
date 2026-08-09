@@ -7,6 +7,7 @@ import org.kdvcs.poiesis.machine.api.MachineContext;
 import org.kdvcs.poiesis.machine.definition.MachineDefinition;
 import org.kdvcs.poiesis.machine.energy.EnergyComponent;
 import org.kdvcs.poiesis.machine.energy.VoltageOverclockPolicy;
+import org.kdvcs.poiesis.machine.energy.item.BatterySlotComponent;
 import org.kdvcs.poiesis.machine.inventory.InventoryComponent;
 import org.kdvcs.poiesis.machine.io.AutoIoComponent;
 import org.kdvcs.poiesis.machine.io.MachineCapabilityRouter;
@@ -35,6 +36,8 @@ public final class MechanicalMachineRuntime {
     private final SideConfigurationComponent sideConfiguration;
     private final AutoIoComponent autoIo;
     private final MachineCapabilityRouter capabilityRouter;
+
+    private final BatterySlotComponent battery;
 
     public MechanicalMachineRuntime(
             MachineContext owner,
@@ -73,6 +76,17 @@ public final class MechanicalMachineRuntime {
                                 : owner.level().getGameTime()
                 )
         );
+
+        battery = definition.hasBatterySlot()
+                ? components.add(
+                BatterySlotComponent.class,
+                new BatterySlotComponent(
+                        definition.battery(),
+                        energy,
+                        changed
+                )
+        )
+                : null;
 
         sideConfiguration = definition.io().isEmpty()
                 ? null
@@ -145,6 +159,10 @@ public final class MechanicalMachineRuntime {
             runAutoInputs();
         }
 
+        if (battery != null) {
+            battery.tick();
+        }
+
         process.tick(
                 owner::markPersistentDirty,
                 owner::setWorking
@@ -153,6 +171,10 @@ public final class MechanicalMachineRuntime {
         if (transferTick) {
             runAutoOutputs();
         }
+    }
+
+    public Optional<BatterySlotComponent> battery() {
+        return Optional.ofNullable(battery);
     }
 
     private boolean shouldRunAutoIo() {

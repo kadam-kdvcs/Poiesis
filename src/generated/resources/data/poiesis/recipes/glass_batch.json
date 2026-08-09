@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "poiesis:silica_powder"
+    },
+    "A": {
+      "item": "minecraft:clay_ball"
+    }
+  },
+  "pattern": [
+    "##",
+    "#A"
+  ],
+  "result": {
+    "count": 4,
+    "item": "poiesis:glass_batch"
+  },
+  "show_notification": true
+}

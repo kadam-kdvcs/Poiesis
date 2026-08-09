@@ -14,6 +14,7 @@ import org.kdvcs.poiesis.machine.io.item.RoutedItemHandler;
 import java.util.EnumMap;
 
 public final class MachineCapabilityRouter {
+
     private final MachineContext owner;
     private final MachineDefinition definition;
     private final InventoryComponent inventory;
@@ -22,6 +23,7 @@ public final class MachineCapabilityRouter {
 
     private final EnumMap<Direction, LazyOptional<IItemHandler>> itemCapabilities =
             new EnumMap<>(Direction.class);
+
     private final EnumMap<Direction, LazyOptional<IEnergyStorage>> energyCapabilities =
             new EnumMap<>(Direction.class);
 
@@ -48,15 +50,33 @@ public final class MachineCapabilityRouter {
             return inventory.capability();
         }
 
+        RelativeSide relativeSide =
+                RelativeSide.fromWorldSide(
+                        worldSide,
+                        owner.facing()
+                );
+
+        if (configuration.mode(
+                IoChannel.ITEM,
+                relativeSide
+        ) == SideIoMode.NONE) {
+            return LazyOptional.empty();
+        }
+
         return itemCapabilities.computeIfAbsent(
                 worldSide,
-                side -> LazyOptional.of(() -> new RoutedItemHandler(
-                        inventory.items(),
-                        configuration,
-                        () -> RelativeSide.fromWorldSide(side, owner.facing()),
-                        definition.inputSlots(),
-                        definition.outputSlots()
-                ))
+                side -> LazyOptional.of(
+                        () -> new RoutedItemHandler(
+                                inventory.items(),
+                                configuration,
+                                () -> RelativeSide.fromWorldSide(
+                                        side,
+                                        owner.facing()
+                                ),
+                                definition.inputSlots(),
+                                definition.outputSlots()
+                        )
+                )
         );
     }
 
@@ -69,21 +89,47 @@ public final class MachineCapabilityRouter {
             return energy.capability();
         }
 
+        RelativeSide relativeSide =
+                RelativeSide.fromWorldSide(
+                        worldSide,
+                        owner.facing()
+                );
+
+        if (configuration.mode(
+                IoChannel.ENERGY,
+                relativeSide
+        ) == SideIoMode.NONE) {
+            return LazyOptional.empty();
+        }
+
         return energyCapabilities.computeIfAbsent(
                 worldSide,
-                side -> LazyOptional.of(() -> new RoutedEnergyStorage(
-                        energy.view(),
-                        configuration,
-                        () -> RelativeSide.fromWorldSide(side, owner.facing())
-                ))
+                side -> LazyOptional.of(
+                        () -> new RoutedEnergyStorage(
+                                energy.view(),
+                                configuration,
+                                () -> RelativeSide.fromWorldSide(
+                                        side,
+                                        owner.facing()
+                                )
+                        )
+                )
         );
     }
 
     public void invalidate() {
-        itemCapabilities.values().forEach(LazyOptional::invalidate);
+        itemCapabilities.values()
+                .forEach(
+                        LazyOptional::invalidate
+                );
+
         itemCapabilities.clear();
 
-        energyCapabilities.values().forEach(LazyOptional::invalidate);
+        energyCapabilities.values()
+                .forEach(
+                        LazyOptional::invalidate
+                );
+
         energyCapabilities.clear();
     }
 }

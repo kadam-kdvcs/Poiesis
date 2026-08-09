@@ -14,7 +14,30 @@ public final class ModCreativeTabs {
             .title(Component.translatable("itemGroup.poiesis.main"))
             .icon(() -> ModBlocks.MECHANICAL_PROCESSOR.get().asItem().getDefaultInstance())
             .displayItems((parameters, output) -> {
+                output.accept(ModBlocks.ALBICHROME_ORE.get());
+                output.accept(ModBlocks.DEEPSLATE_ALBICHROME_ORE.get());
+                output.accept(ModBlocks.SILICA_ROCK.get());
+                output.accept(ModItems.SILICA_POWDER.get());
+                output.accept(ModItems.GLASS_BATCH.get());
+
+                output.accept(ModItems.RAW_ALBICHROME.get());
+                output.accept(ModBlocks.RAW_ALBICHROME_BLOCK.get());
+                output.accept(ModItems.ALBICHROME_INGOT.get());
+                output.accept(ModBlocks.ALBICHROME_BLOCK.get());
+                output.accept(ModItems.ALBICHROME_NUGGET.get());
+
+                output.accept(ModItems.CONTROL_ELEMENT.get());
+                output.accept(ModItems.GRINDING_STONE.get());
+                output.accept(ModItems.PIPE_CONFIGURATOR.get());
+                output.accept(ModItems.MACHINE_UNIT.get());
+
+                output.accept(ModBlocks.ALBICHROME_CASING.get());
+                output.accept(ModBlocks.MODULE_FABRICATOR.get());
                 output.accept(ModBlocks.MECHANICAL_PROCESSOR.get());
+                output.accept(ModBlocks.BASIC_ENERGY_PIPE.get());
+                output.accept(ModBlocks.BASIC_ITEM_PIPE.get());
+                output.accept(ModBlocks.BASIC_FLUID_PIPE.get());
+
                 output.accept(ModItems.SPECIALIZATION_MODULE_SUBSTRATE.get());
                 output.accept(ModItems.PERFORMANCE_MODULE_SUBSTRATE.get());
                 output.accept(ModItems.PRESSING_MODULE.get());

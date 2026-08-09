@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "poiesis:machine_unit"
+    },
+    "A": {
+      "item": "minecraft:anvil"
+    },
+    "B": {
+      "item": "poiesis:albichrome_casing"
+    },
+    "C": {
+      "item": "minecraft:flint"
+    },
+    "D": {
+      "item": "poiesis:control_element"
+    }
+  },
+  "pattern": [
+    " A ",
+    "CBC",
+    "#D#"
+  ],
+  "result": {
+    "item": "poiesis:mechanical_processor"
+  },
+  "show_notification": true
+}

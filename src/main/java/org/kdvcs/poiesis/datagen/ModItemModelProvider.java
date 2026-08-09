@@ -13,6 +13,8 @@ public final class ModItemModelProvider extends ItemModelProvider {
 
     private static final ResourceLocation GENERATED =
             new ResourceLocation("minecraft", "item/generated");
+    private static final ResourceLocation HANDHELD =
+            new ResourceLocation("minecraft", "item/handheld");
 
     public ModItemModelProvider(
             PackOutput output,
@@ -33,8 +35,20 @@ public final class ModItemModelProvider extends ItemModelProvider {
                 ModItems.EXTRUSION_MODULE,
                 ModItems.SPEED_MODULE,
                 ModItems.EFFICIENCY_MODULE,
+                ModItems.SPECIALIZATION_MODULE_SUBSTRATE,
                 ModItems.PERFORMANCE_MODULE_SUBSTRATE,
-                ModItems.SPECIALIZATION_MODULE_SUBSTRATE
+                ModItems.ALBICHROME_INGOT,
+                ModItems.RAW_ALBICHROME,
+                ModItems.ALBICHROME_NUGGET,
+                ModItems.CONTROL_ELEMENT,
+                ModItems.MACHINE_UNIT,
+                ModItems.SILICA_POWDER,
+                ModItems.GRINDING_STONE,
+                ModItems.GLASS_BATCH
+        );
+
+        handheld(
+                ModItems.PIPE_CONFIGURATOR
         );
     }
 
@@ -53,6 +67,21 @@ public final class ModItemModelProvider extends ItemModelProvider {
         String name = item.getId().getPath();
 
         withExistingParent(name, GENERATED)
+                .texture(
+                        "layer0",
+                        modLoc("item/" + name)
+                );
+    }
+
+    private void handheld(
+            RegistryObject<? extends Item> item
+    ) {
+        String name = item.getId().getPath();
+
+        withExistingParent(
+                name,
+                HANDHELD
+        )
                 .texture(
                         "layer0",
                         modLoc("item/" + name)

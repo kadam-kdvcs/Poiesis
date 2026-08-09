@@ -1,5 +1,14 @@
 {
   "values": [
-    "poiesis:mechanical_processor"
+    "poiesis:mechanical_processor",
+    "poiesis:albichrome_ore",
+    "poiesis:deepslate_albichrome_ore",
+    "poiesis:albichrome_block",
+    "poiesis:raw_albichrome_block",
+    "poiesis:albichrome_casing",
+    "poiesis:basic_energy_pipe",
+    "poiesis:basic_item_pipe",
+    "poiesis:basic_fluid_pipe",
+    "poiesis:silica_rock"
   ]
 }

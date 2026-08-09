@@ -21,9 +21,10 @@ import org.jetbrains.annotations.Nullable;
 import org.kdvcs.poiesis.block.MechanicalProcessorBlock;
 import org.kdvcs.poiesis.machine.MechanicalMachineRuntime;
 import org.kdvcs.poiesis.machine.api.MachineContext;
-import org.kdvcs.poiesis.machine.io.MachineIoSpec;
+import org.kdvcs.poiesis.machine.definition.BatterySpec;
 import org.kdvcs.poiesis.machine.definition.EnergySpec;
 import org.kdvcs.poiesis.machine.definition.MachineDefinition;
+import org.kdvcs.poiesis.machine.io.MachineIoSpec;
 import org.kdvcs.poiesis.registry.ModBlockEntities;
 import org.kdvcs.poiesis.registry.ModBlocks;
 import org.kdvcs.poiesis.screen.MechanicalProcessorMenu;
@@ -49,7 +50,8 @@ public final class MechanicalProcessorBlockEntity
                     MachineIoSpec.builder()
                             .item()
                             .energyInput()
-                            .build()
+                            .build(),
+                    new BatterySpec(400)
             );
 
     private final MechanicalMachineRuntime runtime =
@@ -106,8 +108,22 @@ public final class MechanicalProcessorBlockEntity
     }
 
     @Override
-    public MechanicalMachineRuntime machineRuntime() {
-        return runtime;
+    public java.util.Optional<org.kdvcs.poiesis.machine.io.SideConfigurationComponent> sideConfiguration() {
+        return runtime.sideConfiguration();
+    }
+
+    @Override
+    public java.util.Optional<org.kdvcs.poiesis.machine.io.AutoIoComponent> autoIo() {
+        return runtime.autoIo();
+    }
+
+    @Override
+    public void refreshIoCapabilities() {
+        runtime.refreshIoCapabilities();
+
+        if (level != null && !level.isClientSide) {
+            level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
+        }
     }
 
     @Override
@@ -152,6 +168,7 @@ public final class MechanicalProcessorBlockEntity
 
         if (level != null) {
             BlockState state = getBlockState();
+
             level.sendBlockUpdated(
                     worldPosition,
                     state,
@@ -169,9 +186,8 @@ public final class MechanicalProcessorBlockEntity
         BlockState state = getBlockState();
 
         if (state.hasProperty(MechanicalProcessorBlock.WORKING)
-                && state.getValue(
-                        MechanicalProcessorBlock.WORKING
-                ) != working) {
+                && state.getValue(MechanicalProcessorBlock.WORKING) != working) {
+
             level.setBlock(
                     worldPosition,
                     state.setValue(
@@ -185,14 +201,26 @@ public final class MechanicalProcessorBlockEntity
 
     public SimpleContainer allDrops() {
         int inventorySlots =
-                runtime.inventory().items().getSlots();
+                runtime.inventory()
+                        .items()
+                        .getSlots();
 
         int moduleSlots =
-                runtime.modules().items().getSlots();
+                runtime.modules()
+                        .items()
+                        .getSlots();
+
+        int batterySlots =
+                runtime.battery()
+                        .isPresent()
+                        ? 1
+                        : 0;
 
         SimpleContainer drops =
                 new SimpleContainer(
-                        inventorySlots + moduleSlots
+                        inventorySlots
+                                + moduleSlots
+                                + batterySlots
                 );
 
         int index = 0;
@@ -212,6 +240,16 @@ public final class MechanicalProcessorBlockEntity
                     runtime.modules()
                             .items()
                             .getStackInSlot(slot)
+            );
+        }
+
+        if (runtime.battery().isPresent()) {
+            drops.setItem(
+                    index,
+                    runtime.battery()
+                            .orElseThrow()
+                            .items()
+                            .getStackInSlot(0)
             );
         }
 
@@ -267,7 +305,10 @@ public final class MechanicalProcessorBlockEntity
                     .cast();
         }
 
-        return super.getCapability(capability, side);
+        return super.getCapability(
+                capability,
+                side
+        );
     }
 
     @Override

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "tag": "forge:ingots/albichrome"
+    },
+    "A": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "tag": "forge:glass"
+    }
+  },
+  "pattern": [
+    "#A#",
+    "ABA",
+    "#A#"
+  ],
+  "result": {
+    "item": "poiesis:albichrome_casing"
+  },
+  "show_notification": true
+}

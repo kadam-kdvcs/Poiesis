@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 130,
+  "experience": 0.1,
+  "group": "albichrome",
+  "ingredient": {
+    "item": "poiesis:deepslate_albichrome_ore"
+  },
+  "result": "poiesis:albichrome_ingot"
+}

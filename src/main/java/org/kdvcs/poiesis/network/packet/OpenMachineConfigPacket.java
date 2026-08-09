@@ -51,8 +51,7 @@ public record OpenMachineConfigPacket(BlockPos pos) {
 
             if (!(blockEntity instanceof MachineIoHost host)
                     || host.machineDefinition().io().isEmpty()
-                    || host.machineRuntime()
-                    .sideConfiguration()
+                    || host.sideConfiguration()
                     .isEmpty()) {
                 return;
             }

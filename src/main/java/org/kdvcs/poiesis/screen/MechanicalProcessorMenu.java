@@ -9,6 +9,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 import org.kdvcs.poiesis.block.entity.MechanicalProcessorBlockEntity;
+import org.kdvcs.poiesis.machine.energy.item.BatterySlotComponent;
 import org.kdvcs.poiesis.machine.module.MachineModuleItem;
 import org.kdvcs.poiesis.machine.module.MechanicalMode;
 import org.kdvcs.poiesis.machine.module.ModuleComponent;
@@ -16,6 +17,7 @@ import org.kdvcs.poiesis.machine.module.ModuleKind;
 import org.kdvcs.poiesis.registry.ModBlocks;
 import org.kdvcs.poiesis.registry.ModMenuTypes;
 import org.kdvcs.poiesis.screen.menu.AbstractMachineMenu;
+import org.kdvcs.poiesis.screen.slot.BatterySlot;
 import org.kdvcs.poiesis.screen.slot.ModuleSlot;
 import org.kdvcs.poiesis.screen.slot.OutputSlot;
 
@@ -23,11 +25,16 @@ public final class MechanicalProcessorMenu
         extends AbstractMachineMenu {
 
     private static final int INPUT_MENU_SLOT = 0;
+    private static final int OUTPUT_MENU_SLOT = 1;
+
     private static final int PROCESS_MODULE_MENU_SLOT = 2;
+
     private static final int FIRST_PERFORMANCE_MENU_SLOT = 3;
     private static final int PERFORMANCE_MENU_SLOT_END = 5;
 
-    private static final int MACHINE_SLOT_COUNT = 5;
+    private static final int BATTERY_MENU_SLOT = 5;
+
+    private static final int MACHINE_SLOT_COUNT = 6;
     private static final int DATA_COUNT = 8;
 
     private static final int DATA_PROGRESS = 0;
@@ -38,6 +45,9 @@ public final class MechanicalProcessorMenu
     private static final int DATA_VOLTAGE = 5;
     private static final int DATA_STATE = 6;
     private static final int DATA_MODE = 7;
+
+    private static final int BATTERY_SLOT_X = 8;
+    private static final int BATTERY_SLOT_Y = 59;
 
     private final MechanicalProcessorBlockEntity blockEntity;
 
@@ -78,10 +88,18 @@ public final class MechanicalProcessorMenu
 
         this.blockEntity = blockEntity;
 
-        checkContainerDataCount(data, DATA_COUNT);
+        checkContainerDataCount(
+                data,
+                DATA_COUNT
+        );
 
         addMachineSlots();
-        addPlayerInventory(8, 90);
+
+        addPlayerInventory(
+                8,
+                90
+        );
+
         addDataSlots(data);
     }
 
@@ -143,30 +161,64 @@ public final class MechanicalProcessorMenu
                         ModuleKind.PERFORMANCE
                 )
         );
+
+        blockEntity.runtime()
+                .battery()
+                .ifPresent(
+                        battery ->
+                                addSlot(
+                                        new BatterySlot(
+                                                battery.items(),
+                                                0,
+                                                BATTERY_SLOT_X,
+                                                BATTERY_SLOT_Y
+                                        )
+                                )
+                );
     }
 
     @Override
     protected boolean movePlayerStackToMachine(
             ItemStack stack
     ) {
+        /*
+         * 模块优先判断。
+         */
         if (stack.getItem()
                 instanceof MachineModuleItem module) {
+
             return switch (module.kind()) {
-                case PROCESS -> moveToMachineSlot(
-                        stack,
-                        PROCESS_MODULE_MENU_SLOT
-                );
+                case PROCESS ->
+                        moveToMachineSlot(
+                                stack,
+                                PROCESS_MODULE_MENU_SLOT
+                        );
 
-                case PERFORMANCE -> moveToMachineSlots(
-                        stack,
-                        FIRST_PERFORMANCE_MENU_SLOT,
-                        PERFORMANCE_MENU_SLOT_END
-                );
+                case PERFORMANCE ->
+                        moveToMachineSlots(
+                                stack,
+                                FIRST_PERFORMANCE_MENU_SLOT,
+                                PERFORMANCE_MENU_SLOT_END
+                        );
 
-                case PROTECTION -> false;
+                case PROTECTION ->
+                        false;
             };
         }
 
+        /*
+         * 能源物品只能进入电池槽。
+         */
+        if (BatterySlotComponent.isValidBatteryItem(stack)) {
+            return moveToMachineSlot(
+                    stack,
+                    BATTERY_MENU_SLOT
+            );
+        }
+
+        /*
+         * 其他普通物品进入加工输入槽。
+         */
         return moveToMachineSlot(
                 stack,
                 INPUT_MENU_SLOT
@@ -180,37 +232,51 @@ public final class MechanicalProcessorMenu
 
     @Override
     public boolean hasSideConfiguration() {
-        return blockEntity.machineDefinition()
+        return !blockEntity.machineDefinition()
                 .io()
-                .isEmpty() == false;
+                .isEmpty();
     }
 
     public int progress() {
-        return dataValue(DATA_PROGRESS);
+        return dataValue(
+                DATA_PROGRESS
+        );
     }
 
     public int maxProgress() {
-        return dataValue(DATA_MAX_PROGRESS);
+        return dataValue(
+                DATA_MAX_PROGRESS
+        );
     }
 
     public int energy() {
-        return dataValue(DATA_ENERGY);
+        return dataValue(
+                DATA_ENERGY
+        );
     }
 
     public int capacity() {
-        return dataValue(DATA_CAPACITY);
+        return dataValue(
+                DATA_CAPACITY
+        );
     }
 
     public int activeEnergyPerTick() {
-        return dataValue(DATA_ENERGY_PER_TICK);
+        return dataValue(
+                DATA_ENERGY_PER_TICK
+        );
     }
 
     public int activeVoltage() {
-        return dataValue(DATA_VOLTAGE);
+        return dataValue(
+                DATA_VOLTAGE
+        );
     }
 
     public int stateOrdinal() {
-        return dataValue(DATA_STATE);
+        return dataValue(
+                DATA_STATE
+        );
     }
 
     public MechanicalMode mode() {
@@ -221,8 +287,7 @@ public final class MechanicalProcessorMenu
         );
     }
 
-    private static MechanicalProcessorBlockEntity
-    requireBlockEntity(
+    private static MechanicalProcessorBlockEntity requireBlockEntity(
             Inventory playerInventory,
             BlockPos pos
     ) {
@@ -230,6 +295,7 @@ public final class MechanicalProcessorMenu
                 .level()
                 .getBlockEntity(pos)
                 instanceof MechanicalProcessorBlockEntity blockEntity) {
+
             return blockEntity;
         }
 

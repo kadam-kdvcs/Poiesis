@@ -62,8 +62,7 @@ public record SetMachineSideModePacket(
                 return;
             }
 
-            host.machineRuntime()
-                    .sideConfiguration()
+            host.sideConfiguration()
                     .ifPresent(configuration -> {
                         if (!configuration.spec()
                                 .supports(packet.channel)) {
@@ -76,8 +75,7 @@ public record SetMachineSideModePacket(
                                 packet.reverse
                         );
 
-                        host.machineRuntime()
-                                .refreshIoCapabilities();
+                        host.refreshIoCapabilities();
                     });
         });
 

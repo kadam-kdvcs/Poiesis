@@ -1,0 +1,11 @@
+{
+  "type": "poiesis:module_fabrication",
+  "module_base": {"item":"poiesis:specialization_module_substrate"},
+  "materials": [
+    {"item":"minecraft:iron_ingot","count":4},
+    {"item":"minecraft:piston","count":2}
+  ],
+  "result": {"item":"poiesis:pressing_module","count":1},
+  "duration": 200,
+  "energy_per_tick": 20
+}

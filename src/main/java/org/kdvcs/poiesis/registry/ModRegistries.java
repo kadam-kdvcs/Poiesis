@@ -21,5 +21,6 @@ public final class ModRegistries {
         ModMobEffects.register(eventBus);
         ModPotions.register(eventBus);
         ModEnchantments.register(eventBus);
+        ModWorldgenFeatures.register(eventBus);
     }
 }

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 65,
+  "experience": 0.1,
+  "group": "albichrome",
+  "ingredient": {
+    "item": "poiesis:albichrome_ore"
+  },
+  "result": "poiesis:albichrome_ingot"
+}

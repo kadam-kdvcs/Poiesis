@@ -97,13 +97,11 @@ public final class MachineSideConfigMenu extends AbstractContainerMenu {
                     Player player
             ) {
                 SideConfigurationComponent configuration =
-                        host.machineRuntime()
-                                .sideConfiguration()
+                        host.sideConfiguration()
                                 .orElseThrow();
 
                 AutoIoComponent autoIo =
-                        host.machineRuntime()
-                                .autoIo()
+                        host.autoIo()
                                 .orElseThrow();
 
                 return new MachineSideConfigMenu(
@@ -125,13 +123,11 @@ public final class MachineSideConfigMenu extends AbstractContainerMenu {
             MachineIoHost host
     ) {
         SideConfigurationComponent configuration =
-                host.machineRuntime()
-                        .sideConfiguration()
+                host.sideConfiguration()
                         .orElseThrow();
 
         AutoIoComponent autoIo =
-                host.machineRuntime()
-                        .autoIo()
+                host.autoIo()
                         .orElseThrow();
 
         buffer.writeBlockPos(host.pos());

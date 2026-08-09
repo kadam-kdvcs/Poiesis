@@ -60,8 +60,7 @@ public record SetAutoIoPacket(
                 return;
             }
 
-            host.machineRuntime()
-                    .autoIo()
+            host.autoIo()
                     .ifPresent(component ->
                             component.toggle(packet.channel, packet.direction)
                     );

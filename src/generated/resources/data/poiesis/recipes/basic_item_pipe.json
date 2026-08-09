@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "tag": "forge:ingots/albichrome"
+    },
+    "A": {
+      "tag": "forge:glass_panes"
+    },
+    "B": {
+      "tag": "forge:chests"
+    }
+  },
+  "pattern": [
+    "#A#",
+    "B B",
+    "#A#"
+  ],
+  "result": {
+    "count": 16,
+    "item": "poiesis:basic_item_pipe"
+  },
+  "show_notification": true
+}

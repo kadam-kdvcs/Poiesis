@@ -8,6 +8,9 @@ import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.network.packet.OpenMachineConfigPacket;
 import org.kdvcs.poiesis.network.packet.SetAutoIoPacket;
 import org.kdvcs.poiesis.network.packet.SetMachineSideModePacket;
+import org.kdvcs.poiesis.network.packet.SelectModuleFabricationRecipePacket;
+import org.kdvcs.poiesis.network.packet.StartModuleFabricationPacket;
+import org.kdvcs.poiesis.network.packet.ToggleModuleFabricatorAutoPacket;
 
 import java.util.Optional;
 
@@ -52,6 +55,28 @@ public final class ModNetwork {
                 SetAutoIoPacket::encode,
                 SetAutoIoPacket::decode,
                 SetAutoIoPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+
+        CHANNEL.registerMessage(
+                nextId++, SelectModuleFabricationRecipePacket.class,
+                SelectModuleFabricationRecipePacket::encode,
+                SelectModuleFabricationRecipePacket::decode,
+                SelectModuleFabricationRecipePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, StartModuleFabricationPacket.class,
+                StartModuleFabricationPacket::encode,
+                StartModuleFabricationPacket::decode,
+                StartModuleFabricationPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, ToggleModuleFabricatorAutoPacket.class,
+                ToggleModuleFabricatorAutoPacket::encode,
+                ToggleModuleFabricatorAutoPacket::decode,
+                ToggleModuleFabricatorAutoPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
     }

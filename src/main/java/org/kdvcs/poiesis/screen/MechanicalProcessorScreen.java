@@ -328,4 +328,14 @@ public final class MechanicalProcessorScreen
                 int height
         ) {
         }
+
+        @Override
+        protected int ioButtonX() {
+                return 162;
+        }
+
+        @Override
+        protected int ioButtonY() {
+                return 4;
+        }
 }

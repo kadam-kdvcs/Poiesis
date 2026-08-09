@@ -7,14 +7,15 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.kdvcs.poiesis.machine.api.MachineComponent;
 
+import java.util.function.BiPredicate;
 import java.util.function.IntPredicate;
 
-public final class InventoryComponent
-        implements MachineComponent {
+public final class InventoryComponent implements MachineComponent {
 
     private final ItemStackHandler items;
     private final LazyOptional<IItemHandler> capability;
     private final IntPredicate outputSlot;
+    private final BiPredicate<Integer, ItemStack> inputValidator;
     private long version;
 
     public InventoryComponent(
@@ -22,7 +23,17 @@ public final class InventoryComponent
             IntPredicate outputSlot,
             Runnable changed
     ) {
+        this(size, outputSlot, (slot, stack) -> true, changed);
+    }
+
+    public InventoryComponent(
+            int size,
+            IntPredicate outputSlot,
+            BiPredicate<Integer, ItemStack> inputValidator,
+            Runnable changed
+    ) {
         this.outputSlot = outputSlot;
+        this.inputValidator = inputValidator;
 
         this.items = new ItemStackHandler(size) {
             @Override
@@ -32,16 +43,13 @@ public final class InventoryComponent
             }
 
             @Override
-            public boolean isItemValid(
-                    int slot,
-                    ItemStack stack
-            ) {
-                return !outputSlot.test(slot);
+            public boolean isItemValid(int slot, ItemStack stack) {
+                return !outputSlot.test(slot)
+                        && inputValidator.test(slot, stack);
             }
         };
 
-        this.capability =
-                LazyOptional.of(() -> items);
+        this.capability = LazyOptional.of(() -> items);
     }
 
     @Override

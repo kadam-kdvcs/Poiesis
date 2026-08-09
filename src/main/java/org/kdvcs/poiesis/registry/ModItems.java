@@ -7,6 +7,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.kdvcs.poiesis.Poiesis;
+import org.kdvcs.poiesis.item.PipeConfiguratorItem;
 import org.kdvcs.poiesis.machine.module.MachineModuleItem;
 import org.kdvcs.poiesis.machine.module.MechanicalMode;
 import org.kdvcs.poiesis.machine.module.ModuleKind;
@@ -22,26 +23,30 @@ public final class ModItems {
                     Poiesis.MOD_ID
             );
 
-    public static final ResourceLocation PRESSING =
-            capability("pressing");
+    public static final ResourceLocation PRESSING = capability("pressing");
 
-    public static final ResourceLocation GRINDING =
-            capability("grinding");
+    public static final ResourceLocation GRINDING = capability("grinding");
 
-    public static final ResourceLocation EXTRUSION =
-            capability("extrusion");
+    public static final ResourceLocation EXTRUSION = capability("extrusion");
 
-    public static final RegistryObject<Item> EXAMPLE_ITEM =
-            registerItem("example_item");
+    public static final RegistryObject<Item> EXAMPLE_ITEM = registerItem("example_item");
+    public static final RegistryObject<Item> SILICA_POWDER = registerItem("silica_powder");
+    public static final RegistryObject<Item> GLASS_BATCH = registerItem("glass_batch");
 
-    public static final RegistryObject<Item> PRESSED_PLATE =
-            registerItem("pressed_plate");
+    public static final RegistryObject<Item> PRESSED_PLATE = registerItem("pressed_plate");
+    public static final RegistryObject<Item> SPECIALIZATION_MODULE_SUBSTRATE = registerItem("specialization_module_substrate");
+    public static final RegistryObject<Item> PERFORMANCE_MODULE_SUBSTRATE = registerItem("performance_module_substrate");
+    public static final RegistryObject<Item> ALBICHROME_INGOT = registerItem("albichrome_ingot");
+    public static final RegistryObject<Item> RAW_ALBICHROME = registerItem("raw_albichrome");
+    public static final RegistryObject<Item> ALBICHROME_NUGGET = registerItem("albichrome_nugget");
+    public static final RegistryObject<Item> MACHINE_UNIT = registerItem("machine_unit");
+    public static final RegistryObject<Item> CONTROL_ELEMENT = registerItem("control_element");
+    public static final RegistryObject<PipeConfiguratorItem> PIPE_CONFIGURATOR = registerItem("pipe_configurator", PipeConfiguratorItem::new);
 
-    public static final RegistryObject<Item> SPECIALIZATION_MODULE_SUBSTRATE =
-            registerItem("specialization_module_substrate");
-
-    public static final RegistryObject<Item> PERFORMANCE_MODULE_SUBSTRATE =
-            registerItem("performance_module_substrate");
+    public static final RegistryObject<Item> GRINDING_STONE = registerItem(
+            "grinding_stone",
+            properties -> new Item(properties.durability(64))
+    );
 
     public static final RegistryObject<MachineModuleItem> PRESSING_MODULE =
             registerModule(

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "cookingtime": 75,
+  "experience": 0.1,
+  "ingredient": {
+    "item": "poiesis:glass_batch"
+  },
+  "result": {
+    "item": "minecraft:glass"
+  }
+}

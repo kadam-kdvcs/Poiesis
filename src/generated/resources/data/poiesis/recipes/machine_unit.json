@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:copper_ingot"
+    },
+    "B": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "tag": "forge:ingots/albichrome"
+    }
+  },
+  "pattern": [
+    "A A",
+    "BCB",
+    " B "
+  ],
+  "result": {
+    "item": "poiesis:machine_unit"
+  },
+  "show_notification": true
+}
