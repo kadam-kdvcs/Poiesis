@@ -1,0 +1,9 @@
+{
+  "entries": [
+    "poiesis:kenaf_seeds_from_grass",
+    "poiesis:kenaf_seeds_from_tall_grass",
+    "poiesis:kenaf_seeds_from_large_fern",
+    "poiesis:kenaf_seeds_from_fern"
+  ],
+  "replace": false
+}

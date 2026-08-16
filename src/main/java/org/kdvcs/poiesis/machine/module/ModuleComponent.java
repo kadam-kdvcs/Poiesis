@@ -9,57 +9,41 @@ import org.kdvcs.poiesis.machine.api.MachineComponent;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Generic module inventory shared by all modular machines.
+ *
+ * Slot acceptance and semantic roles are supplied by ModuleLayout. Adding a
+ * machine with a different specialization rule therefore does not require a
+ * second ModuleComponent implementation.
+ */
 public final class ModuleComponent implements MachineComponent {
 
+    // Compatibility constants for the current three-slot machine GUIs.
     public static final int PROCESS_SLOT = 0;
     public static final int FIRST_PERFORMANCE_SLOT = 1;
     public static final int SECOND_PERFORMANCE_SLOT = 2;
     public static final int REQUIRED_SLOT_COUNT = 3;
 
+    private final ModuleLayout layout;
     private final ItemStackHandler modules;
 
     private long version;
-    private long processVersion;
+    private long capabilityVersion;
     private long performanceVersion;
 
     public ModuleComponent(
-            int slots,
+            ModuleLayout layout,
             Runnable changed
     ) {
-        if (slots != REQUIRED_SLOT_COUNT) {
-            throw new IllegalArgumentException(
-                    "Mechanical processor requires exactly "
-                            + REQUIRED_SLOT_COUNT
-                            + " module slots"
-            );
+        if (layout == null) {
+            throw new IllegalArgumentException("Module layout cannot be null");
         }
 
-        modules = new ItemStackHandler(slots) {
-
+        this.layout = layout;
+        this.modules = new ItemStackHandler(layout.size()) {
             @Override
-            public boolean isItemValid(
-                    int slot,
-                    ItemStack stack
-            ) {
-                if (!(stack.getItem()
-                        instanceof MachineModuleItem module)) {
-                    return false;
-                }
-
-                return switch (slot) {
-                    case PROCESS_SLOT ->
-                            module.kind() == ModuleKind.PROCESS
-                                    && module.mode()
-                                    != MechanicalMode.NONE;
-
-                    case FIRST_PERFORMANCE_SLOT,
-                         SECOND_PERFORMANCE_SLOT ->
-                            module.kind() == ModuleKind.PERFORMANCE
-                                    && module.mode()
-                                    == MechanicalMode.NONE;
-
-                    default -> false;
-                };
+            public boolean isItemValid(int slot, ItemStack stack) {
+                return ModuleComponent.this.layout.accepts(slot, stack);
             }
 
             @Override
@@ -71,11 +55,10 @@ public final class ModuleComponent implements MachineComponent {
             protected void onContentsChanged(int slot) {
                 version++;
 
-                if (slot == PROCESS_SLOT) {
-                    processVersion++;
-                } else if (slot == FIRST_PERFORMANCE_SLOT
-                        || slot == SECOND_PERFORMANCE_SLOT) {
-                    performanceVersion++;
+                switch (ModuleComponent.this.layout.role(slot)) {
+                    case PROCESS -> capabilityVersion++;
+                    case PERFORMANCE -> performanceVersion++;
+                    case PROTECTION -> capabilityVersion++;
                 }
 
                 changed.run();
@@ -83,93 +66,89 @@ public final class ModuleComponent implements MachineComponent {
         };
     }
 
+    /**
+     * Legacy constructor retained for source compatibility. It represents the
+     * mechanical processor's original three-slot layout.
+     */
+    public ModuleComponent(int slots, Runnable changed) {
+        this(ModuleLayout.mechanicalProcessing(), changed);
+
+        if (slots != layout.size()) {
+            throw new IllegalArgumentException(
+                    "Module layout requires exactly " + layout.size() + " slots"
+            );
+        }
+    }
+
     @Override
     public String key() {
         return "modules";
+    }
+
+    public ModuleLayout layout() {
+        return layout;
     }
 
     public ItemStackHandler items() {
         return modules;
     }
 
-    /**
-     * 任意模块槽发生变化时递增。
-     */
     public long version() {
         return version;
     }
 
-    /**
-     * 只有工艺模块槽发生变化时递增。
-     *
-     * 配方缓存应监听这个版本。
-     */
-    public long processVersion() {
-        return processVersion;
+    /** Version of slots that can change process capabilities. */
+    public long capabilityVersion() {
+        return capabilityVersion;
     }
 
-    /**
-     * 只有性能模块槽发生变化时递增。
-     */
+    /** Compatibility alias for the old mechanical-process name. */
+    public long processVersion() {
+        return capabilityVersion;
+    }
+
+    /** Compatibility alias for the old Compounder specialization name. */
+    public long specializationVersion() {
+        return capabilityVersion;
+    }
+
     public long performanceVersion() {
         return performanceVersion;
     }
 
     public MechanicalMode currentMode() {
-        ItemStack stack =
-                modules.getStackInSlot(PROCESS_SLOT);
-
-        if (stack.getItem()
-                instanceof MachineModuleItem module
-                && module.kind() == ModuleKind.PROCESS) {
-            return module.mode();
-        }
-
-        return MechanicalMode.NONE;
+        return snapshot().mode();
     }
 
     public ModuleSnapshot snapshot() {
-        ItemStack processStack =
-                modules.getStackInSlot(PROCESS_SLOT);
-
-        if (!(processStack.getItem()
-                instanceof MachineModuleItem processModule)
-                || processModule.kind() != ModuleKind.PROCESS
-                || processModule.mode() == MechanicalMode.NONE) {
-            return ModuleSnapshot.empty();
-        }
-
-        Set<ResourceLocation> capabilities =
-                new HashSet<>(
-                        processModule.capabilities()
-                );
-
+        Set<ResourceLocation> capabilities = new HashSet<>();
+        MechanicalMode mode = MechanicalMode.NONE;
         int requestedSpeed = 1;
         double energyMultiplier = 1.0D;
 
-        for (
-                int slot = FIRST_PERFORMANCE_SLOT;
-                slot <= SECOND_PERFORMANCE_SLOT;
-                slot++
-        ) {
-            ItemStack stack =
-                    modules.getStackInSlot(slot);
+        for (int slot = 0; slot < modules.getSlots(); slot++) {
+            ItemStack stack = modules.getStackInSlot(slot);
+            if (!(stack.getItem() instanceof MachineModuleItem module)) {
+                continue;
+            }
 
-            if (stack.getItem()
-                    instanceof MachineModuleItem module
-                    && module.kind()
-                    == ModuleKind.PERFORMANCE) {
-
-                requestedSpeed +=
-                        module.speedBonus();
-
-                energyMultiplier *=
-                        module.energyMultiplier();
+            switch (layout.role(slot)) {
+                case PROCESS, PROTECTION -> {
+                    capabilities.addAll(module.capabilities());
+                    if (mode == MechanicalMode.NONE
+                            && module.mode() != MechanicalMode.NONE) {
+                        mode = module.mode();
+                    }
+                }
+                case PERFORMANCE -> {
+                    requestedSpeed += module.speedBonus();
+                    energyMultiplier *= module.energyMultiplier();
+                }
             }
         }
 
         return new ModuleSnapshot(
-                processModule.mode(),
+                mode,
                 Set.copyOf(capabilities),
                 Math.max(1, requestedSpeed),
                 Math.max(0.25D, energyMultiplier)
@@ -178,37 +157,26 @@ public final class ModuleComponent implements MachineComponent {
 
     @Override
     public void save(CompoundTag tag) {
-        tag.put(
-                "items",
-                modules.serializeNBT()
-        );
-
-        tag.putLong(
-                "version",
-                version
-        );
-
-        tag.putLong(
-                "process_version",
-                processVersion
-        );
-
-        tag.putLong(
-                "performance_version",
-                performanceVersion
-        );
+        tag.put("items", modules.serializeNBT());
+        tag.putLong("version", version);
+        tag.putLong("capability_version", capabilityVersion);
+        tag.putLong("performance_version", performanceVersion);
     }
 
     @Override
     public void load(CompoundTag tag) {
-        modules.deserializeNBT(
-                tag.getCompound("items")
-        );
-
+        modules.deserializeNBT(tag.getCompound("items"));
         version = tag.getLong("version");
-        processVersion =
-                tag.getLong("process_version");
-        performanceVersion =
-                tag.getLong("performance_version");
+
+        if (tag.contains("capability_version")) {
+            capabilityVersion = tag.getLong("capability_version");
+        } else if (tag.contains("process_version")) {
+            capabilityVersion = tag.getLong("process_version");
+        } else {
+            // Compatibility with the old Compounder component.
+            capabilityVersion = tag.getLong("specialization_version");
+        }
+
+        performanceVersion = tag.getLong("performance_version");
     }
 }

@@ -1,0 +1,14 @@
+{
+  "type": "poiesis:mechanical_processing",
+  "input": {
+    "item": "minecraft:bone",
+    "count": 1
+  },
+  "result": {
+    "item": "minecraft:bone_meal",
+    "count": 5
+  },
+  "required_capability": "poiesis:grinding",
+  "duration": 55,
+  "energy_per_tick": 32
+}

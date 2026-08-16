@@ -3,7 +3,9 @@
   "module_base": {"item":"poiesis:specialization_module_substrate"},
   "materials": [
     {"item":"minecraft:flint","count":4},
-    {"item":"minecraft:iron_ingot","count":2}
+    {"item":"minecraft:iron_ingot","count":2},
+    {"item":"poiesis:albichrome_ingot","count":1},
+    {"item":"poiesis:silica_powder","count":2}
   ],
   "result": {"item":"poiesis:grinding_module","count":1},
   "duration": 200,

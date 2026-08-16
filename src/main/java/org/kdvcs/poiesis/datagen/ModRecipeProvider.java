@@ -113,7 +113,6 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .define('C', Items.REDSTONE)
                 .unlockedBy(getHasName(ModBlocks.MODULE_FABRICATOR.get()), has(ModBlocks.MODULE_FABRICATOR.get()))
                 .save(consumer);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.MECHANICAL_PROCESSOR.get())
                 .pattern(" A ")
                 .pattern("CBC")
@@ -124,6 +123,36 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .define('B', ModBlocks.ALBICHROME_CASING.get())
                 .define('C', Items.FLINT)
                 .unlockedBy(getHasName(ModBlocks.MODULE_FABRICATOR.get()), has(ModBlocks.MODULE_FABRICATOR.get()))
+                .save(consumer);
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.COMPOUNDER.get())
+                .pattern(" A ")
+                .pattern("CBC")
+                .pattern("#D#")
+                .define('D', ModItems.CONTROL_ELEMENT.get())
+                .define('#', ModItems.MACHINE_UNIT.get())
+                .define('A', Items.HOPPER)
+                .define('B', ModBlocks.ALBICHROME_CASING.get())
+                .define('C', Items.PISTON)
+                .unlockedBy(getHasName(ModBlocks.MODULE_FABRICATOR.get()), has(ModBlocks.MODULE_FABRICATOR.get()))
+                .save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SPECIALIZATION_MODULE_SUBSTRATE.get(), 2)
+                .pattern("ABA")
+                .pattern("BCB")
+                .pattern("ABA")
+                .define('A', Items.IRON_NUGGET)
+                .define('B', ModItems.SILICA_POWDER.get())
+                .define('C', ModTags.Items.INGOTS_ALBICHROME)
+                .unlockedBy(getHasName(ModItems.SPECIALIZATION_MODULE_SUBSTRATE.get()), has(ModItems.SPECIALIZATION_MODULE_SUBSTRATE.get()))
+                .save(consumer);
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERFORMANCE_MODULE_SUBSTRATE.get(), 4)
+                .pattern("ABA")
+                .pattern("BCB")
+                .pattern("ABA")
+                .define('A', Items.REDSTONE)
+                .define('B', Items.GOLD_NUGGET)
+                .define('C', ModTags.Items.INGOTS_ALBICHROME)
+                .unlockedBy(getHasName(ModItems.PERFORMANCE_MODULE_SUBSTRATE.get()), has(ModItems.PERFORMANCE_MODULE_SUBSTRATE.get()))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CONTROL_ELEMENT.get())

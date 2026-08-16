@@ -1,0 +1,14 @@
+{
+  "type": "poiesis:mechanical_processing",
+  "input": {
+    "item": "minecraft:blaze_rod",
+    "count": 1
+  },
+  "result": {
+    "item": "minecraft:blaze_powder",
+    "count": 5
+  },
+  "required_capability": "poiesis:grinding",
+  "duration": 55,
+  "energy_per_tick": 64
+}

@@ -29,11 +29,12 @@ public final class ModItems {
 
     public static final ResourceLocation EXTRUSION = capability("extrusion");
 
-    public static final RegistryObject<Item> EXAMPLE_ITEM = registerItem("example_item");
     public static final RegistryObject<Item> SILICA_POWDER = registerItem("silica_powder");
+    public static final RegistryObject<Item> KENAF_CORE = registerItem("kenaf_core");
+    public static final RegistryObject<Item> RAW_KENAF_BAST = registerItem("raw_kenaf_bast");
     public static final RegistryObject<Item> GLASS_BATCH = registerItem("glass_batch");
-
-    public static final RegistryObject<Item> PRESSED_PLATE = registerItem("pressed_plate");
+    public static final RegistryObject<Item> FIBER_COMPOSITE = registerItem("fiber_composite");
+    public static final RegistryObject<Item> FILTER_PLATE = registerItem("filter_plate");
     public static final RegistryObject<Item> SPECIALIZATION_MODULE_SUBSTRATE = registerItem("specialization_module_substrate");
     public static final RegistryObject<Item> PERFORMANCE_MODULE_SUBSTRATE = registerItem("performance_module_substrate");
     public static final RegistryObject<Item> ALBICHROME_INGOT = registerItem("albichrome_ingot");

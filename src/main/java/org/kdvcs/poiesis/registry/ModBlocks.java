@@ -12,6 +12,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.kdvcs.poiesis.Poiesis;
+import org.kdvcs.poiesis.block.CompounderBlock;
 import org.kdvcs.poiesis.block.EnergyPipeBlock;
 import org.kdvcs.poiesis.block.FluidPipeBlock;
 import org.kdvcs.poiesis.block.ItemPipeBlock;
@@ -28,19 +29,6 @@ public final class ModBlocks {
             DeferredRegister.create(
                     ForgeRegistries.BLOCKS,
                     Poiesis.MOD_ID
-            );
-
-    public static final RegistryObject<Block> EXAMPLE_BLOCK =
-            registerBlock(
-                    "example_block",
-                    () -> new Block(
-                            BlockBehaviour.Properties
-                                    .of()
-                                    .noLootTable()
-                                    .mapColor(MapColor.METAL)
-                                    .strength(3.0F, 6.0F)
-                                    .sound(SoundType.METAL)
-                    )
             );
 
     public static final RegistryObject<Block> SILICA_ROCK =
@@ -146,6 +134,13 @@ public final class ModBlocks {
             registerBlock(
                     "module_fabricator",
                     ModuleFabricatorBlock::new
+            );
+
+    public static final RegistryObject<CompounderBlock>
+            COMPOUNDER =
+            registerBlock(
+                    "compounder",
+                    CompounderBlock::new
             );
 
 

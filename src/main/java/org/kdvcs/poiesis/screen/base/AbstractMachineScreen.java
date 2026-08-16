@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.network.ModNetwork;
 import org.kdvcs.poiesis.network.packet.OpenMachineConfigPacket;
+import org.kdvcs.poiesis.screen.layout.ProgressIndicatorLayout;
 import org.kdvcs.poiesis.screen.menu.AbstractMachineMenu;
 import org.kdvcs.poiesis.screen.widget.IoConfigButton;
 
@@ -122,6 +123,67 @@ public abstract class AbstractMachineScreen<M extends AbstractMachineMenu>
             int mouseX,
             int mouseY
     ) {
+    }
+
+    /**
+     * Draws a layered machine progress widget:
+     * static base first, then a left-to-right clipped foreground layer.
+     */
+    protected final void drawProgressIndicator(
+            GuiGraphics graphics,
+            ProgressIndicatorLayout layout,
+            int value,
+            int maximum
+    ) {
+        if (layout == null) {
+            return;
+        }
+
+        ProgressIndicatorLayout.TextureSpec baseTexture =
+                layout.baseTexture();
+
+        ProgressIndicatorLayout.SpriteRegion base =
+                layout.base();
+
+        graphics.blit(
+                baseTexture.location(),
+                leftPos + layout.x(),
+                topPos + layout.y(),
+                base.u(),
+                base.v(),
+                base.width(),
+                base.height(),
+                baseTexture.width(),
+                baseTexture.height()
+        );
+
+        ProgressIndicatorLayout.SpriteRegion progress =
+                layout.progress();
+
+        int visibleWidth = scale(
+                value,
+                maximum,
+                progress.width()
+        );
+
+        if (visibleWidth <= 0) {
+            return;
+        }
+
+        ProgressIndicatorLayout.TextureSpec progressTexture =
+                layout.progressTexture();
+
+        graphics.blit(
+                progressTexture.location(),
+                leftPos + layout.x(),
+                topPos + layout.y(),
+                progress.u(),
+                progress.v(),
+                visibleWidth,
+                progress.height(),
+                progressTexture.width(),
+                progressTexture.height()
+        );
     }
 
     protected final void drawHorizontalBar(

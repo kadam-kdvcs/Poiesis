@@ -6,6 +6,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.kdvcs.poiesis.Poiesis;
+import org.kdvcs.poiesis.recipe.CompounderRecipe;
 import org.kdvcs.poiesis.recipe.MechanicalProcessingRecipe;
 import org.kdvcs.poiesis.recipe.ModuleFabricationRecipe;
 
@@ -18,6 +19,10 @@ public final class ModRecipeTypes {
     public static final RegistryObject<RecipeType<ModuleFabricationRecipe>> MODULE_FABRICATION =
             RECIPE_TYPES.register("module_fabrication", () -> new RecipeType<>() {
                 @Override public String toString() { return Poiesis.MOD_ID + ":module_fabrication"; }
+            });
+    public static final RegistryObject<RecipeType<CompounderRecipe>> COMPOUNDING =
+            RECIPE_TYPES.register("compounding", () -> new RecipeType<>() {
+                @Override public String toString() { return Poiesis.MOD_ID + ":compounding"; }
             });
     private ModRecipeTypes() { }
     public static void register(IEventBus eventBus) { RECIPE_TYPES.register(eventBus); }

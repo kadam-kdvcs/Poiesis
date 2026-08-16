@@ -26,6 +26,7 @@ public final class ModBlockTagProvider extends BlockTagsProvider {
 
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(ModBlocks.MECHANICAL_PROCESSOR.get())
+                .add(ModBlocks.COMPOUNDER.get())
                 .add(ModBlocks.ALBICHROME_ORE.get())
                 .add(ModBlocks.DEEPSLATE_ALBICHROME_ORE.get())
                 .add(ModBlocks.ALBICHROME_BLOCK.get())

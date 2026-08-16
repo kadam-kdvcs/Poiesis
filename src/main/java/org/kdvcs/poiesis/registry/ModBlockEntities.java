@@ -6,6 +6,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.kdvcs.poiesis.Poiesis;
+import org.kdvcs.poiesis.block.entity.CompounderBlockEntity;
 import org.kdvcs.poiesis.block.entity.EnergyPipeBlockEntity;
 import org.kdvcs.poiesis.block.entity.FluidPipeBlockEntity;
 import org.kdvcs.poiesis.block.entity.ItemPipeBlockEntity;
@@ -21,6 +22,9 @@ public final class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<ModuleFabricatorBlockEntity>> MODULE_FABRICATOR =
             BLOCK_ENTITIES.register("module_fabricator", () ->
                     BlockEntityType.Builder.of(ModuleFabricatorBlockEntity::new, ModBlocks.MODULE_FABRICATOR.get()).build(null));
+    public static final RegistryObject<BlockEntityType<CompounderBlockEntity>> COMPOUNDER =
+            BLOCK_ENTITIES.register("compounder", () ->
+                    BlockEntityType.Builder.of(CompounderBlockEntity::new, ModBlocks.COMPOUNDER.get()).build(null));
     public static final RegistryObject<BlockEntityType<EnergyPipeBlockEntity>> ENERGY_PIPE =
             BLOCK_ENTITIES.register("energy_pipe", () ->
                     BlockEntityType.Builder.of(EnergyPipeBlockEntity::new, ModBlocks.BASIC_ENERGY_PIPE.get()).build(null));

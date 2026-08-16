@@ -2,13 +2,24 @@ package org.kdvcs.poiesis.datagen;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
 import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.registry.ModItems;
 
+import java.util.Set;
+
+/**
+ * Convention-based item model generation.
+ *
+ * New ordinary items automatically receive item/generated + item/<registry>
+ * instead of requiring another line in this provider. BlockItems are skipped
+ * because their models are owned by the block model pipeline.
+ */
 public final class ModItemModelProvider extends ItemModelProvider {
 
     private static final ResourceLocation GENERATED =
@@ -16,75 +27,33 @@ public final class ModItemModelProvider extends ItemModelProvider {
     private static final ResourceLocation HANDHELD =
             new ResourceLocation("minecraft", "item/handheld");
 
+    private static final Set<String> HANDHELD_ITEMS = Set.of(
+            "pipe_configurator"
+    );
+
     public ModItemModelProvider(
             PackOutput output,
             ExistingFileHelper existingFileHelper
     ) {
-        super(
-                output,
-                Poiesis.MOD_ID,
-                existingFileHelper
-        );
+        super(output, Poiesis.MOD_ID, existingFileHelper);
     }
 
     @Override
     protected void registerModels() {
-        generated(
-                ModItems.PRESSING_MODULE,
-                ModItems.GRINDING_MODULE,
-                ModItems.EXTRUSION_MODULE,
-                ModItems.SPEED_MODULE,
-                ModItems.EFFICIENCY_MODULE,
-                ModItems.SPECIALIZATION_MODULE_SUBSTRATE,
-                ModItems.PERFORMANCE_MODULE_SUBSTRATE,
-                ModItems.ALBICHROME_INGOT,
-                ModItems.RAW_ALBICHROME,
-                ModItems.ALBICHROME_NUGGET,
-                ModItems.CONTROL_ELEMENT,
-                ModItems.MACHINE_UNIT,
-                ModItems.SILICA_POWDER,
-                ModItems.GRINDING_STONE,
-                ModItems.GLASS_BATCH
-        );
+        for (RegistryObject<Item> registered : ModItems.ITEMS.getEntries()) {
+            Item item = registered.get();
+            if (item instanceof BlockItem
+                    && !(item instanceof ItemNameBlockItem)) {
+                continue;
+            }
 
-        handheld(
-                ModItems.PIPE_CONFIGURATOR
-        );
-    }
+            String name = registered.getId().getPath();
+            ResourceLocation parent = HANDHELD_ITEMS.contains(name)
+                    ? HANDHELD
+                    : GENERATED;
 
-    @SafeVarargs
-    private void generated(
-            RegistryObject<? extends Item>... items
-    ) {
-        for (RegistryObject<? extends Item> item : items) {
-            generated(item);
+            withExistingParent(name, parent)
+                    .texture("layer0", modLoc("item/" + name));
         }
-    }
-
-    private void generated(
-            RegistryObject<? extends Item> item
-    ) {
-        String name = item.getId().getPath();
-
-        withExistingParent(name, GENERATED)
-                .texture(
-                        "layer0",
-                        modLoc("item/" + name)
-                );
-    }
-
-    private void handheld(
-            RegistryObject<? extends Item> item
-    ) {
-        String name = item.getId().getPath();
-
-        withExistingParent(
-                name,
-                HANDHELD
-        )
-                .texture(
-                        "layer0",
-                        modLoc("item/" + name)
-                );
     }
 }

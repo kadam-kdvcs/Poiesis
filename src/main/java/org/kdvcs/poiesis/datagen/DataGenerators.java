@@ -61,6 +61,10 @@ public final class DataGenerators {
                 new ModItemTagProvider(output, lookupProvider, blockTags.contentsGetter(), existingFileHelper)
         );
         generator.addProvider(event.includeServer(), new ModRecipeProvider(output));
+        generator.addProvider(
+                event.includeServer(),
+                new ModGlobalLootModifierProvider(output)
+        );
         generator.addProvider(event.includeServer(), ModLootTableProvider.create(output));
     }
 }

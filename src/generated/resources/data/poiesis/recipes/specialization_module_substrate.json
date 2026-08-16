@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:iron_nugget"
+    },
+    "B": {
+      "item": "poiesis:silica_powder"
+    },
+    "C": {
+      "tag": "forge:ingots/albichrome"
+    }
+  },
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "result": {
+    "count": 2,
+    "item": "poiesis:specialization_module_substrate"
+  },
+  "show_notification": true
+}

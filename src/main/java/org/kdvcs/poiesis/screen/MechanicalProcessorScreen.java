@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import org.kdvcs.poiesis.machine.module.MechanicalMode;
 import org.kdvcs.poiesis.screen.base.AbstractMachineScreen;
+import org.kdvcs.poiesis.screen.layout.MechanicalProcessorGuiLayout;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -30,9 +31,6 @@ public final class MechanicalProcessorScreen
         private static final int SPECIALIZATION_HINT_WIDTH = 16;
         private static final int SPECIALIZATION_HINT_HEIGHT = 16;
 
-        private static final int PROGRESS_TEXTURE_WIDTH = 22;
-        private static final int PROGRESS_TEXTURE_HEIGHT = 48;
-
         private static final NumberFormat NUMBER_FORMAT =
                 NumberFormat.getIntegerInstance(Locale.US);
 
@@ -48,44 +46,9 @@ public final class MechanicalProcessorScreen
         private static final ResourceLocation EXTRUSION_TEXTURE =
                 containerTexture("mechanical_processor_extrusion");
 
-        private static final ResourceLocation PROGRESS_TEXTURE =
-                containerTexture(
-                        "widget/mechanical_processor_progress_arrows"
-                );
-
         private static final ResourceLocation ENERGY_TEXTURE =
                 containerTexture(
                         "widget/energy_bar"
-                );
-
-        private static final ProgressSprite PRESSING_PROGRESS =
-                new ProgressSprite(
-                        78,
-                        35,
-                        0,
-                        0,
-                        22,
-                        15
-                );
-
-        private static final ProgressSprite GRINDING_PROGRESS =
-                new ProgressSprite(
-                        79,
-                        34,
-                        0,
-                        31,
-                        22,
-                        17
-                );
-
-        private static final ProgressSprite EXTRUSION_PROGRESS =
-                new ProgressSprite(
-                        79,
-                        34,
-                        0,
-                        15,
-                        22,
-                        16
                 );
 
         public MechanicalProcessorScreen(
@@ -113,6 +76,10 @@ public final class MechanicalProcessorScreen
                 inventoryLabelY = INVENTORY_LABEL_Y;
         }
 
+        public MechanicalMode mode() {
+                return menu.mode();
+        }
+
         @Override
         protected ResourceLocation backgroundTexture() {
                 return switch (menu.mode()) {
@@ -137,43 +104,14 @@ public final class MechanicalProcessorScreen
         private void renderProgress(
                 GuiGraphics graphics
         ) {
-                ProgressSprite sprite =
-                        currentProgressSprite();
-
-                if (sprite == null) {
-                        return;
-                }
-
-                int visibleWidth = scale(
+                drawProgressIndicator(
+                        graphics,
+                        MechanicalProcessorGuiLayout.progressVisual(
+                                menu.mode()
+                        ),
                         menu.progress(),
-                        menu.maxProgress(),
-                        sprite.width()
+                        menu.maxProgress()
                 );
-
-                if (visibleWidth <= 0) {
-                        return;
-                }
-
-                graphics.blit(
-                        PROGRESS_TEXTURE,
-                        leftPos + sprite.x(),
-                        topPos + sprite.y(),
-                        sprite.u(),
-                        sprite.v(),
-                        visibleWidth,
-                        sprite.height(),
-                        PROGRESS_TEXTURE_WIDTH,
-                        PROGRESS_TEXTURE_HEIGHT
-                );
-        }
-
-        private ProgressSprite currentProgressSprite() {
-                return switch (menu.mode()) {
-                        case PRESSING -> PRESSING_PROGRESS;
-                        case GRINDING -> GRINDING_PROGRESS;
-                        case EXTRUSION -> EXTRUSION_PROGRESS;
-                        case NONE -> null;
-                };
         }
 
         private void renderEnergy(
@@ -317,16 +255,6 @@ public final class MechanicalProcessorScreen
                 return NUMBER_FORMAT.format(
                         Math.max(0, value)
                 );
-        }
-
-        private record ProgressSprite(
-                int x,
-                int y,
-                int u,
-                int v,
-                int width,
-                int height
-        ) {
         }
 
         @Override

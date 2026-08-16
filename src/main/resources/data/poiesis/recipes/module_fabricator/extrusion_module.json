@@ -3,7 +3,9 @@
   "module_base": {"item":"poiesis:specialization_module_substrate"},
   "materials": [
     {"item":"minecraft:copper_ingot","count":4},
-    {"item":"minecraft:piston","count":1}
+    {"item":"minecraft:piston","count":1},
+    {"item":"minecraft:iron_bars","count":2},
+    {"item":"poiesis:albichrome_ingot","count":2}
   ],
   "result": {"item":"poiesis:extrusion_module","count":1},
   "duration": 200,

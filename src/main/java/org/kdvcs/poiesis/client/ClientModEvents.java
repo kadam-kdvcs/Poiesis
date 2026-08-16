@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.registry.ModMenuTypes;
+import org.kdvcs.poiesis.screen.CompounderScreen;
 import org.kdvcs.poiesis.screen.MechanicalProcessorScreen;
 import org.kdvcs.poiesis.screen.ModuleFabricatorScreen;
 import org.kdvcs.poiesis.screen.config.MachineSideConfigScreen;
@@ -25,6 +26,11 @@ public final class ClientModEvents {
             MenuScreens.register(
                     ModMenuTypes.MODULE_FABRICATOR.get(),
                     ModuleFabricatorScreen::new
+            );
+
+            MenuScreens.register(
+                    ModMenuTypes.COMPOUNDER.get(),
+                    CompounderScreen::new
             );
 
             MenuScreens.register(

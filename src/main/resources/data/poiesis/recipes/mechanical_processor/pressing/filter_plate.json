@@ -1,0 +1,14 @@
+{
+  "type": "poiesis:mechanical_processing",
+  "input": {
+    "item": "poiesis:fiber_composite",
+    "count": 3
+  },
+  "result": {
+    "item": "poiesis:filter_plate",
+    "count": 1
+  },
+  "required_capability": "poiesis:pressing",
+  "duration": 75,
+  "energy_per_tick": 32
+}

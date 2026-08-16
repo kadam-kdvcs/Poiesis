@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "poiesis:machine_unit"
+    },
+    "A": {
+      "item": "minecraft:hopper"
+    },
+    "B": {
+      "item": "poiesis:albichrome_casing"
+    },
+    "C": {
+      "item": "minecraft:piston"
+    },
+    "D": {
+      "item": "poiesis:control_element"
+    }
+  },
+  "pattern": [
+    " A ",
+    "CBC",
+    "#D#"
+  ],
+  "result": {
+    "item": "poiesis:compounder"
+  },
+  "show_notification": true
+}

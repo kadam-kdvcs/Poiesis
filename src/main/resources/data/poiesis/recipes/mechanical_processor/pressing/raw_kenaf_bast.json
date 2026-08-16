@@ -1,0 +1,14 @@
+{
+  "type": "poiesis:mechanical_processing",
+  "input": {
+    "item": "poiesis:kenaf_stalk",
+    "count": 2
+  },
+  "result": {
+    "item": "poiesis:raw_kenaf_bast",
+    "count": 1
+  },
+  "required_capability": "poiesis:pressing",
+  "duration": 50,
+  "energy_per_tick": 16
+}

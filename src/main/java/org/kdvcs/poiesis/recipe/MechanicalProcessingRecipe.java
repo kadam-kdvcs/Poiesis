@@ -6,7 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -14,7 +13,7 @@ import org.kdvcs.poiesis.registry.ModRecipeSerializers;
 import org.kdvcs.poiesis.registry.ModRecipeTypes;
 
 public final class MechanicalProcessingRecipe
-        implements Recipe<Container> {
+        implements MaterialProcessRecipe {
 
     private final ResourceLocation id;
     private final CountedIngredient input;
@@ -119,6 +118,11 @@ public final class MechanicalProcessingRecipe
                 Ingredient.EMPTY,
                 input.ingredient()
         );
+    }
+
+    @Override
+    public java.util.List<CountedIngredient> inputs() {
+        return java.util.List.of(input);
     }
 
     public CountedIngredient input() {

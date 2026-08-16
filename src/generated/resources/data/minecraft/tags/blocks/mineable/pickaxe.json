@@ -1,6 +1,7 @@
 {
   "values": [
     "poiesis:mechanical_processor",
+    "poiesis:compounder",
     "poiesis:albichrome_ore",
     "poiesis:deepslate_albichrome_ore",
     "poiesis:albichrome_block",

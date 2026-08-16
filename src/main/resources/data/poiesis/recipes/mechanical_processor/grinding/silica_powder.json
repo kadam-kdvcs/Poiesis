@@ -1,0 +1,14 @@
+{
+  "type": "poiesis:mechanical_processing",
+  "input": {
+    "item": "poiesis:silica_rock",
+    "count": 1
+  },
+  "result": {
+    "item": "poiesis:silica_powder",
+    "count": 7
+  },
+  "required_capability": "poiesis:grinding",
+  "duration": 100,
+  "energy_per_tick": 48
+}

@@ -14,6 +14,16 @@ public final class ModCreativeTabs {
             .title(Component.translatable("itemGroup.poiesis.main"))
             .icon(() -> ModBlocks.MECHANICAL_PROCESSOR.get().asItem().getDefaultInstance())
             .displayItems((parameters, output) -> {
+                for (ModCrops.CropEntry crop : ModCrops.all()) {
+                    output.accept(crop.seeds().get());
+                    output.accept(crop.product().get());
+                }
+
+                output.accept(ModItems.RAW_KENAF_BAST.get());
+                output.accept(ModItems.KENAF_CORE.get());
+                output.accept(ModItems.FIBER_COMPOSITE.get());
+                output.accept(ModItems.FILTER_PLATE.get());
+
                 output.accept(ModBlocks.ALBICHROME_ORE.get());
                 output.accept(ModBlocks.DEEPSLATE_ALBICHROME_ORE.get());
                 output.accept(ModBlocks.SILICA_ROCK.get());
@@ -34,6 +44,7 @@ public final class ModCreativeTabs {
                 output.accept(ModBlocks.ALBICHROME_CASING.get());
                 output.accept(ModBlocks.MODULE_FABRICATOR.get());
                 output.accept(ModBlocks.MECHANICAL_PROCESSOR.get());
+                output.accept(ModBlocks.COMPOUNDER.get());
                 output.accept(ModBlocks.BASIC_ENERGY_PIPE.get());
                 output.accept(ModBlocks.BASIC_ITEM_PIPE.get());
                 output.accept(ModBlocks.BASIC_FLUID_PIPE.get());

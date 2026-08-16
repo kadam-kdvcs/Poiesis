@@ -1,5 +1,7 @@
 package org.kdvcs.poiesis.machine.fabrication;
 
+import org.kdvcs.poiesis.recipe.MaterialPlan;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
