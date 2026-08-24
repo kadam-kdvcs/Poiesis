@@ -14,6 +14,8 @@ import org.kdvcs.poiesis.machine.io.IoChannel;
 import org.kdvcs.poiesis.machine.io.RelativeSide;
 import org.kdvcs.poiesis.machine.io.SideConfigurationComponent;
 
+import java.util.function.Predicate;
+
 public final class ItemAutoTransfer {
 
     private static final int MAX_TRANSFER_PER_SIDE = 64;
@@ -25,7 +27,8 @@ public final class ItemAutoTransfer {
             MachineContext owner,
             MachineDefinition definition,
             InventoryComponent inventory,
-            SideConfigurationComponent configuration
+            SideConfigurationComponent configuration,
+            Predicate<RelativeSide> sideAllowed
     ) {
         Level level = owner.level();
 
@@ -34,7 +37,8 @@ public final class ItemAutoTransfer {
         }
 
         for (RelativeSide relativeSide : RelativeSide.values()) {
-            if (!configuration.allowsInput(IoChannel.ITEM, relativeSide)) {
+            if (!sideAllowed.test(relativeSide)
+                    || !configuration.allowsInput(IoChannel.ITEM, relativeSide)) {
                 continue;
             }
 
@@ -57,7 +61,8 @@ public final class ItemAutoTransfer {
             MachineContext owner,
             MachineDefinition definition,
             InventoryComponent inventory,
-            SideConfigurationComponent configuration
+            SideConfigurationComponent configuration,
+            Predicate<RelativeSide> sideAllowed
     ) {
         Level level = owner.level();
 
@@ -69,7 +74,8 @@ public final class ItemAutoTransfer {
         int outputEnd = firstOutputSlot + definition.outputSlots();
 
         for (RelativeSide relativeSide : RelativeSide.values()) {
-            if (!configuration.allowsOutput(IoChannel.ITEM, relativeSide)) {
+            if (!sideAllowed.test(relativeSide)
+                    || !configuration.allowsOutput(IoChannel.ITEM, relativeSide)) {
                 continue;
             }
 

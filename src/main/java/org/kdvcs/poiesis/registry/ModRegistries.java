@@ -8,6 +8,7 @@ public final class ModRegistries {
 
     public static void register(IEventBus eventBus) {
         ModCrops.bootstrap();
+        ModFluids.register(eventBus);
         ModBlocks.register(eventBus);
         ModItems.register(eventBus);
         ModCreativeTabs.register(eventBus);
@@ -15,6 +16,7 @@ public final class ModRegistries {
         ModMenuTypes.register(eventBus);
         ModRecipeTypes.register(eventBus);
         ModRecipeSerializers.register(eventBus);
+        ModSounds.register(eventBus);
         ModLootModifiers.register(eventBus);
         ModWorldgenFeatures.register(eventBus);
     }

@@ -27,6 +27,10 @@ minecraft {
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            // Runtime mod dependencies such as Jade ship SRG-named Mixin refmaps.
+            // Remap those targets to the Parchment names used by this dev workspace.
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             mods {
                 "${mod_id}" {
                     source sourceSets.main
@@ -81,7 +85,23 @@ dependencies {
     compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"))
     // at runtime, use the full JEI jar for Forge
     runtimeOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}"))
-    runtimeOnly fg.deobf("curse.maven:mekanism-268560:6552911")
+    compileOnly fg.deobf("curse.maven:mekanism-268560:6552911")
+    if (!project.hasProperty("without_mekanism")) {
+        runtimeOnly fg.deobf("curse.maven:mekanism-268560:6552911")
+    }
+    compileOnly fg.deobf("curse.maven:jade-324717:6855440")
+    if (!project.hasProperty("without_jade")) {
+        runtimeOnly fg.deobf("curse.maven:jade-324717:6855440")
+    }
+    compileOnly fg.deobf("curse.maven:ender-io-64578:7726916")
+    if (!project.hasProperty("without_enderio")) {
+        runtimeOnly fg.deobf("curse.maven:ender-io-64578:7726916")
+    }
+    if (!project.hasProperty("without_thermal")) {
+        runtimeOnly fg.deobf("curse.maven:cofh-core-69162:5374122")
+        runtimeOnly fg.deobf("curse.maven:thermal-foundation-222880:5443583")
+        runtimeOnly fg.deobf("curse.maven:thermal-expansion-69163:4970700")
+    }
 
 
 }

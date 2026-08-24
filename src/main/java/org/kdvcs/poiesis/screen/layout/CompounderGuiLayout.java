@@ -40,7 +40,7 @@ public final class CompounderGuiLayout {
                             "textures/container/widget/compounder_base.png"
                     ),
                     49,
-                    34
+                    68
             );
 
     private static final ProgressIndicatorLayout.TextureSpec PROGRESS_TEXTURE =
@@ -50,10 +50,10 @@ public final class CompounderGuiLayout {
                             "textures/container/widget/compounder_progress_arrows.png"
                     ),
                     49,
-                    34
+                    68
             );
 
-    public static final ProgressIndicatorLayout PROGRESS =
+    public static final ProgressIndicatorLayout STANDARD_PROGRESS =
             new ProgressIndicatorLayout(
                     BASE_TEXTURE,
                     PROGRESS_TEXTURE,
@@ -72,6 +72,34 @@ public final class CompounderGuiLayout {
                             34
                     )
             );
+
+    public static final ProgressIndicatorLayout HIGH_SHEAR_PROGRESS =
+            new ProgressIndicatorLayout(
+                    BASE_TEXTURE,
+                    PROGRESS_TEXTURE,
+                    60,
+                    26,
+                    new ProgressIndicatorLayout.SpriteRegion(
+                            0,
+                            34,
+                            49,
+                            34
+                    ),
+                    new ProgressIndicatorLayout.SpriteRegion(
+                            0,
+                            34,
+                            49,
+                            34
+                    )
+            );
+
+    public static ProgressIndicatorLayout progressVisual(
+            boolean highShear
+    ) {
+        return highShear
+                ? HIGH_SHEAR_PROGRESS
+                : STANDARD_PROGRESS;
+    }
 
     /*
      * Compact JEI recipe-flow bounds.

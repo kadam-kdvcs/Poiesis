@@ -49,6 +49,94 @@ public final class ModRecipeProvider extends RecipeProvider {
                 new ResourceLocation(Poiesis.MOD_ID, "glass_from_glass_batch")
         );
 
+        SimpleCookingRecipeBuilder.smelting(
+                        Ingredient.of(ModTags.Items.DUSTS_IRON),
+                        RecipeCategory.MISC,
+                        Items.IRON_INGOT,
+                        0.0F,
+                        200
+                )
+                .unlockedBy(getHasName(ModItems.IRON_DUST.get()), has(ModItems.IRON_DUST.get()))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "iron_ingot_from_iron_dust"));
+
+        SimpleCookingRecipeBuilder.smelting(
+                        Ingredient.of(ModTags.Items.DUSTS_HEAT_RESISTANT_STEEL),
+                        RecipeCategory.MISC,
+                        ModItems.HEAT_RESISTANT_STEEL_INGOT.get(),
+                        0.0F,
+                        200
+                )
+                .unlockedBy(
+                        getHasName(ModItems.HEAT_RESISTANT_STEEL_DUST.get()),
+                        has(ModItems.HEAT_RESISTANT_STEEL_DUST.get())
+                )
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "heat_resistant_steel_ingot_from_dust"));
+
+        ShapelessRecipeBuilder.shapeless(
+                        RecipeCategory.MISC,
+                        ModItems.HEAT_RESISTANT_STEEL_DUST.get(),
+                        4
+                )
+                .requires(Ingredient.of(ModTags.Items.DUSTS_IRON), 3)
+                .requires(Ingredient.of(ModTags.Items.DUSTS_ALBICHROME))
+                .unlockedBy(getHasName(ModItems.IRON_DUST.get()), has(ModItems.IRON_DUST.get()))
+                .save(consumer);
+
+        armorRecipe(
+                consumer,
+                ModItems.HEAT_RESISTANT_STEEL_HELMET.get(),
+                "heat_resistant_steel_helmet",
+                "#A#",
+                "# #"
+        );
+        armorRecipe(
+                consumer,
+                ModItems.HEAT_RESISTANT_STEEL_CHESTPLATE.get(),
+                "heat_resistant_steel_chestplate",
+                "#A#",
+                "###",
+                "#A#"
+        );
+        armorRecipe(
+                consumer,
+                ModItems.HEAT_RESISTANT_STEEL_LEGGINGS.get(),
+                "heat_resistant_steel_leggings",
+                "###",
+                "#A#",
+                "#A#"
+        );
+        armorRecipe(
+                consumer,
+                ModItems.HEAT_RESISTANT_STEEL_BOOTS.get(),
+                "heat_resistant_steel_boots",
+                "#A#",
+                "#A#"
+        );
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.BIOMASS_GASIFIER.get())
+                .pattern(" A ")
+                .pattern("CBC")
+                .pattern("#D#")
+                .define('D', ModItems.CONTROL_ELEMENT.get())
+                .define('#', ModItems.MACHINE_UNIT.get())
+                .define('A', Items.HOPPER)
+                .define('B', ModBlocks.HEAT_RESISTANT_STEEL_BLOCK.get())
+                .define('C', Items.COPPER_INGOT)
+                .unlockedBy(getHasName(ModBlocks.BIOMASS_GASIFIER.get()), has(ModBlocks.BIOMASS_GASIFIER.get()))
+                .save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.ALLOY_FACTORY.get())
+                .pattern("HAH")
+                .pattern("#B#")
+                .pattern("HCH")
+                .define('H', ModItems.HEAT_RESISTANT_STEEL_INGOT.get())
+                .define('A', Items.BLAST_FURNACE)
+                .define('#', ModItems.MACHINE_UNIT.get())
+                .define('B', ModBlocks.ALBICHROME_CASING.get())
+                .define('C', ModItems.CONTROL_ELEMENT.get())
+                .unlockedBy(getHasName(ModBlocks.ALLOY_FACTORY.get()), has(ModBlocks.ALLOY_FACTORY.get()))
+                .save(consumer);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.ALBICHROME_CASING.get())
                 .pattern("#A#")
                 .pattern("ABA")
@@ -135,8 +223,19 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .define('C', Items.PISTON)
                 .unlockedBy(getHasName(ModBlocks.MODULE_FABRICATOR.get()), has(ModBlocks.MODULE_FABRICATOR.get()))
                 .save(consumer);
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.SEPARATOR.get())
+                .pattern(" A ")
+                .pattern("CBC")
+                .pattern("#D#")
+                .define('D', ModItems.CONTROL_ELEMENT.get())
+                .define('#', ModItems.MACHINE_UNIT.get())
+                .define('A', Items.IRON_BARS)
+                .define('B', ModBlocks.ALBICHROME_CASING.get())
+                .define('C', ModItems.FILTER_PLATE.get())
+                .unlockedBy(getHasName(ModBlocks.SEPARATOR.get()), has(ModBlocks.SEPARATOR.get()))
+                .save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SPECIALIZATION_MODULE_SUBSTRATE.get(), 2)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SPECIALIZATION_MODULE_SUBSTRATE.get())
                 .pattern("ABA")
                 .pattern("BCB")
                 .pattern("ABA")
@@ -145,7 +244,7 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .define('C', ModTags.Items.INGOTS_ALBICHROME)
                 .unlockedBy(getHasName(ModItems.SPECIALIZATION_MODULE_SUBSTRATE.get()), has(ModItems.SPECIALIZATION_MODULE_SUBSTRATE.get()))
                 .save(consumer);
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERFORMANCE_MODULE_SUBSTRATE.get(), 4)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERFORMANCE_MODULE_SUBSTRATE.get(), 3)
                 .pattern("ABA")
                 .pattern("BCB")
                 .pattern("ABA")
@@ -192,6 +291,16 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .define('#', ModItems.ALBICHROME_INGOT.get())
                 .unlockedBy(getHasName(ModBlocks.ALBICHROME_BLOCK.get()), has(ModBlocks.ALBICHROME_BLOCK.get()))
                 .save(consumer);
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.HEAT_RESISTANT_STEEL_BLOCK.get())
+                .pattern("###")
+                .pattern("###")
+                .pattern("###")
+                .define('#', ModItems.HEAT_RESISTANT_STEEL_INGOT.get())
+                .unlockedBy(
+                        getHasName(ModItems.HEAT_RESISTANT_STEEL_INGOT.get()),
+                        has(ModItems.HEAT_RESISTANT_STEEL_INGOT.get())
+                )
+                .save(consumer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RAW_ALBICHROME_BLOCK.get())
                 .pattern("###")
@@ -225,6 +334,49 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModItems.ALBICHROME_INGOT.get()), has(ModItems.ALBICHROME_INGOT.get()))
                 .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "albichrome_ingot_from_unpacking"));
 
+        ShapelessRecipeBuilder.shapeless(
+                        RecipeCategory.MISC,
+                        ModItems.HEAT_RESISTANT_STEEL_INGOT.get(),
+                        9
+                )
+                .requires(ModBlocks.HEAT_RESISTANT_STEEL_BLOCK.get())
+                .unlockedBy(
+                        getHasName(ModBlocks.HEAT_RESISTANT_STEEL_BLOCK.get()),
+                        has(ModBlocks.HEAT_RESISTANT_STEEL_BLOCK.get())
+                )
+                .save(
+                        consumer,
+                        new ResourceLocation(
+                                Poiesis.MOD_ID,
+                                "heat_resistant_steel_ingot_from_unpacking"
+                        )
+                );
+
+    }
+
+    private void armorRecipe(
+            Consumer<FinishedRecipe> consumer,
+            ItemLike result,
+            String id,
+            String... pattern
+    ) {
+        ShapedRecipeBuilder builder = ShapedRecipeBuilder.shaped(
+                RecipeCategory.COMBAT,
+                result
+        );
+        for (String row : pattern) {
+            builder.pattern(row);
+        }
+        builder.define('#', ModItems.HEAT_RESISTANT_STEEL_INGOT.get())
+                .define('A', ModItems.FIBER_COMPOSITE.get())
+                .unlockedBy(
+                        getHasName(ModItems.HEAT_RESISTANT_STEEL_INGOT.get()),
+                        has(ModItems.HEAT_RESISTANT_STEEL_INGOT.get())
+                )
+                .save(
+                        consumer,
+                        new ResourceLocation(Poiesis.MOD_ID, id)
+                );
     }
 
     protected static void oreSmelting(Consumer<FinishedRecipe> consumer, List<ItemLike> ingredients,

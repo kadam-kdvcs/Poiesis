@@ -8,8 +8,10 @@ import net.minecraft.world.item.ItemStack;
 import org.kdvcs.poiesis.machine.api.MachineComponent;
 import org.kdvcs.poiesis.machine.energy.EnergyComponent;
 import org.kdvcs.poiesis.machine.inventory.InventoryComponent;
+import org.kdvcs.poiesis.machine.inventory.ItemOutputTransaction;
 import org.kdvcs.poiesis.recipe.ModuleFabricationRecipe;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -112,16 +114,32 @@ public final class ModuleFabricationProcess implements MachineComponent {
             return;
         }
 
-        if (!hasBase(active) || !hasMaterials(active) || !canAcceptResult(active.result())) {
+        ItemOutputTransaction.Plan outputPlan = planResult(
+                active.result()
+        ).orElse(null);
+        if (!hasBase(active) || !hasMaterials(active) || outputPlan == null) {
             workingSetter.accept(false);
             return;
         }
 
-        commit(active);
+        if (!commit(active, outputPlan)) {
+            workingSetter.accept(false);
+            return;
+        }
         activeRecipeId = null;
         progress = 0;
         maxProgress = 0;
         activeEnergyPerTick = 0;
+        if (autoCrafting) {
+            ModuleFabricationRecipe next = selectedRecipe().orElse(null);
+            if (next != null && canStart(next)) {
+                activeRecipeId = next.getId();
+                maxProgress = next.duration();
+                workingSetter.accept(true);
+                changed.run();
+                return;
+            }
+        }
         workingSetter.accept(false);
         changed.run();
     }
@@ -147,20 +165,33 @@ public final class ModuleFabricationProcess implements MachineComponent {
     }
 
     private boolean canAcceptResult(ItemStack result) {
-        ItemStack output = inventory.items().getStackInSlot(OUTPUT_SLOT);
-        if (output.isEmpty()) return true;
-        if (!ItemStack.isSameItemSameTags(output, result)) return false;
-        return output.getCount() + result.getCount() <= output.getMaxStackSize();
+        return planResult(result).isPresent();
     }
 
-    private void commit(ModuleFabricationRecipe recipe) {
+    private Optional<ItemOutputTransaction.Plan> planResult(ItemStack result) {
+        return ItemOutputTransaction.plan(
+                inventory.items(),
+                OUTPUT_SLOT,
+                OUTPUT_SLOT + 1,
+                List.of(result)
+        );
+    }
+
+    private boolean commit(
+            ModuleFabricationRecipe recipe,
+            ItemOutputTransaction.Plan outputPlan
+    ) {
         int[] plan = MaterialPlan.find(
                 inventory.items(),
                 FIRST_MATERIAL_SLOT,
                 MATERIAL_SLOT_END,
                 recipe.materials()
         );
-        if (plan == null) return;
+        if (plan == null
+                || !hasBase(recipe)
+                || !outputPlan.matches(inventory.items())) {
+            return false;
+        }
 
         inventory.items().extractItem(MODULE_BASE_SLOT, recipe.moduleBase().count(), false);
         for (int i = 0; i < plan.length; i++) {
@@ -169,15 +200,12 @@ public final class ModuleFabricationProcess implements MachineComponent {
             }
         }
 
-        ItemStack result = recipe.result();
-        ItemStack output = inventory.items().getStackInSlot(OUTPUT_SLOT);
-        if (output.isEmpty()) {
-            inventory.items().setStackInSlot(OUTPUT_SLOT, result);
-        } else {
-            ItemStack merged = output.copy();
-            merged.grow(result.getCount());
-            inventory.items().setStackInSlot(OUTPUT_SLOT, merged);
+        if (!outputPlan.commit(inventory.items())) {
+            throw new IllegalStateException(
+                    "Module fabricator output changed during an atomic commit"
+            );
         }
+        return true;
     }
 
     private void cancelActive(Consumer<Boolean> workingSetter, Runnable changed) {

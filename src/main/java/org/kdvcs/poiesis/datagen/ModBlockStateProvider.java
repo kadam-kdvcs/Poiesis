@@ -28,6 +28,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         blockWithItem(ModBlocks.ALBICHROME_ORE);
         blockWithItem(ModBlocks.DEEPSLATE_ALBICHROME_ORE);
         blockWithItem(ModBlocks.ALBICHROME_BLOCK);
+        blockWithItem(ModBlocks.HEAT_RESISTANT_STEEL_BLOCK);
         blockWithItem(ModBlocks.RAW_ALBICHROME_BLOCK);
         blockWithItem(ModBlocks.SILICA_ROCK);
 

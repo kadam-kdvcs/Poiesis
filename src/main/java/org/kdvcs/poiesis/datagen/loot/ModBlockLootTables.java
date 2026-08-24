@@ -37,11 +37,19 @@ public final class ModBlockLootTables extends BlockLootSubProvider {
         dropSelf(ModBlocks.ALBICHROME_CASING.get());
         dropSelf(ModBlocks.MODULE_FABRICATOR.get());
         dropSelf(ModBlocks.COMPOUNDER.get());
+        dropSelf(ModBlocks.SEPARATOR.get());
+        dropSelf(ModBlocks.BIOMASS_GASIFIER.get());
+        dropSelf(ModBlocks.ALLOY_FACTORY.get());
+        dropSelf(ModBlocks.ADSORPTION_COLUMN_CONTROLLER.get());
+        dropSelf(ModBlocks.ADSORPTION_BED.get());
+        dropSelf(ModBlocks.FLUID_DISTRIBUTOR.get());
         dropSelf(ModBlocks.BASIC_ENERGY_PIPE.get());
         dropSelf(ModBlocks.BASIC_ITEM_PIPE.get());
         dropSelf(ModBlocks.BASIC_FLUID_PIPE.get());
         dropSelf(ModBlocks.ALBICHROME_BLOCK.get());
+        dropSelf(ModBlocks.HEAT_RESISTANT_STEEL_BLOCK.get());
         dropSelf(ModBlocks.RAW_ALBICHROME_BLOCK.get());
+        dropSelf(ModBlocks.HEAVY_MACHINE_CASING.get());
 
         add(
                 ModBlocks.ALBICHROME_ORE.get(),
@@ -152,7 +160,7 @@ public final class ModBlockLootTables extends BlockLootSubProvider {
                             .hasBlockStateProperties(crop)
                             .setProperties(
                                     StatePropertiesPredicate.Builder.properties()
-                                            .hasProperty(PoiesisCropBlock.AGE, maxAge)
+                                            .hasProperty(PoiesisCropBlock.AGE, age)
                             );
 
             condition = condition == null

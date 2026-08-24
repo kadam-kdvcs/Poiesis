@@ -15,7 +15,10 @@ import java.util.Optional;
  * Version-aware recipe resolver for item material processes.
  *
  * Recipe scanning occurs only when material inputs or process capabilities
- * change. Specialized recipes are preferred over standard recipes.
+ * change. Recipe modes are strictly isolated: a machine without a process
+ * capability can only resolve standard recipes, while a specialized machine
+ * can only resolve recipes belonging to its installed capability. There is no
+ * fallback from a specialized mode to standard processing.
  */
 public final class MaterialRecipeResolver<R extends MaterialProcessRecipe> {
     private final MachineContext owner;
@@ -75,20 +78,24 @@ public final class MaterialRecipeResolver<R extends MaterialProcessRecipe> {
                 .getRecipeManager()
                 .getAllRecipesFor(recipeType);
 
-        Optional<R> specialized = recipes.stream()
-                .filter(recipe -> !recipe.isStandard())
-                .filter(recipe -> snapshot.capabilities().contains(recipe.requiredCapability()))
+        return recipes.stream()
+                .filter(recipe -> belongsToActiveMode(recipe, snapshot))
                 .filter(this::matchesInputs)
                 .findFirst();
+    }
 
-        if (specialized.isPresent()) {
-            return specialized;
+    private boolean belongsToActiveMode(
+            R recipe,
+            ModuleSnapshot snapshot
+    ) {
+        if (snapshot.capabilities().isEmpty()) {
+            return recipe.isStandard();
         }
 
-        return recipes.stream()
-                .filter(MaterialProcessRecipe::isStandard)
-                .filter(this::matchesInputs)
-                .findFirst();
+        return recipe.requiredCapability() != null
+                && snapshot.capabilities().contains(
+                recipe.requiredCapability()
+        );
     }
 
     private boolean matchesInputs(R recipe) {

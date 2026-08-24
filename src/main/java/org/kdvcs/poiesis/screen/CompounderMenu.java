@@ -35,7 +35,7 @@ public final class CompounderMenu
     private static final int BATTERY_MENU_SLOT = 6;
 
     private static final int MACHINE_SLOT_COUNT = 7;
-    private static final int DATA_COUNT = 7;
+    public static final int DATA_COUNT = 8;
 
 
     private final CompounderBlockEntity blockEntity;
@@ -265,6 +265,10 @@ public final class CompounderMenu
 
     public int stateOrdinal() {
         return dataValue(6);
+    }
+
+    public boolean highShearEnabled() {
+        return dataValue(7) != 0;
     }
 
     private static CompounderBlockEntity requireBlockEntity(

@@ -5,16 +5,16 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import org.kdvcs.poiesis.compat.jei.PoiesisJeiRecipeTypes;
+import org.kdvcs.poiesis.compat.jei.CompounderJeiMode;
 import org.kdvcs.poiesis.compat.jei.util.JeiProgressIndicator;
 import org.kdvcs.poiesis.compat.jei.util.JeiStacks;
 import org.kdvcs.poiesis.recipe.CompounderRecipe;
 import org.kdvcs.poiesis.recipe.CountedIngredient;
-import org.kdvcs.poiesis.registry.ModBlocks;
 import org.kdvcs.poiesis.screen.layout.CompounderGuiLayout;
 
 import java.util.List;
@@ -27,8 +27,8 @@ import java.util.List;
  * JEI page compact while preserving the same visual relationship players see
  * in the actual GUI.
  *
- * Specialization modules are intentionally not inserted into the process-flow
- * diagram: they are machine catalysts, not material-flow slots.
+ * Specialized pages place their required process module beneath the arrow,
+ * matching the visual cue used by the Mechanical Processor's JEI pages.
  */
 public final class CompounderCategory
         implements IRecipeCategory<CompounderRecipe> {
@@ -75,56 +75,61 @@ public final class CompounderCategory
 
     private static final int ARROW_X =
             CompounderGuiLayout.jeiX(
-                    CompounderGuiLayout.PROGRESS.x()
+                    CompounderGuiLayout.STANDARD_PROGRESS.x()
             );
 
     private static final int ARROW_Y =
             CompounderGuiLayout.jeiY(
-                    CompounderGuiLayout.PROGRESS.y()
+                    CompounderGuiLayout.STANDARD_PROGRESS.y()
             );
+
+    private static final int MODULE_X =
+            ARROW_X + (49 - 18) / 2;
+
+    private static final int MODULE_Y =
+            CompounderGuiLayout.JEI_HEIGHT + 1;
 
     private static final int JEI_ARROW_CYCLE_TICKS = 40;
 
+    private final CompounderJeiMode mode;
     private final IDrawable background;
     private final IDrawable icon;
     private final JeiProgressIndicator progressIndicator;
 
     public CompounderCategory(
-            IGuiHelper guiHelper
+            IGuiHelper guiHelper,
+            CompounderJeiMode mode
     ) {
+        this.mode = mode;
         this.background =
                 guiHelper.createBlankDrawable(
                         WIDTH,
-                        HEIGHT
+                        mode.specialized()
+                                ? HEIGHT + 20
+                                : HEIGHT
                 );
 
         this.icon =
                 guiHelper.createDrawableItemStack(
-                        ModBlocks
-                                .COMPOUNDER
-                                .get()
-                                .asItem()
-                                .getDefaultInstance()
+                        mode.iconStack()
                 );
 
         this.progressIndicator =
                 JeiProgressIndicator.create(
                         guiHelper,
-                        CompounderGuiLayout.PROGRESS,
+                        mode.progressVisual(),
                         JEI_ARROW_CYCLE_TICKS
                 );
     }
 
     @Override
     public RecipeType<CompounderRecipe> getRecipeType() {
-        return PoiesisJeiRecipeTypes.COMPOUNDING;
+        return mode.recipeType();
     }
 
     @Override
     public Component getTitle() {
-        return Component.translatable(
-                "jei.poiesis.category.compounder"
-        );
+        return mode.title();
     }
 
     @Override
@@ -183,6 +188,17 @@ public final class CompounderCategory
                 .addItemStack(
                         recipe.result()
                 );
+
+        if (mode.specialized()) {
+            builder.addSlot(
+                            RecipeIngredientRole.CATALYST,
+                            MODULE_X,
+                            MODULE_Y
+                    )
+                    .setStandardSlotBackground()
+                    .setSlotName("high_shear_module")
+                    .addItemStack(mode.moduleStack());
+        }
 
     }
 

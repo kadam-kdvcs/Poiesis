@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.Nullable;
 import org.kdvcs.poiesis.block.entity.base.AbstractMachineBlockEntity;
 import org.kdvcs.poiesis.machine.MaterialMachineRuntime;
@@ -17,6 +18,7 @@ import org.kdvcs.poiesis.machine.module.ModuleLayout;
 import org.kdvcs.poiesis.recipe.MechanicalProcessingRecipe;
 import org.kdvcs.poiesis.registry.ModBlockEntities;
 import org.kdvcs.poiesis.registry.ModRecipeTypes;
+import org.kdvcs.poiesis.registry.ModSounds;
 import org.kdvcs.poiesis.screen.MechanicalProcessorMenu;
 
 public final class MechanicalProcessorBlockEntity
@@ -24,7 +26,7 @@ public final class MechanicalProcessorBlockEntity
 
     public static final MachineDefinition DEFINITION = new MachineDefinition(
             "mechanical_processor",
-            new EnergySpec(40_000, 640, 20, 40, 320, 20),
+            new EnergySpec(64_000, 640, 20, 40, 320, 20),
             1,
             1,
             3,
@@ -81,5 +83,10 @@ public final class MechanicalProcessorBlockEntity
             Player player
     ) {
         return new MechanicalProcessorMenu(id, inventory, this, data);
+    }
+
+    @Override
+    protected SoundEvent workingSound() {
+        return ModSounds.MECHANICAL_PROCESSOR_WORKING.get();
     }
 }

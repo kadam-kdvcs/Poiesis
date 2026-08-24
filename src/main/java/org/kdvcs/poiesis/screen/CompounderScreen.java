@@ -84,10 +84,16 @@ public final class CompounderScreen
     ) {
         drawProgressIndicator(
                 graphics,
-                CompounderGuiLayout.PROGRESS,
+                CompounderGuiLayout.progressVisual(
+                        menu.highShearEnabled()
+                ),
                 menu.progress(),
                 menu.maxProgress()
         );
+    }
+
+    public boolean highShearEnabled() {
+        return menu.highShearEnabled();
     }
 
     private void renderEnergy(

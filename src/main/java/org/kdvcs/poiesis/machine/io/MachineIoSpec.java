@@ -83,6 +83,26 @@ public final class MachineIoSpec {
             );
         }
 
+        public Builder fluidInput() {
+            return channel(
+                    IoChannel.FLUID,
+                    EnumSet.of(SideIoMode.NONE, SideIoMode.INPUT),
+                    SideIoMode.INPUT,
+                    false,
+                    false
+            );
+        }
+
+        public Builder fluidOutput() {
+            return channel(
+                    IoChannel.FLUID,
+                    EnumSet.of(SideIoMode.NONE, SideIoMode.OUTPUT),
+                    SideIoMode.OUTPUT,
+                    false,
+                    true
+            );
+        }
+
         public Builder energyInput() {
             return channel(
                     IoChannel.ENERGY,

@@ -62,13 +62,13 @@ public final class MechanicalProcessorGuiLayout {
                             0,
                             15,
                             20,
-                            15
+                            16
                     ),
                     new ProgressIndicatorLayout.SpriteRegion(
                             0,
                             15,
                             20,
-                            15
+                            16
                     )
             );
 

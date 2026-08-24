@@ -9,7 +9,8 @@ public record MachineDefinition(
         int outputSlots,
         int moduleSlots,
         MachineIoSpec io,
-        BatterySpec battery
+        BatterySpec battery,
+        FluidSpec fluid
 ) {
     public MachineDefinition {
         if (id == null || id.isBlank()) {
@@ -33,12 +34,27 @@ public record MachineDefinition(
         }
     }
 
-    /*
-     * 保留旧的六参数构造器。
-     *
-     * 这样你之前已经写好的机器定义
-     * 不需要全部立刻修改。
-     */
+    public MachineDefinition(
+            String id,
+            EnergySpec energy,
+            int inputSlots,
+            int outputSlots,
+            int moduleSlots,
+            MachineIoSpec io,
+            BatterySpec battery
+    ) {
+        this(
+                id,
+                energy,
+                inputSlots,
+                outputSlots,
+                moduleSlots,
+                io,
+                battery,
+                null
+        );
+    }
+
     public MachineDefinition(
             String id,
             EnergySpec energy,
@@ -54,13 +70,11 @@ public record MachineDefinition(
                 outputSlots,
                 moduleSlots,
                 io,
+                null,
                 null
         );
     }
 
-    /*
-     * 保留最早的五参数构造器。
-     */
     public MachineDefinition(
             String id,
             EnergySpec energy,
@@ -75,11 +89,16 @@ public record MachineDefinition(
                 outputSlots,
                 moduleSlots,
                 MachineIoSpec.none(),
+                null,
                 null
         );
     }
 
     public boolean hasBatterySlot() {
         return battery != null;
+    }
+
+    public boolean hasFluidTank() {
+        return fluid != null;
     }
 }

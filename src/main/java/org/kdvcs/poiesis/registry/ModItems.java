@@ -7,7 +7,10 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.kdvcs.poiesis.Poiesis;
+import org.kdvcs.poiesis.item.HeatResistantSteelArmorMaterial;
+import org.kdvcs.poiesis.item.HeatResistantSteelArmorItem;
 import org.kdvcs.poiesis.item.PipeConfiguratorItem;
+import net.minecraft.world.item.ArmorItem;
 import org.kdvcs.poiesis.machine.module.MachineModuleItem;
 import org.kdvcs.poiesis.machine.module.MechanicalMode;
 import org.kdvcs.poiesis.machine.module.ModuleKind;
@@ -23,13 +26,50 @@ public final class ModItems {
                     Poiesis.MOD_ID
             );
 
+    //  register capabilities of specialization modules
     public static final ResourceLocation PRESSING = capability("pressing");
-
     public static final ResourceLocation GRINDING = capability("grinding");
-
     public static final ResourceLocation EXTRUSION = capability("extrusion");
+    public static final ResourceLocation HIGH_SHEAR = capability("high_shear");
+    public static final ResourceLocation WET_SEPARATION = capability("wet_separation");
 
     public static final RegistryObject<Item> SILICA_POWDER = registerItem("silica_powder");
+    public static final RegistryObject<Item> IRON_DUST = registerItem("iron_dust");
+    public static final RegistryObject<Item> HEAT_RESISTANT_STEEL_DUST = registerItem("heat_resistant_steel_dust");
+    public static final RegistryObject<Item> HEAT_RESISTANT_STEEL_INGOT = registerItem("heat_resistant_steel_ingot");
+    public static final RegistryObject<Item> HEAT_RESISTANT_STEEL_HELMET = registerItem(
+            "heat_resistant_steel_helmet",
+            properties -> new HeatResistantSteelArmorItem(
+                    HeatResistantSteelArmorMaterial.INSTANCE,
+                    ArmorItem.Type.HELMET,
+                    properties
+            )
+    );
+    public static final RegistryObject<Item> HEAT_RESISTANT_STEEL_CHESTPLATE = registerItem(
+            "heat_resistant_steel_chestplate",
+            properties -> new HeatResistantSteelArmorItem(
+                    HeatResistantSteelArmorMaterial.INSTANCE,
+                    ArmorItem.Type.CHESTPLATE,
+                    properties
+            )
+    );
+    public static final RegistryObject<Item> HEAT_RESISTANT_STEEL_LEGGINGS = registerItem(
+            "heat_resistant_steel_leggings",
+            properties -> new HeatResistantSteelArmorItem(
+                    HeatResistantSteelArmorMaterial.INSTANCE,
+                    ArmorItem.Type.LEGGINGS,
+                    properties
+            )
+    );
+    public static final RegistryObject<Item> HEAT_RESISTANT_STEEL_BOOTS = registerItem(
+            "heat_resistant_steel_boots",
+            properties -> new HeatResistantSteelArmorItem(
+                    HeatResistantSteelArmorMaterial.INSTANCE,
+                    ArmorItem.Type.BOOTS,
+                    properties
+            )
+    );
+    public static final RegistryObject<Item> KENAF_FIBER = registerItem("kenaf_fiber");
     public static final RegistryObject<Item> KENAF_CORE = registerItem("kenaf_core");
     public static final RegistryObject<Item> RAW_KENAF_BAST = registerItem("raw_kenaf_bast");
     public static final RegistryObject<Item> GLASS_BATCH = registerItem("glass_batch");
@@ -40,6 +80,7 @@ public final class ModItems {
     public static final RegistryObject<Item> ALBICHROME_INGOT = registerItem("albichrome_ingot");
     public static final RegistryObject<Item> RAW_ALBICHROME = registerItem("raw_albichrome");
     public static final RegistryObject<Item> ALBICHROME_NUGGET = registerItem("albichrome_nugget");
+    public static final RegistryObject<Item> ALBICHROME_DUST = registerItem("albichrome_dust");
     public static final RegistryObject<Item> MACHINE_UNIT = registerItem("machine_unit");
     public static final RegistryObject<Item> CONTROL_ELEMENT = registerItem("control_element");
     public static final RegistryObject<PipeConfiguratorItem> PIPE_CONFIGURATOR = registerItem("pipe_configurator", PipeConfiguratorItem::new);
@@ -75,6 +116,26 @@ public final class ModItems {
                     ModuleKind.PROCESS,
                     MechanicalMode.EXTRUSION,
                     Set.of(EXTRUSION),
+                    0,
+                    1.0D
+            );
+
+    public static final RegistryObject<MachineModuleItem> WET_SEPARATION_MODULE =
+            registerModule(
+                    "wet_separation_module",
+                    ModuleKind.PROCESS,
+                    MechanicalMode.NONE,
+                    Set.of(WET_SEPARATION),
+                    0,
+                    1.0D
+            );
+
+    public static final RegistryObject<MachineModuleItem> HIGH_SHEAR_MODULE =
+            registerModule(
+                    "high_shear_module",
+                    ModuleKind.PROCESS,
+                    MechanicalMode.NONE,
+                    Set.of(HIGH_SHEAR),
                     0,
                     1.0D
             );

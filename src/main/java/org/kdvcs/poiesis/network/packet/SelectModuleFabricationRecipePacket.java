@@ -25,6 +25,7 @@ public record SelectModuleFabricationRecipePacket(BlockPos pos, ResourceLocation
             if (player == null || !(player.containerMenu instanceof ModuleFabricatorMenu menu) || !menu.machinePos().equals(packet.pos)) return;
             BlockEntity be = player.level().getBlockEntity(packet.pos);
             if (!(be instanceof ModuleFabricatorBlockEntity machine)) return;
+            if (machine.runtime().process().isProcessing()) return;
             machine.runtime().findRecipeById(packet.recipeId).ifPresent(recipe -> {
                 if (recipe.moduleBase().test(machine.runtime().inventory().items().getStackInSlot(0))) {
                     machine.runtime().process().select(packet.recipeId);

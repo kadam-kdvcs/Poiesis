@@ -12,6 +12,8 @@ import org.kdvcs.poiesis.machine.io.IoChannel;
 import org.kdvcs.poiesis.machine.io.RelativeSide;
 import org.kdvcs.poiesis.machine.io.SideConfigurationComponent;
 
+import java.util.function.Predicate;
+
 public final class EnergyAutoTransfer {
 
     private EnergyAutoTransfer() {
@@ -20,7 +22,8 @@ public final class EnergyAutoTransfer {
     public static void pullEnergy(
             MachineContext owner,
             EnergyComponent energy,
-            SideConfigurationComponent configuration
+            SideConfigurationComponent configuration,
+            Predicate<RelativeSide> sideAllowed
     ) {
         Level level = owner.level();
 
@@ -29,7 +32,8 @@ public final class EnergyAutoTransfer {
         }
 
         for (RelativeSide relativeSide : RelativeSide.values()) {
-            if (!configuration.allowsInput(IoChannel.ENERGY, relativeSide)) {
+            if (!sideAllowed.test(relativeSide)
+                    || !configuration.allowsInput(IoChannel.ENERGY, relativeSide)) {
                 continue;
             }
 

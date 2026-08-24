@@ -11,6 +11,12 @@ import org.kdvcs.poiesis.network.packet.SetMachineSideModePacket;
 import org.kdvcs.poiesis.network.packet.SelectModuleFabricationRecipePacket;
 import org.kdvcs.poiesis.network.packet.StartModuleFabricationPacket;
 import org.kdvcs.poiesis.network.packet.ToggleModuleFabricatorAutoPacket;
+import org.kdvcs.poiesis.network.packet.SeparatorFluidInteractPacket;
+import org.kdvcs.poiesis.network.packet.AdsorptionColumnFluidInteractPacket;
+import org.kdvcs.poiesis.network.packet.BiomassGasifierFluidInteractPacket;
+import org.kdvcs.poiesis.network.packet.SelectAlloyFactoryRecipePacket;
+import org.kdvcs.poiesis.network.packet.StartAlloyFactoryPacket;
+import org.kdvcs.poiesis.network.packet.ToggleAlloyFactoryAutoPacket;
 
 import java.util.Optional;
 
@@ -77,6 +83,48 @@ public final class ModNetwork {
                 ToggleModuleFabricatorAutoPacket::encode,
                 ToggleModuleFabricatorAutoPacket::decode,
                 ToggleModuleFabricatorAutoPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, SeparatorFluidInteractPacket.class,
+                SeparatorFluidInteractPacket::encode,
+                SeparatorFluidInteractPacket::decode,
+                SeparatorFluidInteractPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, AdsorptionColumnFluidInteractPacket.class,
+                AdsorptionColumnFluidInteractPacket::encode,
+                AdsorptionColumnFluidInteractPacket::decode,
+                AdsorptionColumnFluidInteractPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, BiomassGasifierFluidInteractPacket.class,
+                BiomassGasifierFluidInteractPacket::encode,
+                BiomassGasifierFluidInteractPacket::decode,
+                BiomassGasifierFluidInteractPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, SelectAlloyFactoryRecipePacket.class,
+                SelectAlloyFactoryRecipePacket::encode,
+                SelectAlloyFactoryRecipePacket::decode,
+                SelectAlloyFactoryRecipePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, StartAlloyFactoryPacket.class,
+                StartAlloyFactoryPacket::encode,
+                StartAlloyFactoryPacket::decode,
+                StartAlloyFactoryPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, ToggleAlloyFactoryAutoPacket.class,
+                ToggleAlloyFactoryAutoPacket::encode,
+                ToggleAlloyFactoryAutoPacket::decode,
+                ToggleAlloyFactoryAutoPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
     }

@@ -4,9 +4,11 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import org.kdvcs.poiesis.Poiesis;
+import org.kdvcs.poiesis.compat.mekanism.MekanismAlbichromeCompat;
 
 public final class ModCreativeTabs {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Poiesis.MOD_ID);
@@ -20,6 +22,7 @@ public final class ModCreativeTabs {
                 }
 
                 output.accept(ModItems.RAW_KENAF_BAST.get());
+                output.accept(ModItems.KENAF_FIBER.get());
                 output.accept(ModItems.KENAF_CORE.get());
                 output.accept(ModItems.FIBER_COMPOSITE.get());
                 output.accept(ModItems.FILTER_PLATE.get());
@@ -35,16 +38,38 @@ public final class ModCreativeTabs {
                 output.accept(ModItems.ALBICHROME_INGOT.get());
                 output.accept(ModBlocks.ALBICHROME_BLOCK.get());
                 output.accept(ModItems.ALBICHROME_NUGGET.get());
+                output.accept(ModItems.ALBICHROME_DUST.get());
+                output.accept(ModItems.IRON_DUST.get());
+                output.accept(ModItems.HEAT_RESISTANT_STEEL_DUST.get());
+                output.accept(ModItems.HEAT_RESISTANT_STEEL_INGOT.get());
+                output.accept(ModBlocks.HEAT_RESISTANT_STEEL_BLOCK.get());
+                output.accept(ModItems.HEAT_RESISTANT_STEEL_HELMET.get());
+                output.accept(ModItems.HEAT_RESISTANT_STEEL_CHESTPLATE.get());
+                output.accept(ModItems.HEAT_RESISTANT_STEEL_LEGGINGS.get());
+                output.accept(ModItems.HEAT_RESISTANT_STEEL_BOOTS.get());
+                if (ModList.get().isLoaded("mekanism")) {
+                    output.accept(MekanismAlbichromeCompat.DIRTY_ALBICHROME_DUST.get());
+                    output.accept(MekanismAlbichromeCompat.ALBICHROME_CLUMP.get());
+                    output.accept(MekanismAlbichromeCompat.ALBICHROME_SHARD.get());
+                    output.accept(MekanismAlbichromeCompat.ALBICHROME_CRYSTAL.get());
+                }
 
                 output.accept(ModItems.CONTROL_ELEMENT.get());
                 output.accept(ModItems.GRINDING_STONE.get());
                 output.accept(ModItems.PIPE_CONFIGURATOR.get());
                 output.accept(ModItems.MACHINE_UNIT.get());
 
+                output.accept(ModBlocks.BIOMASS_GASIFIER.get());
                 output.accept(ModBlocks.ALBICHROME_CASING.get());
                 output.accept(ModBlocks.MODULE_FABRICATOR.get());
                 output.accept(ModBlocks.MECHANICAL_PROCESSOR.get());
                 output.accept(ModBlocks.COMPOUNDER.get());
+                output.accept(ModBlocks.SEPARATOR.get());
+                output.accept(ModBlocks.ADSORPTION_COLUMN_CONTROLLER.get());
+                output.accept(ModBlocks.ADSORPTION_BED.get());
+                output.accept(ModBlocks.FLUID_DISTRIBUTOR.get());
+                output.accept(ModBlocks.HEAVY_MACHINE_CASING.get());
+                output.accept(ModBlocks.ALLOY_FACTORY.get());
                 output.accept(ModBlocks.BASIC_ENERGY_PIPE.get());
                 output.accept(ModBlocks.BASIC_ITEM_PIPE.get());
                 output.accept(ModBlocks.BASIC_FLUID_PIPE.get());
@@ -54,6 +79,8 @@ public final class ModCreativeTabs {
                 output.accept(ModItems.PRESSING_MODULE.get());
                 output.accept(ModItems.GRINDING_MODULE.get());
                 output.accept(ModItems.EXTRUSION_MODULE.get());
+                output.accept(ModItems.HIGH_SHEAR_MODULE.get());
+                output.accept(ModItems.WET_SEPARATION_MODULE.get());
                 output.accept(ModItems.SPEED_MODULE.get());
                 output.accept(ModItems.EFFICIENCY_MODULE.get());
             }).build());

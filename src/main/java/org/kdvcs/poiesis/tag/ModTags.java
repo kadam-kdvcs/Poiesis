@@ -25,6 +25,11 @@ public final class ModTags {
                         "machine_casings"
                 );
 
+        public static final TagKey<Block> STORAGE_BLOCKS_HEAT_RESISTANT_STEEL =
+                forgeBlockTag(
+                        "storage_blocks/heat_resistant_steel"
+                );
+
     }
 
     public static final class Items {
@@ -49,9 +54,54 @@ public final class ModTags {
                         "nuggets/albichrome"
                 );
 
+        public static final TagKey<Item> DUSTS_ALBICHROME =
+                forgeItemTag(
+                        "dusts/albichrome"
+                );
+
+        public static final TagKey<Item> DUSTS_IRON =
+                forgeItemTag(
+                        "dusts/iron"
+                );
+
+        public static final TagKey<Item> DUSTS_HEAT_RESISTANT_STEEL =
+                forgeItemTag(
+                        "dusts/heat_resistant_steel"
+                );
+
+        public static final TagKey<Item> INGOTS_HEAT_RESISTANT_STEEL =
+                forgeItemTag(
+                        "ingots/heat_resistant_steel"
+                );
+
+        public static final TagKey<Item> DIRTY_DUSTS_ALBICHROME =
+                mekanismItemTag(
+                        "dirty_dusts/albichrome"
+                );
+
+        public static final TagKey<Item> CLUMPS_ALBICHROME =
+                mekanismItemTag(
+                        "clumps/albichrome"
+                );
+
+        public static final TagKey<Item> SHARDS_ALBICHROME =
+                mekanismItemTag(
+                        "shards/albichrome"
+                );
+
+        public static final TagKey<Item> CRYSTALS_ALBICHROME =
+                mekanismItemTag(
+                        "crystals/albichrome"
+                );
+
         public static final TagKey<Item> STORAGE_BLOCKS_ALBICHROME =
                 forgeItemTag(
                         "storage_blocks/albichrome"
+                );
+
+        public static final TagKey<Item> STORAGE_BLOCKS_HEAT_RESISTANT_STEEL =
+                forgeItemTag(
+                        "storage_blocks/heat_resistant_steel"
                 );
 
         public static final TagKey<Item> MACHINE_CASING_MATERIALS =
@@ -91,6 +141,17 @@ public final class ModTags {
         return ItemTags.create(
                 new ResourceLocation(
                         "forge",
+                        name
+                )
+        );
+    }
+
+    private static TagKey<Item> mekanismItemTag(
+            String name
+    ) {
+        return ItemTags.create(
+                new ResourceLocation(
+                        "mekanism",
                         name
                 )
         );

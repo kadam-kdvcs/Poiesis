@@ -2,7 +2,7 @@ package org.kdvcs.poiesis.compat.jei.handler;
 
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import org.kdvcs.poiesis.compat.jei.PoiesisJeiRecipeTypes;
+import org.kdvcs.poiesis.compat.jei.CompounderJeiMode;
 import org.kdvcs.poiesis.screen.CompounderScreen;
 import org.kdvcs.poiesis.screen.layout.CompounderGuiLayout;
 import org.kdvcs.poiesis.screen.layout.ProgressIndicatorLayout;
@@ -23,7 +23,14 @@ public final class CompounderGuiHandler
             double guiMouseY
     ) {
         ProgressIndicatorLayout visual =
-                CompounderGuiLayout.PROGRESS;
+                CompounderGuiLayout.progressVisual(
+                        screen.highShearEnabled()
+                );
+
+        CompounderJeiMode mode =
+                CompounderJeiMode.fromHighShear(
+                        screen.highShearEnabled()
+                );
 
         return List.of(
                 IGuiClickableArea.createBasic(
@@ -31,7 +38,7 @@ public final class CompounderGuiHandler
                         visual.y(),
                         visual.width(),
                         visual.height(),
-                        PoiesisJeiRecipeTypes.COMPOUNDING
+                        mode.recipeType()
                 )
         );
     }

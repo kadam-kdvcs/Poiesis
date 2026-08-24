@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.Nullable;
 import org.kdvcs.poiesis.block.entity.base.AbstractMachineBlockEntity;
 import org.kdvcs.poiesis.machine.definition.BatterySpec;
@@ -14,6 +15,7 @@ import org.kdvcs.poiesis.machine.definition.MachineDefinition;
 import org.kdvcs.poiesis.machine.fabrication.ModuleFabricatorRuntime;
 import org.kdvcs.poiesis.machine.io.MachineIoSpec;
 import org.kdvcs.poiesis.registry.ModBlockEntities;
+import org.kdvcs.poiesis.registry.ModSounds;
 import org.kdvcs.poiesis.screen.ModuleFabricatorMenu;
 
 public final class ModuleFabricatorBlockEntity
@@ -21,7 +23,7 @@ public final class ModuleFabricatorBlockEntity
 
     public static final MachineDefinition DEFINITION = new MachineDefinition(
             "module_fabricator",
-            new EnergySpec(40_000, 640, 20, 40, 320, 20),
+            new EnergySpec(64_000, 640, 20, 40, 320, 20),
             10,
             1,
             0,
@@ -78,5 +80,10 @@ public final class ModuleFabricatorBlockEntity
                 data,
                 runtime().process().selectedRecipeId()
         );
+    }
+
+    @Override
+    protected SoundEvent workingSound() {
+        return ModSounds.MODULE_FABRICATOR_WORKING.get();
     }
 }

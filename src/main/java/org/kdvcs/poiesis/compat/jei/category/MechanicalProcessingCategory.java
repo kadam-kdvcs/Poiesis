@@ -97,7 +97,7 @@ public final class MechanicalProcessingCategory
 
         this.progressX = ARROW_X;
         this.progressY =
-                ARROW_CENTER_Y - progressHeight / 2;
+                ARROW_CENTER_Y - (progressHeight - 1) / 2;
     }
 
     @Override

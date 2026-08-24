@@ -46,6 +46,7 @@ public final class ModCrops {
         String cropName = name + "_crop";
         String seedName = name + "_seeds";
         ResourceLocation seedId = new ResourceLocation(Poiesis.MOD_ID, seedName);
+        ResourceLocation productId = new ResourceLocation(Poiesis.MOD_ID, productName);
 
         RegistryObject<Block> crop = ModBlocks.BLOCKS.register(
                 cropName,
@@ -53,7 +54,8 @@ public final class ModCrops {
                         BlockBehaviour.Properties.copy(Blocks.WHEAT)
                                 .noOcclusion()
                                 .noCollission(),
-                        seedId
+                        seedId,
+                        productId
                 )
         );
 

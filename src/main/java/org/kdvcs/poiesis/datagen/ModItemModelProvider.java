@@ -9,6 +9,7 @@ import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
 import org.kdvcs.poiesis.Poiesis;
+import org.kdvcs.poiesis.compat.mekanism.MekanismAlbichromeCompat;
 import org.kdvcs.poiesis.registry.ModItems;
 
 import java.util.Set;
@@ -31,6 +32,13 @@ public final class ModItemModelProvider extends ItemModelProvider {
             "pipe_configurator"
     );
 
+    private static final Set<String> MEKANISM_ALBICHROME_ITEMS = Set.of(
+            "dirty_albichrome_dust",
+            "albichrome_clump",
+            "albichrome_shard",
+            "albichrome_crystal"
+    );
+
     public ModItemModelProvider(
             PackOutput output,
             ExistingFileHelper existingFileHelper
@@ -40,7 +48,12 @@ public final class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        for (RegistryObject<Item> registered : ModItems.ITEMS.getEntries()) {
+        registerModels(ModItems.ITEMS.getEntries());
+        registerModels(MekanismAlbichromeCompat.ITEMS.getEntries());
+    }
+
+    private void registerModels(Iterable<RegistryObject<Item>> entries) {
+        for (RegistryObject<Item> registered : entries) {
             Item item = registered.get();
             if (item instanceof BlockItem
                     && !(item instanceof ItemNameBlockItem)) {
@@ -52,8 +65,12 @@ public final class ModItemModelProvider extends ItemModelProvider {
                     ? HANDHELD
                     : GENERATED;
 
+            ResourceLocation texture = MEKANISM_ALBICHROME_ITEMS.contains(name)
+                    ? modLoc("item/mek/" + name)
+                    : modLoc("item/" + name);
+
             withExistingParent(name, parent)
-                    .texture("layer0", modLoc("item/" + name));
+                    .texture("layer0", texture);
         }
     }
 }

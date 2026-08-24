@@ -2,9 +2,11 @@ package org.kdvcs.poiesis;
 
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.kdvcs.poiesis.network.ModNetwork;
+import org.kdvcs.poiesis.compat.mekanism.MekanismAlbichromeCompat;
 import org.kdvcs.poiesis.registry.ModRegistries;
 import org.kdvcs.poiesis.registry.ModWorldgenFeatures;
 import org.slf4j.Logger;
@@ -17,6 +19,9 @@ public final class Poiesis {
     public Poiesis() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModRegistries.register(modEventBus);
+        if (ModList.get().isLoaded("mekanism")) {
+            MekanismAlbichromeCompat.register(modEventBus);
+        }
         ModNetwork.register();
     }
 }

@@ -6,9 +6,13 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.kdvcs.poiesis.Poiesis;
+import org.kdvcs.poiesis.recipe.AdsorptionRecipe;
 import org.kdvcs.poiesis.recipe.CompounderRecipe;
+import org.kdvcs.poiesis.recipe.GasificationRecipe;
 import org.kdvcs.poiesis.recipe.MechanicalProcessingRecipe;
 import org.kdvcs.poiesis.recipe.ModuleFabricationRecipe;
+import org.kdvcs.poiesis.recipe.SeparatorRecipe;
+import org.kdvcs.poiesis.recipe.alloy.AlloyTableRecipe;
 
 public final class ModRecipeTypes {
     public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, Poiesis.MOD_ID);
@@ -23,6 +27,22 @@ public final class ModRecipeTypes {
     public static final RegistryObject<RecipeType<CompounderRecipe>> COMPOUNDING =
             RECIPE_TYPES.register("compounding", () -> new RecipeType<>() {
                 @Override public String toString() { return Poiesis.MOD_ID + ":compounding"; }
+            });
+    public static final RegistryObject<RecipeType<SeparatorRecipe>> SEPARATING =
+            RECIPE_TYPES.register("separating", () -> new RecipeType<>() {
+                @Override public String toString() { return Poiesis.MOD_ID + ":separating"; }
+            });
+    public static final RegistryObject<RecipeType<AdsorptionRecipe>> ADSORPTION =
+            RECIPE_TYPES.register("adsorption", () -> new RecipeType<>() {
+                @Override public String toString() { return Poiesis.MOD_ID + ":adsorption"; }
+            });
+    public static final RegistryObject<RecipeType<GasificationRecipe>> GASIFICATION =
+            RECIPE_TYPES.register("gasification", () -> new RecipeType<>() {
+                @Override public String toString() { return Poiesis.MOD_ID + ":gasification"; }
+            });
+    public static final RegistryObject<RecipeType<AlloyTableRecipe>> ALLOYING =
+            RECIPE_TYPES.register("alloying", () -> new RecipeType<>() {
+                @Override public String toString() { return Poiesis.MOD_ID + ":alloying"; }
             });
     private ModRecipeTypes() { }
     public static void register(IEventBus eventBus) { RECIPE_TYPES.register(eventBus); }

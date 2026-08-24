@@ -139,7 +139,11 @@ public abstract class AbstractMachineBlock<T extends AbstractMachineBlockEntity<
             BlockEntityType<E> type
     ) {
         if (level.isClientSide) {
-            return null;
+            return createTickerHelper(
+                    type,
+                    machineBlockEntityType(),
+                    (tickerLevel, pos, tickerState, blockEntity) -> blockEntity.tickClient()
+            );
         }
 
         return createTickerHelper(

@@ -63,6 +63,30 @@ public final class ModItemTagProvider extends ItemTagsProvider {
                         ModItems.ALBICHROME_NUGGET.get()
                 );
 
+        tag(ModTags.Items.DUSTS_ALBICHROME)
+                .add(ModItems.ALBICHROME_DUST.get());
+
+        tag(ModTags.Items.DUSTS_IRON)
+                .add(ModItems.IRON_DUST.get());
+
+        tag(ModTags.Items.DUSTS_HEAT_RESISTANT_STEEL)
+                .add(ModItems.HEAT_RESISTANT_STEEL_DUST.get());
+
+        tag(ModTags.Items.INGOTS_HEAT_RESISTANT_STEEL)
+                .add(ModItems.HEAT_RESISTANT_STEEL_INGOT.get());
+
+        tag(ModTags.Items.DIRTY_DUSTS_ALBICHROME)
+                .addOptional(new ResourceLocation(Poiesis.MOD_ID, "dirty_albichrome_dust"));
+
+        tag(ModTags.Items.CLUMPS_ALBICHROME)
+                .addOptional(new ResourceLocation(Poiesis.MOD_ID, "albichrome_clump"));
+
+        tag(ModTags.Items.SHARDS_ALBICHROME)
+                .addOptional(new ResourceLocation(Poiesis.MOD_ID, "albichrome_shard"));
+
+        tag(ModTags.Items.CRYSTALS_ALBICHROME)
+                .addOptional(new ResourceLocation(Poiesis.MOD_ID, "albichrome_crystal"));
+
 
         tag(
                 ModTags.Items.STORAGE_BLOCKS_ALBICHROME
@@ -70,6 +94,9 @@ public final class ModItemTagProvider extends ItemTagsProvider {
                 .add(
                         ModBlocks.ALBICHROME_BLOCK.get().asItem()
                 );
+
+        tag(ModTags.Items.STORAGE_BLOCKS_HEAT_RESISTANT_STEEL)
+                .add(ModBlocks.HEAT_RESISTANT_STEEL_BLOCK.get().asItem());
 
 
         tag(

@@ -2,8 +2,8 @@
   "type": "poiesis:compounding",
   "inputs": [
     {
-      "item": "poiesis:raw_kenaf_bast",
-      "count": 1
+      "item": "poiesis:kenaf_fiber",
+      "count": 3
     },
     {
       "item": "minecraft:clay_ball",
@@ -14,6 +14,7 @@
     "item": "poiesis:fiber_composite",
     "count": 1
   },
+  "required_capability": "poiesis:high_shear",
   "duration": 120,
   "energy_per_tick": 32
 }

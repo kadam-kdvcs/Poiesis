@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.Nullable;
 import org.kdvcs.poiesis.block.entity.base.AbstractMachineBlockEntity;
 import org.kdvcs.poiesis.machine.MaterialMachineRuntime;
@@ -14,9 +15,12 @@ import org.kdvcs.poiesis.machine.definition.EnergySpec;
 import org.kdvcs.poiesis.machine.definition.MachineDefinition;
 import org.kdvcs.poiesis.machine.io.MachineIoSpec;
 import org.kdvcs.poiesis.machine.module.ModuleLayout;
+import org.kdvcs.poiesis.machine.module.ModuleKind;
 import org.kdvcs.poiesis.recipe.CompounderRecipe;
 import org.kdvcs.poiesis.registry.ModBlockEntities;
+import org.kdvcs.poiesis.registry.ModItems;
 import org.kdvcs.poiesis.registry.ModRecipeTypes;
+import org.kdvcs.poiesis.registry.ModSounds;
 import org.kdvcs.poiesis.screen.CompounderMenu;
 
 public final class CompounderBlockEntity
@@ -24,7 +28,7 @@ public final class CompounderBlockEntity
 
     public static final MachineDefinition DEFINITION = new MachineDefinition(
             "compounder",
-            new EnergySpec(40_000, 640, 20, 40, 320, 20),
+            new EnergySpec(64_000, 640, 20, 40, 320, 20),
             2,
             1,
             3,
@@ -43,6 +47,10 @@ public final class CompounderBlockEntity
                 case 4 -> runtime().process().activeEnergyPerTick();
                 case 5 -> runtime().process().activeVoltage();
                 case 6 -> runtime().process().state().ordinal();
+                case 7 -> runtime().modules()
+                        .snapshot()
+                        .capabilities()
+                        .contains(ModItems.HIGH_SHEAR) ? 1 : 0;
                 default -> 0;
             };
         }
@@ -53,7 +61,7 @@ public final class CompounderBlockEntity
 
         @Override
         public int getCount() {
-            return 7;
+            return CompounderMenu.DATA_COUNT;
         }
     };
 
@@ -67,7 +75,15 @@ public final class CompounderBlockEntity
                         owner,
                         DEFINITION,
                         ModRecipeTypes.COMPOUNDING.get(),
-                        ModuleLayout.specialization()
+                        ModuleLayout.of(
+                                ModuleLayout.process(module ->
+                                        module.kind() == ModuleKind.PROCESS
+                                                && module.capabilities()
+                                                .contains(ModItems.HIGH_SHEAR)
+                                ),
+                                ModuleLayout.performance(),
+                                ModuleLayout.performance()
+                        )
                 )
         );
     }
@@ -80,5 +96,10 @@ public final class CompounderBlockEntity
             Player player
     ) {
         return new CompounderMenu(id, inventory, this, data);
+    }
+
+    @Override
+    protected SoundEvent workingSound() {
+        return ModSounds.COMPOUNDER_WORKING.get();
     }
 }

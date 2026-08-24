@@ -8,11 +8,13 @@ import org.kdvcs.poiesis.machine.api.MachineContext;
 import org.kdvcs.poiesis.machine.definition.MachineDefinition;
 import org.kdvcs.poiesis.machine.energy.EnergyComponent;
 import org.kdvcs.poiesis.machine.energy.item.BatterySlotComponent;
+import org.kdvcs.poiesis.machine.fluid.FluidComponent;
 import org.kdvcs.poiesis.machine.inventory.InventoryComponent;
 import org.kdvcs.poiesis.machine.io.AutoIoComponent;
 import org.kdvcs.poiesis.machine.io.AutoIoDirection;
 import org.kdvcs.poiesis.machine.io.IoChannel;
 import org.kdvcs.poiesis.machine.io.MachineCapabilityRouter;
+import org.kdvcs.poiesis.machine.io.RelativeSide;
 import org.kdvcs.poiesis.machine.io.SideConfigurationComponent;
 import org.kdvcs.poiesis.machine.io.transfer.EnergyAutoTransfer;
 import org.kdvcs.poiesis.machine.io.transfer.ItemAutoTransfer;
@@ -39,6 +41,7 @@ public abstract class MachineRuntime {
     private final InventoryComponent inventory;
     private final EnergyComponent energy;
     private final BatterySlotComponent battery;
+    private final FluidComponent fluid;
     private final SideConfigurationComponent sideConfiguration;
     private final AutoIoComponent autoIo;
     private final MachineCapabilityRouter capabilityRouter;
@@ -85,6 +88,13 @@ public abstract class MachineRuntime {
         )
                 : null;
 
+        fluid = definition.hasFluidTank()
+                ? components.add(
+                FluidComponent.class,
+                new FluidComponent(definition.fluid(), changed)
+        )
+                : null;
+
         if (definition.io().isEmpty()) {
             sideConfiguration = null;
             autoIo = null;
@@ -105,7 +115,9 @@ public abstract class MachineRuntime {
                     definition,
                     inventory,
                     energy,
-                    sideConfiguration
+                    fluid,
+                    sideConfiguration,
+                    this::isFluidCapabilityEnabled
             );
         }
     }
@@ -138,10 +150,26 @@ public abstract class MachineRuntime {
 
     protected abstract void tickProcess();
 
+    /** Machines with module-gated tanks override this dynamic capability lock. */
+    protected boolean isFluidCapabilityEnabled() {
+        return fluid != null;
+    }
+
     private boolean shouldRunAutoIo() {
         return owner.level() != null
                 && !owner.level().isClientSide
+                && canRunAutoIo()
                 && owner.level().getGameTime() % 5L == 0L;
+    }
+
+    /** Multiblock runtimes can suspend active transfer while their structure is invalid. */
+    protected boolean canRunAutoIo() {
+        return true;
+    }
+
+    /** Allows machines with restricted ports to exclude physical sides from active transfer. */
+    protected boolean canUseAutoIoSide(RelativeSide side) {
+        return true;
     }
 
     private void runAutoInputs() {
@@ -154,13 +182,21 @@ public abstract class MachineRuntime {
                     owner,
                     definition,
                     inventory,
-                    sideConfiguration
+                    sideConfiguration,
+                    this::canUseAutoIoSide
             );
         }
 
         if (autoIo.enabled(IoChannel.ENERGY, AutoIoDirection.INPUT)) {
-            EnergyAutoTransfer.pullEnergy(owner, energy, sideConfiguration);
+            EnergyAutoTransfer.pullEnergy(
+                    owner,
+                    energy,
+                    sideConfiguration,
+                    this::canUseAutoIoSide
+            );
         }
+
+        runAdditionalAutoInputs();
     }
 
     private void runAutoOutputs() {
@@ -173,9 +209,20 @@ public abstract class MachineRuntime {
                     owner,
                     definition,
                     inventory,
-                    sideConfiguration
+                    sideConfiguration,
+                    this::canUseAutoIoSide
             );
         }
+
+        runAdditionalAutoOutputs();
+    }
+
+    /** Optional machine-specific active inputs, such as a multiblock's fixed fluid port. */
+    protected void runAdditionalAutoInputs() {
+    }
+
+    /** Optional machine-specific active outputs backed by nonstandard tanks. */
+    protected void runAdditionalAutoOutputs() {
     }
 
     public void save(CompoundTag tag) {
@@ -240,6 +287,10 @@ public abstract class MachineRuntime {
 
     public Optional<BatterySlotComponent> battery() {
         return Optional.ofNullable(battery);
+    }
+
+    public Optional<FluidComponent> fluid() {
+        return Optional.ofNullable(fluid);
     }
 
     public Optional<SideConfigurationComponent> sideConfiguration() {

@@ -8,11 +8,13 @@ import org.kdvcs.poiesis.machine.energy.EnergyComponent;
 import org.kdvcs.poiesis.machine.energy.OperatingPowerPolicy;
 import org.kdvcs.poiesis.machine.energy.PowerAllocation;
 import org.kdvcs.poiesis.machine.inventory.InventoryComponent;
+import org.kdvcs.poiesis.machine.inventory.ItemOutputTransaction;
 import org.kdvcs.poiesis.machine.module.ModuleComponent;
 import org.kdvcs.poiesis.machine.module.ModuleSnapshot;
 import org.kdvcs.poiesis.recipe.MaterialPlan;
 import org.kdvcs.poiesis.recipe.MaterialProcessRecipe;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -101,7 +103,7 @@ public final class MaterialPoweredProcess<R extends MaterialProcessRecipe>
             return;
         }
 
-        if (!hasRequiredCapability(recipe, moduleSnapshot)) {
+        if (!belongsToActiveMode(recipe, moduleSnapshot)) {
             clearActiveRecipe();
             reset(ProcessState.MISSING_MODULE, workingSetter);
             return;
@@ -152,13 +154,18 @@ public final class MaterialPoweredProcess<R extends MaterialProcessRecipe>
         // Re-plan immediately before commit so external automation cannot cause
         // a partial consume/output transaction.
         consumptionPlan = findConsumptionPlan(recipe);
-        if (consumptionPlan == null
-                || !canAcceptResult(recipe.result())) {
+        ItemOutputTransaction.Plan outputPlan = planResult(
+                recipe.result()
+        ).orElse(null);
+        if (consumptionPlan == null || outputPlan == null) {
             pause(ProcessState.BLOCKED_OUTPUT, workingSetter);
             return;
         }
 
-        commit(recipe, consumptionPlan);
+        if (!commit(consumptionPlan, outputPlan)) {
+            pause(ProcessState.BLOCKED_OUTPUT, workingSetter);
+            return;
+        }
         progress = 0;
         maxProgress = 0;
         changed.run();
@@ -201,12 +208,19 @@ public final class MaterialPoweredProcess<R extends MaterialProcessRecipe>
         return activeRecipe;
     }
 
-    private boolean hasRequiredCapability(
+    /** Defense-in-depth guard against a cached recipe crossing mode boundaries. */
+    private boolean belongsToActiveMode(
             R recipe,
             ModuleSnapshot snapshot
     ) {
-        return recipe.requiredCapability() == null
-                || snapshot.capabilities().contains(recipe.requiredCapability());
+        if (snapshot.capabilities().isEmpty()) {
+            return recipe.isStandard();
+        }
+
+        return recipe.requiredCapability() != null
+                && snapshot.capabilities().contains(
+                recipe.requiredCapability()
+        );
     }
 
     private boolean inputsStillBelongTo(R recipe) {
@@ -257,17 +271,26 @@ public final class MaterialPoweredProcess<R extends MaterialProcessRecipe>
     }
 
     private boolean canAcceptResult(ItemStack result) {
-        ItemStack output = inventory.items().getStackInSlot(outputSlot);
-
-        if (output.isEmpty()) {
-            return result.getCount() <= result.getMaxStackSize();
-        }
-
-        return ItemStack.isSameItemSameTags(output, result)
-                && output.getCount() + result.getCount() <= output.getMaxStackSize();
+        return planResult(result).isPresent();
     }
 
-    private void commit(R recipe, int[] consumptionPlan) {
+    private Optional<ItemOutputTransaction.Plan> planResult(ItemStack result) {
+        return ItemOutputTransaction.plan(
+                inventory.items(),
+                outputSlot,
+                outputSlot + 1,
+                List.of(result)
+        );
+    }
+
+    private boolean commit(
+            int[] consumptionPlan,
+            ItemOutputTransaction.Plan outputPlan
+    ) {
+        if (!outputPlan.matches(inventory.items())) {
+            return false;
+        }
+
         for (int offset = 0; offset < consumptionPlan.length; offset++) {
             int amount = consumptionPlan[offset];
             if (amount > 0) {
@@ -275,17 +298,12 @@ public final class MaterialPoweredProcess<R extends MaterialProcessRecipe>
             }
         }
 
-        ItemStack result = recipe.result();
-        ItemStack output = inventory.items().getStackInSlot(outputSlot);
-
-        if (output.isEmpty()) {
-            inventory.items().setStackInSlot(outputSlot, result.copy());
-            return;
+        if (!outputPlan.commit(inventory.items())) {
+            throw new IllegalStateException(
+                    "Material processor output changed during an atomic commit"
+            );
         }
-
-        ItemStack grown = output.copy();
-        grown.grow(result.getCount());
-        inventory.items().setStackInSlot(outputSlot, grown);
+        return true;
     }
 
     private void reset(ProcessState next, Consumer<Boolean> workingSetter) {

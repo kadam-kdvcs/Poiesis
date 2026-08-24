@@ -78,35 +78,35 @@
               "block": "poiesis:kenaf_crop",
               "condition": "minecraft:block_state_property",
               "properties": {
-                "age": "5"
+                "age": "0"
               }
             },
             {
               "block": "poiesis:kenaf_crop",
               "condition": "minecraft:block_state_property",
               "properties": {
-                "age": "5"
+                "age": "1"
               }
             },
             {
               "block": "poiesis:kenaf_crop",
               "condition": "minecraft:block_state_property",
               "properties": {
-                "age": "5"
+                "age": "2"
               }
             },
             {
               "block": "poiesis:kenaf_crop",
               "condition": "minecraft:block_state_property",
               "properties": {
-                "age": "5"
+                "age": "3"
               }
             },
             {
               "block": "poiesis:kenaf_crop",
               "condition": "minecraft:block_state_property",
               "properties": {
-                "age": "5"
+                "age": "4"
               }
             }
           ]

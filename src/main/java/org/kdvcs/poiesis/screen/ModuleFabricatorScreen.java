@@ -15,7 +15,7 @@ import org.kdvcs.poiesis.recipe.ModuleFabricationRecipe;
 import org.kdvcs.poiesis.registry.ModRecipeTypes;
 import org.kdvcs.poiesis.screen.base.AbstractMachineScreen;
 import org.kdvcs.poiesis.screen.widget.AutoCraftToggleButton;
-import org.kdvcs.poiesis.screen.widget.CraftIconButton;
+import org.kdvcs.poiesis.screen.widget.FabricationButton;
 
 import java.text.NumberFormat;
 import java.util.Comparator;
@@ -37,6 +37,15 @@ public final class ModuleFabricatorScreen
     private static final ResourceLocation PROGRESS_TEXTURE =
             containerTexture("widget/module_fabricator_progress_arrow");
 
+    private static final ResourceLocation SLOT_TEXTURE =
+            containerTexture("widget/slot");
+
+    private static final ResourceLocation SELECTED_SLOT_TEXTURE =
+            containerTexture("widget/slot_selected");
+
+    private static final ResourceLocation MATERIAL_BAR_TEXTURE =
+            containerTexture("widget/material_bar");
+
     private static final int CONTENT_Y_OFFSET = 3;
 
     private static final int DISPLAY_X = 64;
@@ -51,35 +60,36 @@ public final class ModuleFabricatorScreen
     private static final int DISPLAY_CONTENT_WIDTH = DISPLAY_WIDTH - 2;
     private static final int DISPLAY_CONTENT_HEIGHT = DISPLAY_HEIGHT - DISPLAY_HEADER_HEIGHT;
 
-    private static final int ROW_X = DISPLAY_CONTENT_X;
     private static final int ROW_Y = DISPLAY_CONTENT_Y + 1;
-    private static final int ROW_WIDTH = DISPLAY_CONTENT_WIDTH;
     private static final int ROW_HEIGHT = 17;
     private static final int VISIBLE_ROWS = 4;
 
     private static final int TEMPLATE_FRAME_X = 65;
     private static final int TEMPLATE_FRAME_WIDTH = 18;
     private static final int TEMPLATE_FRAME_HEIGHT = 18;
-    private static final int TEMPLATE_FRAME_U = 39;
-    private static final int TEMPLATE_FRAME_V = 30;
-    private static final int TEXTURE_SIZE = 256;
 
-    private static final int MATERIAL_X = 85;
+    private static final int MATERIAL_BAR_X =
+            TEMPLATE_FRAME_X + TEMPLATE_FRAME_WIDTH + 1;
+    private static final int MATERIAL_BAR_WIDTH = 96;
+    private static final int MATERIAL_BAR_HEIGHT = 18;
+    private static final int MATERIAL_X = MATERIAL_BAR_X + 1;
     private static final int MATERIAL_Y_OFFSET = 1;
     private static final int MATERIAL_ICON_SIZE = 16;
     private static final int MATERIAL_SPACING = 16;
     private static final int MAX_VISIBLE_MATERIALS = 5;
 
     private static final int FABRICATE_X =
-            DISPLAY_X + DISPLAY_WIDTH - 18;
+            MATERIAL_BAR_X + MATERIAL_BAR_WIDTH + 1;
+    private static final int FABRICATE_Y_OFFSET =
+            (TEMPLATE_FRAME_HEIGHT - FabricationButton.HEIGHT) / 2;
 
     private static final int AUTO_LABEL_X = DISPLAY_X + 4;
-    private static final int AUTO_LABEL_Y = DISPLAY_Y + 3;
+    private static final int AUTO_LABEL_Y = DISPLAY_Y + 2;
 
     private static final int AUTO_BUTTON_X =
             DISPLAY_X + DISPLAY_WIDTH - 16 - 2;
     private static final int AUTO_BUTTON_Y =
-            DISPLAY_Y + (DISPLAY_HEADER_HEIGHT - 8) / 2 + 1;
+            DISPLAY_Y + (DISPLAY_HEADER_HEIGHT - 8) / 2;
 
     private static final int ENERGY_X = 16;
     private static final int ENERGY_Y = 25 + CONTENT_Y_OFFSET;
@@ -91,14 +101,13 @@ public final class ModuleFabricatorScreen
     private static final int PROGRESS_WIDTH = 10;
     private static final int PROGRESS_HEIGHT = 19;
 
-    private static final int SELECTED_ROW_COLOR = 0x553F7FBF;
     private static final int TEXT_COLOR = 0xE0E0E0;
 
     private static final NumberFormat NUMBER_FORMAT =
             NumberFormat.getIntegerInstance(Locale.US);
 
-    private final CraftIconButton[] fabricateButtons =
-            new CraftIconButton[VISIBLE_ROWS];
+    private final FabricationButton[] fabricateButtons =
+            new FabricationButton[VISIBLE_ROWS];
 
     private AutoCraftToggleButton autoButton;
     private int scrollOffset;
@@ -127,9 +136,10 @@ public final class ModuleFabricatorScreen
         for (int row = 0; row < VISIBLE_ROWS; row++) {
             final int buttonRow = row;
 
-            CraftIconButton button = new CraftIconButton(
+            FabricationButton button = new FabricationButton(
                     leftPos + FABRICATE_X,
-                    topPos + ROW_Y + row * ROW_HEIGHT,
+                    topPos + ROW_Y + row * ROW_HEIGHT
+                            + FABRICATE_Y_OFFSET,
                     () -> fabricateVisibleRecipe(buttonRow)
             );
 
@@ -219,19 +229,41 @@ public final class ModuleFabricatorScreen
             int row
     ) {
         int rowTop = topPos + ROW_Y + row * ROW_HEIGHT;
+        boolean selected = recipe.getId().equals(menu.selectedRecipeId());
 
-        if (recipe.getId().equals(menu.selectedRecipeId())) {
-            graphics.fill(
-                    leftPos + ROW_X,
-                    rowTop,
-                    leftPos + ROW_X + ROW_WIDTH,
-                    rowTop + ROW_HEIGHT,
-                    SELECTED_ROW_COLOR
-            );
-        }
-
+        renderRecipeRowWidgets(graphics, rowTop, selected);
         renderTemplateIcon(graphics, recipe, rowTop);
         renderMaterialIcons(graphics, recipe, rowTop);
+    }
+
+    private void renderRecipeRowWidgets(
+            GuiGraphics graphics,
+            int rowTop,
+            boolean selected
+    ) {
+        graphics.blit(
+                selected ? SELECTED_SLOT_TEXTURE : SLOT_TEXTURE,
+                leftPos + TEMPLATE_FRAME_X,
+                rowTop,
+                0,
+                0,
+                TEMPLATE_FRAME_WIDTH,
+                TEMPLATE_FRAME_HEIGHT,
+                TEMPLATE_FRAME_WIDTH,
+                TEMPLATE_FRAME_HEIGHT
+        );
+
+        graphics.blit(
+                MATERIAL_BAR_TEXTURE,
+                leftPos + MATERIAL_BAR_X,
+                rowTop,
+                0,
+                selected ? MATERIAL_BAR_HEIGHT : 0,
+                MATERIAL_BAR_WIDTH,
+                MATERIAL_BAR_HEIGHT,
+                MATERIAL_BAR_WIDTH,
+                MATERIAL_BAR_HEIGHT * 2
+        );
     }
 
     private void renderTemplateIcon(
@@ -239,18 +271,6 @@ public final class ModuleFabricatorScreen
             ModuleFabricationRecipe recipe,
             int rowTop
     ) {
-        graphics.blit(
-                TEXTURE,
-                leftPos + TEMPLATE_FRAME_X,
-                rowTop,
-                TEMPLATE_FRAME_U,
-                TEMPLATE_FRAME_V,
-                TEMPLATE_FRAME_WIDTH,
-                TEMPLATE_FRAME_HEIGHT,
-                TEXTURE_SIZE,
-                TEXTURE_SIZE
-        );
-
         graphics.renderItem(
                 recipe.result(),
                 leftPos + TEMPLATE_FRAME_X + 1,
@@ -342,7 +362,7 @@ public final class ModuleFabricatorScreen
 
     private void updateButtons(List<ModuleFabricationRecipe> recipes) {
         for (int row = 0; row < VISIBLE_ROWS; row++) {
-            CraftIconButton button = fabricateButtons[row];
+            FabricationButton button = fabricateButtons[row];
             int recipeIndex = scrollOffset + row;
             boolean hasRecipe =
                     recipeIndex >= 0 && recipeIndex < recipes.size();
@@ -350,11 +370,20 @@ public final class ModuleFabricatorScreen
             button.visible = hasRecipe;
 
             if (!hasRecipe) {
+                button.setSelected(false);
+                button.setProcessing(false);
                 button.active = false;
                 continue;
             }
 
             ModuleFabricationRecipe recipe = recipes.get(recipeIndex);
+            button.setSelected(
+                    recipe.getId().equals(menu.selectedRecipeId())
+            );
+            button.setProcessing(
+                    menu.processing()
+                            && recipe.getId().equals(menu.selectedRecipeId())
+            );
             button.active = !menu.processing() && menu.canStart(recipe);
         }
 
@@ -379,6 +408,9 @@ public final class ModuleFabricatorScreen
     }
 
     private void selectVisibleRecipe(int row) {
+        if (menu.processing()) {
+            return;
+        }
         ModuleFabricationRecipe recipe = visibleRecipeAt(row);
         if (recipe == null) {
             return;
@@ -418,7 +450,7 @@ public final class ModuleFabricatorScreen
                 int row = relativeY / ROW_HEIGHT;
 
                 if (row >= 0 && row < VISIBLE_ROWS) {
-                    CraftIconButton craftButton = fabricateButtons[row];
+                    FabricationButton craftButton = fabricateButtons[row];
 
                     if (!craftButton.isMouseOver(mouseX, mouseY)) {
                         selectVisibleRecipe(row);

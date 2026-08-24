@@ -1,11 +1,30 @@
 {
   "type": "poiesis:module_fabrication",
-  "module_base": {"item":"poiesis:performance_module_substrate"},
+  "module_base": {
+    "item": "poiesis:performance_module_substrate"
+  },
   "materials": [
-    {"item":"minecraft:quartz","count":4},
-    {"item":"minecraft:redstone","count":2}
+    {
+      "item": "poiesis:machine_unit",
+      "count": 1
+    },
+    {
+      "item": "minecraft:quartz",
+      "count": 8
+    },
+    {
+      "item": "minecraft:copper_ingot",
+      "count": 4
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 2
+    }
   ],
-  "result": {"item":"poiesis:efficiency_module","count":1},
-  "duration": 160,
-  "energy_per_tick": 20
+  "result": {
+    "item": "poiesis:efficiency_module",
+    "count": 1
+  },
+  "duration": 220,
+  "energy_per_tick": 28
 }

@@ -13,15 +13,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kdvcs.poiesis.block.base.AbstractMachineBlock;
+import org.kdvcs.poiesis.client.sound.MachineWorkingSounds;
 import org.kdvcs.poiesis.machine.MachineRuntime;
 import org.kdvcs.poiesis.machine.api.MachineContext;
 import org.kdvcs.poiesis.machine.api.MachineIoHost;
 import org.kdvcs.poiesis.machine.definition.MachineDefinition;
 import org.kdvcs.poiesis.machine.io.AutoIoComponent;
 import org.kdvcs.poiesis.machine.io.SideConfigurationComponent;
+import net.minecraft.sounds.SoundEvent;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -52,6 +56,25 @@ public abstract class AbstractMachineBlockEntity<R extends MachineRuntime>
 
     public final void tickServer() {
         runtime.tickServer();
+    }
+
+    public final void tickClient() {
+        if (level == null || !level.isClientSide) return;
+        boolean working = getBlockState().hasProperty(AbstractMachineBlock.WORKING)
+                && getBlockState().getValue(AbstractMachineBlock.WORKING);
+        if (working != clientSoundWorking) {
+            clientSoundWorking = working;
+            SoundEvent sound = workingSound();
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+                    MachineWorkingSounds.update(worldPosition, sound, working));
+        }
+    }
+
+    private boolean clientSoundWorking;
+
+    /** Sound used while this machine's working block state is active. */
+    protected SoundEvent workingSound() {
+        return null;
     }
 
     @Override
@@ -130,7 +153,12 @@ public abstract class AbstractMachineBlockEntity<R extends MachineRuntime>
                     state.setValue(AbstractMachineBlock.WORKING, working),
                     3
             );
+            onWorkingStateChanged(working);
         }
+    }
+
+    /** Allows multiblock shells to mirror working visuals onto their parts. */
+    protected void onWorkingStateChanged(boolean working) {
     }
 
     public final SimpleContainer allDrops() {
@@ -174,6 +202,13 @@ public abstract class AbstractMachineBlockEntity<R extends MachineRuntime>
                 return router.orElseThrow().energyCapability(side).cast();
             }
             return runtime.energy().capability().cast();
+        }
+
+        if (capability == ForgeCapabilities.FLUID_HANDLER) {
+            var router = runtime.capabilityRouter();
+            if (router.isPresent()) {
+                return router.orElseThrow().fluidCapability(side).cast();
+            }
         }
 
         return super.getCapability(capability, side);

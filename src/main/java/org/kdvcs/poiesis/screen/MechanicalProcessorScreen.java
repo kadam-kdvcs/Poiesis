@@ -34,21 +34,17 @@ public final class MechanicalProcessorScreen
         private static final NumberFormat NUMBER_FORMAT =
                 NumberFormat.getIntegerInstance(Locale.US);
 
-        private static final ResourceLocation NONE_TEXTURE =
-                containerTexture("mechanical_processor_none");
-
-        private static final ResourceLocation PRESSING_TEXTURE =
-                containerTexture("mechanical_processor_pressing");
-
-        private static final ResourceLocation GRINDING_TEXTURE =
-                containerTexture("mechanical_processor_grinding");
-
-        private static final ResourceLocation EXTRUSION_TEXTURE =
-                containerTexture("mechanical_processor_extrusion");
+        private static final ResourceLocation BACKGROUND =
+                containerTexture("mechanical_processor");
 
         private static final ResourceLocation ENERGY_TEXTURE =
                 containerTexture(
                         "widget/energy_bar"
+                );
+
+        private static final ResourceLocation EMPTY_SPECIALIZATION_TEXTURE =
+                containerTexture(
+                        "widget/empty"
                 );
 
         public MechanicalProcessorScreen(
@@ -82,12 +78,7 @@ public final class MechanicalProcessorScreen
 
         @Override
         protected ResourceLocation backgroundTexture() {
-                return switch (menu.mode()) {
-                        case PRESSING -> PRESSING_TEXTURE;
-                        case GRINDING -> GRINDING_TEXTURE;
-                        case EXTRUSION -> EXTRUSION_TEXTURE;
-                        case NONE -> NONE_TEXTURE;
-                };
+                return BACKGROUND;
         }
 
         @Override
@@ -104,6 +95,22 @@ public final class MechanicalProcessorScreen
         private void renderProgress(
                 GuiGraphics graphics
         ) {
+                if (menu.mode() == MechanicalMode.NONE) {
+                        graphics.blit(
+                                EMPTY_SPECIALIZATION_TEXTURE,
+                                leftPos + SPECIALIZATION_HINT_X,
+                                topPos + SPECIALIZATION_HINT_Y,
+                                0,
+                                0,
+                                SPECIALIZATION_HINT_WIDTH,
+                                SPECIALIZATION_HINT_HEIGHT,
+                                SPECIALIZATION_HINT_WIDTH,
+                                SPECIALIZATION_HINT_HEIGHT
+                        );
+
+                        return;
+                }
+
                 drawProgressIndicator(
                         graphics,
                         MechanicalProcessorGuiLayout.progressVisual(
