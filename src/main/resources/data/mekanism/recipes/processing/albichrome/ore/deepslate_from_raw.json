@@ -1,0 +1,14 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [{"type": "forge:mod_loaded", "modid": "mekanism"}],
+      "recipe": {
+  "type": "mekanism:combining",
+  "mainInput": {"amount": 8, "ingredient": {"tag": "forge:raw_materials/albichrome"}},
+  "extraInput": {"ingredient": {"tag": "forge:cobblestone/deepslate"}},
+  "output": {"item": "poiesis:deepslate_albichrome_ore"}
+      }
+    }
+  ]
+}

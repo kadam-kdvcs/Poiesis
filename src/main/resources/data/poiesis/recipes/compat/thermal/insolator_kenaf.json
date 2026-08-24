@@ -1,0 +1,24 @@
+{
+  "type": "thermal:insolator",
+  "ingredient": {
+    "item": "poiesis:kenaf_seeds"
+  },
+  "result": [
+    {
+      "item": "poiesis:kenaf_stalk",
+      "chance": 2.0
+    },
+    {
+      "item": "poiesis:kenaf_seeds",
+      "chance": 1.1
+    }
+  ],
+  "water_mod": 0.5,
+  "experience": 0.15,
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "thermal_expansion"
+    }
+  ]
+}

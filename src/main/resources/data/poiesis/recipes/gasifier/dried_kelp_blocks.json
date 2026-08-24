@@ -1,0 +1,13 @@
+{
+  "type": "poiesis:gasification",
+  "input": {
+    "item": "minecraft:dried_kelp_block",
+    "count": 2
+  },
+  "gas_output": {
+    "fluid": "poiesis:producer_gas",
+    "amount": 6000
+  },
+  "duration": 400,
+  "minimum_temperature": 450
+}

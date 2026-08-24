@@ -1,0 +1,20 @@
+{
+  "alloy_factory_working": {
+    "sounds": [{ "name": "poiesis:alloy_factory_working", "stream": true }]
+  },
+  "biomass_gasifier_working": {
+    "sounds": [{ "name": "poiesis:biomass_gasifier_working", "stream": true }]
+  },
+  "compounder_working": {
+    "sounds": [{ "name": "poiesis:compounder_working", "stream": true }]
+  },
+  "mechanical_processor_working": {
+    "sounds": [{ "name": "poiesis:mechanical_processor_working", "stream": true }]
+  },
+  "module_fabricator_working": {
+    "sounds": [{ "name": "poiesis:module_fabricator_working", "stream": true }]
+  },
+  "separator_working": {
+    "sounds": [{ "name": "poiesis:separator_working", "stream": true }]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "poiesis:block/adsorption_bed",
+  "textures": {
+    "0": "poiesis:block/multiblock/formed/adsorption_bed_formed_mid_active",
+    "particle": "poiesis:block/multiblock/formed/adsorption_bed_formed_mid_active"
+  }
+}

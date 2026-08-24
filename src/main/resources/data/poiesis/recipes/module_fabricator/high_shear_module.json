@@ -1,0 +1,30 @@
+{
+  "type": "poiesis:module_fabrication",
+  "module_base": {
+    "item": "poiesis:specialization_module_substrate"
+  },
+  "materials": [
+    {
+      "item": "minecraft:copper_ingot",
+      "count": 4
+    },
+    {
+      "item": "poiesis:albichrome_ingot",
+      "count": 2
+    },
+    {
+      "item": "minecraft:iron_bars",
+      "count": 2
+    },
+    {
+      "item": "poiesis:machine_unit",
+      "count": 4
+    }
+  ],
+  "result": {
+    "item": "poiesis:high_shear_module",
+    "count": 1
+  },
+  "duration": 240,
+  "energy_per_tick": 32
+}

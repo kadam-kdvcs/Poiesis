@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "north": "poiesis:block/multiblock/fluid_distributor",
+    "south": "poiesis:block/multiblock/fluid_distributor",
+    "east": "poiesis:block/multiblock/fluid_distributor",
+    "west": "poiesis:block/multiblock/fluid_distributor",
+    "up": "poiesis:block/multiblock/adsorption_side",
+    "down": "poiesis:block/multiblock/adsorption_side",
+    "particle": "poiesis:block/multiblock/fluid_distributor"
+  }
+}

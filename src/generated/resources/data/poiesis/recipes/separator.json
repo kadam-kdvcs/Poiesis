@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "poiesis:machine_unit"
+    },
+    "A": {
+      "item": "minecraft:iron_bars"
+    },
+    "B": {
+      "item": "poiesis:albichrome_casing"
+    },
+    "C": {
+      "item": "poiesis:filter_plate"
+    },
+    "D": {
+      "item": "poiesis:control_element"
+    }
+  },
+  "pattern": [
+    " A ",
+    "CBC",
+    "#D#"
+  ],
+  "result": {
+    "item": "poiesis:separator"
+  },
+  "show_notification": true
+}

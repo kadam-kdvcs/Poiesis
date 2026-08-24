@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,working=false": { "model": "poiesis:block/alloy_factory" },
+    "facing=south,working=false": { "model": "poiesis:block/alloy_factory", "y": 180 },
+    "facing=west,working=false": { "model": "poiesis:block/alloy_factory", "y": 270 },
+    "facing=east,working=false": { "model": "poiesis:block/alloy_factory", "y": 90 },
+    "facing=north,working=true": { "model": "poiesis:block/alloy_factory_active" },
+    "facing=south,working=true": { "model": "poiesis:block/alloy_factory_active", "y": 180 },
+    "facing=west,working=true": { "model": "poiesis:block/alloy_factory_active", "y": 270 },
+    "facing=east,working=true": { "model": "poiesis:block/alloy_factory_active", "y": 90 }
+  }
+}

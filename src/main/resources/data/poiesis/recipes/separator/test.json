@@ -1,0 +1,27 @@
+{
+  "type": "poiesis:separating",
+  "inputs": [
+    {
+      "tag": "forge:ores/iron",
+      "count": 1
+    }
+  ],
+  "fluid": {
+    "tag": "minecraft:water",
+    "amount": 1000
+  },
+  "outputs": [
+    {
+      "item": "minecraft:iron_nugget",
+      "count": 3,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:flint",
+      "count": 1,
+      "chance": 0.25
+    }
+  ],
+  "duration": 200,
+  "energy_per_tick": 20
+}

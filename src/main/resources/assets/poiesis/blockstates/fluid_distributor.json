@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "formed=false": { "model": "poiesis:block/fluid_distributor" },
+    "formed=true": { "model": "poiesis:block/fluid_distributor_formed" }
+  }
+}

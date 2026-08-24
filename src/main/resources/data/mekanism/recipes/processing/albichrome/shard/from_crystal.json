@@ -1,0 +1,14 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [{"type": "forge:mod_loaded", "modid": "mekanism"}],
+      "recipe": {
+  "type": "mekanism:injecting",
+  "chemicalInput": {"amount": 1, "gas": "mekanism:hydrogen_chloride"},
+  "itemInput": {"ingredient": {"tag": "mekanism:crystals/albichrome"}},
+  "output": {"item": "poiesis:albichrome_shard"}
+      }
+    }
+  ]
+}

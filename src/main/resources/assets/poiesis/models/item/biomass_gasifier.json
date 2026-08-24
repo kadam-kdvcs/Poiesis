@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "north": "poiesis:block/machine/biomass_gasifier_idle",
+    "south": "poiesis:block/machine/biomass_gasifier_side",
+    "east":  "poiesis:block/machine/biomass_gasifier_side_fan_idle",
+    "west":  "poiesis:block/machine/biomass_gasifier_side",
+    "up":    "poiesis:block/machine/biomass_gasifier_top",
+    "down":  "poiesis:block/machine/biomass_gasifier_side",
+    "particle": "poiesis:block/machine/biomass_gasifier_idle"
+  }
+}

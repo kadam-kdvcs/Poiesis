@@ -5,3 +5,8 @@
 /build/
 /.gradle/
 /src/generated/resources/.cache/
+
+# Local research/export artifacts
+/outputs/
+/出处标注任务/
+/node_modules/

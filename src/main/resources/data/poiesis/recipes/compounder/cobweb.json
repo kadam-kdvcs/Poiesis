@@ -1,0 +1,19 @@
+{
+  "type": "poiesis:compounding",
+  "inputs": [
+    {
+      "item": "minecraft:string",
+      "count": 9
+    },
+    {
+      "tag": "forge:slimeballs",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "minecraft:cobweb",
+    "count": 1
+  },
+  "duration": 40,
+  "energy_per_tick": 16
+}

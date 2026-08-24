@@ -1,0 +1,14 @@
+{
+  "type": "poiesis:mechanical_processing",
+  "input": {
+    "tag": "forge:ingots/albichrome",
+    "count": 1
+  },
+  "result": {
+    "item": "poiesis:albichrome_dust",
+    "count": 1
+  },
+  "required_capability": "poiesis:grinding",
+  "duration": 50,
+  "energy_per_tick": 16
+}

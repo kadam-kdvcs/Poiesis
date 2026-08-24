@@ -1,0 +1,14 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [{"type": "forge:mod_loaded", "modid": "mekanism"}],
+      "recipe": {
+  "type": "mekanism:washing",
+  "fluidInput": {"amount": 5, "tag": "minecraft:water"},
+  "slurryInput": {"amount": 1, "slurry": "poiesis:dirty_albichrome"},
+  "output": {"amount": 1, "slurry": "poiesis:clean_albichrome"}
+      }
+    }
+  ]
+}

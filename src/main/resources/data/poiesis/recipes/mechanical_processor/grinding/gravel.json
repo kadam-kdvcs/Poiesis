@@ -1,0 +1,14 @@
+{
+  "type": "poiesis:mechanical_processing",
+  "input": {
+    "item": "minecraft:cobblestone",
+    "count": 1
+  },
+  "result": {
+    "item": "minecraft:gravel",
+    "count": 1
+  },
+  "required_capability": "poiesis:grinding",
+  "duration": 50,
+  "energy_per_tick": 16
+}

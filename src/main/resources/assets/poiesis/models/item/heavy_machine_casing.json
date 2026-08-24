@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "north": "poiesis:block/machine/heavy_machine_side",
+    "south": "poiesis:block/machine/heavy_machine_side",
+    "east": "poiesis:block/machine/heavy_machine_side",
+    "west": "poiesis:block/machine/heavy_machine_side",
+    "up": "poiesis:block/machine/heavy_machine_top",
+    "down": "poiesis:block/machine/machine_bottom",
+    "particle": "poiesis:block/machine/heavy_machine_side"
+  }
+}

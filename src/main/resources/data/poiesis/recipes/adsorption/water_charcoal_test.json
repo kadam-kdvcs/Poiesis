@@ -1,0 +1,21 @@
+{
+  "type": "poiesis:adsorption",
+  "fluid_input": {
+    "fluid": "minecraft:water",
+    "amount": 8000
+  },
+  "adsorbent": {
+    "item": "minecraft:charcoal",
+    "count": 1
+  },
+  "fluid_output": {
+    "fluid": "minecraft:water",
+    "amount": 8000
+  },
+  "result": {
+    "item": "minecraft:black_dye",
+    "count": 1
+  },
+  "duration": 200,
+  "energy_per_tick": 40
+}

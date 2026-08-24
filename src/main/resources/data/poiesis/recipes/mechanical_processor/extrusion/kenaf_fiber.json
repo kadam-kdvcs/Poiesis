@@ -1,0 +1,14 @@
+{
+  "type": "poiesis:mechanical_processing",
+  "input": {
+    "item": "poiesis:raw_kenaf_bast",
+    "count": 1
+  },
+  "result": {
+    "item": "poiesis:kenaf_fiber",
+    "count": 2
+  },
+  "required_capability": "poiesis:extrusion",
+  "duration": 55,
+  "energy_per_tick": 32
+}

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "poiesis:machine_unit"
+    },
+    "A": {
+      "item": "minecraft:blast_furnace"
+    },
+    "B": {
+      "item": "poiesis:albichrome_casing"
+    },
+    "C": {
+      "item": "poiesis:control_element"
+    },
+    "H": {
+      "item": "poiesis:heat_resistant_steel_ingot"
+    }
+  },
+  "pattern": [
+    "HAH",
+    "#B#",
+    "HCH"
+  ],
+  "result": {
+    "item": "poiesis:alloy_factory"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,28 @@
+{
+  "multipart": [
+    {
+      "when": {"formed": "false", "working": "false"},
+      "apply": {"model": "poiesis:block/adsorption_bed"}
+    },
+    {
+      "when": {"formed": "false", "working": "true"},
+      "apply": {"model": "poiesis:block/adsorption_bed_active"}
+    },
+    {
+      "when": {"formed": "true", "bottom": "true", "working": "false"},
+      "apply": {"model": "poiesis:block/adsorption_bed_formed_bottom"}
+    },
+    {
+      "when": {"formed": "true", "bottom": "true", "working": "true"},
+      "apply": {"model": "poiesis:block/adsorption_bed_formed_bottom_active"}
+    },
+    {
+      "when": {"formed": "true", "bottom": "false", "working": "false"},
+      "apply": {"model": "poiesis:block/adsorption_bed_formed_mid"}
+    },
+    {
+      "when": {"formed": "true", "bottom": "false", "working": "true"},
+      "apply": {"model": "poiesis:block/adsorption_bed_formed_mid_active"}
+    }
+  ]
+}

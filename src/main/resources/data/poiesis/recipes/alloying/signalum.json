@@ -1,0 +1,11 @@
+{
+  "type": "poiesis:alloying",
+  "materials": [
+    { "material": "copper", "count": 3 },
+    { "material": "silver", "count": 1 },
+    { "material": "redstone", "count": 4 }
+  ],
+  "result": { "tag": "forge:ingots/signalum", "count": 4 },
+  "duration": 120,
+  "energy_per_tick": 100
+}

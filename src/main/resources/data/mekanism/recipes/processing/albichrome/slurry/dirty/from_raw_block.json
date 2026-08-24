@@ -1,0 +1,14 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [{"type": "forge:mod_loaded", "modid": "mekanism"}],
+      "recipe": {
+  "type": "mekanism:dissolution",
+  "gasInput": {"amount": 2, "gas": "mekanism:sulfuric_acid"},
+  "itemInput": {"ingredient": {"tag": "forge:storage_blocks/raw_albichrome"}},
+  "output": {"amount": 6000, "chemicalType": "slurry", "slurry": "poiesis:dirty_albichrome"}
+      }
+    }
+  ]
+}

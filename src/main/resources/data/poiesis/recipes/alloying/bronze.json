@@ -1,0 +1,10 @@
+{
+  "type": "poiesis:alloying",
+  "materials": [
+    { "material": "copper", "count": 3 },
+    { "material": "tin", "count": 1 }
+  ],
+  "result": { "tag": "forge:ingots/bronze", "count": 4 },
+  "duration": 120,
+  "energy_per_tick": 80
+}

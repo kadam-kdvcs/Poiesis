@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "poiesis:heat_resistant_steel_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "item": "poiesis:heat_resistant_steel_ingot"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "north": "poiesis:block/multiblock/adsorption_column_controller_idle",
+    "south": "poiesis:block/multiblock/adsorption_side",
+    "east": "poiesis:block/multiblock/adsorption_side",
+    "west": "poiesis:block/multiblock/adsorption_side",
+    "up": "poiesis:block/multiblock/adsorption_side",
+    "down": "poiesis:block/machine/machine_bottom",
+    "particle": "poiesis:block/multiblock/adsorption_column_controller_idle"
+  }
+}

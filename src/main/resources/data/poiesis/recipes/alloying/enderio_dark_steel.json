@@ -1,0 +1,12 @@
+{
+  "type": "poiesis:alloying",
+  "conditions": [{ "type": "forge:mod_loaded", "modid": "enderio" }],
+  "materials": [
+    { "tag": "forge:ingots/iron", "count": 1 },
+    { "tag": "forge:dusts/coal", "count": 1 },
+    { "tag": "forge:obsidian", "count": 1 }
+  ],
+  "result": { "tag": "forge:ingots/dark_steel", "count": 1 },
+  "duration": 160,
+  "energy_per_tick": 100
+}

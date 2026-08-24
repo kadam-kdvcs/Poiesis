@@ -1,0 +1,8 @@
+{
+  "parent": "poiesis:block/adsorption_column_controller",
+  "textures": {
+    "1": "poiesis:block/multiblock/formed/adsorption_column_controller_formed_idle",
+    "2": "poiesis:block/multiblock/formed/adsorption_side_formed",
+    "particle": "poiesis:block/multiblock/formed/adsorption_column_controller_formed_idle"
+  }
+}

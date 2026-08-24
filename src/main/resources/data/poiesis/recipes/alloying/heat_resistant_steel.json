@@ -1,0 +1,10 @@
+{
+  "type": "poiesis:alloying",
+  "materials": [
+    { "material": "iron", "count": 3 },
+    { "material": "albichrome", "count": 1 }
+  ],
+  "result": { "tag": "forge:ingots/heat_resistant_steel", "count": 4 },
+  "duration": 120,
+  "energy_per_tick": 80
+}

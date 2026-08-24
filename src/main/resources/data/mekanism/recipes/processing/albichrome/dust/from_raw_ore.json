@@ -1,0 +1,13 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [{"type": "forge:mod_loaded", "modid": "mekanism"}],
+      "recipe": {
+  "type": "mekanism:enriching",
+  "input": {"amount": 3, "ingredient": {"tag": "forge:raw_materials/albichrome"}},
+  "output": {"count": 4, "item": "poiesis:albichrome_dust"}
+      }
+    }
+  ]
+}

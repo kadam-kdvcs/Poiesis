@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="760" viewBox="0 0 640 760">
+  <rect width="640" height="760" fill="#171b1c"/>
+  <g shape-rendering="crispEdges" stroke="#22292b" stroke-width="8" stroke-linejoin="miter">
+    <!-- top inlet and distributor -->
+    <rect x="286" y="38" width="68" height="66" fill="#b66f4a"/>
+    <rect x="258" y="82" width="124" height="38" fill="#75503b"/>
+    <path d="M236 112H404V150H426V230H214V150H236Z" fill="#cbd0d0"/>
+    <rect x="204" y="216" width="232" height="30" fill="#40494b"/>
+
+    <!-- upper adsorption bed -->
+    <rect x="220" y="246" width="200" height="176" fill="#cbd0d0"/>
+    <rect x="204" y="246" width="232" height="30" fill="#40494b"/>
+    <rect x="204" y="392" width="232" height="30" fill="#40494b"/>
+    <rect x="220" y="264" width="26" height="146" fill="#343c3e"/>
+    <rect x="394" y="264" width="26" height="146" fill="#343c3e"/>
+    <rect x="276" y="284" width="88" height="98" fill="#22292b"/>
+    <rect x="290" y="298" width="60" height="70" fill="#352f2b"/>
+    <path d="M298 310h12v10h-12zm24 4h14v12h-14zm-18 26h14v12h-14zm28 8h10v10h-10z" fill="#665446" stroke="none"/>
+
+    <!-- lower adsorption bed -->
+    <rect x="220" y="422" width="200" height="176" fill="#cbd0d0"/>
+    <rect x="204" y="422" width="232" height="30" fill="#40494b"/>
+    <rect x="204" y="568" width="232" height="30" fill="#40494b"/>
+    <rect x="220" y="440" width="26" height="146" fill="#343c3e"/>
+    <rect x="394" y="440" width="26" height="146" fill="#343c3e"/>
+    <rect x="276" y="460" width="88" height="98" fill="#22292b"/>
+    <rect x="290" y="474" width="60" height="70" fill="#352f2b"/>
+    <path d="M298 486h12v10h-12zm24 4h14v12h-14zm-18 26h14v12h-14zm28 8h10v10h-10z" fill="#665446" stroke="none"/>
+
+    <!-- control base -->
+    <path d="M190 598H450V626H466V720H174V626H190Z" fill="#cbd0d0"/>
+    <rect x="158" y="704" width="324" height="34" fill="#40494b"/>
+    <rect x="246" y="624" width="148" height="66" fill="#30383a"/>
+    <rect x="264" y="642" width="68" height="28" fill="#315963"/>
+    <rect x="350" y="648" width="18" height="18" fill="#e9ae43"/>
+    <rect x="196" y="652" width="42" height="38" fill="#b66f4a"/>
+    <rect x="402" y="652" width="42" height="38" fill="#40494b"/>
+    <rect x="450" y="644" width="70" height="42" fill="#b66f4a"/>
+    <rect x="500" y="654" width="38" height="22" fill="#315963"/>
+  </g>
+  <g font-family="sans-serif" fill="#d9dddd">
+    <text x="26" y="62" font-size="26" font-weight="700">MAC</text>
+    <text x="26" y="91" font-size="17" fill="#899294">4-block concept</text>
+    <text x="470" y="170" font-size="16">Fluid distributor</text>
+    <text x="470" y="348" font-size="16">Adsorption bed</text>
+    <text x="470" y="524" font-size="16">Adsorption bed</text>
+    <text x="26" y="672" font-size="16">Control base</text>
+  </g>
+</svg>

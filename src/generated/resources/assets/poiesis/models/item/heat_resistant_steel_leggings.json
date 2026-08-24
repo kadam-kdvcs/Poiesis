@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "poiesis:item/heat_resistant_steel_leggings"
+  }
+}
