@@ -1,0 +1,17 @@
+{
+  "type": "poiesis:leaching",
+  "fluid_input": {
+    "fluid": "minecraft:water",
+    "amount": 4000
+  },
+  "input": {
+    "item": "minecraft:kelp",
+    "count": 8
+  },
+  "fluid_output": {
+    "fluid": "poiesis:organic_nutrient_solution",
+    "amount": 3000
+  },
+  "duration": 160,
+  "energy_per_tick": 64
+}

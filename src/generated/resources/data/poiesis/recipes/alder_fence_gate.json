@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "wooden_fence_gate",
+  "key": {
+    "#": {
+      "item": "poiesis:alder_planks"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "S#S",
+    "S#S"
+  ],
+  "result": {
+    "item": "poiesis:alder_fence_gate"
+  },
+  "show_notification": true
+}

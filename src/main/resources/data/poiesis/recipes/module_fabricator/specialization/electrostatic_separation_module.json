@@ -1,0 +1,30 @@
+{
+  "type": "poiesis:module_fabrication",
+  "module_base": {
+    "item": "poiesis:specialization_module_substrate"
+  },
+  "materials": [
+    {
+      "item": "poiesis:graphite_electrode",
+      "count": 1
+    },
+    {
+      "item": "poiesis:graphite_plate",
+      "count": 2
+    },
+    {
+      "item": "poiesis:albichrome_ingot",
+      "count": 2
+    },
+    {
+      "item": "minecraft:redstone",
+      "count": 4
+    }
+  ],
+  "result": {
+    "item": "poiesis:electrostatic_separation_module",
+    "count": 1
+  },
+  "duration": 240,
+  "energy_per_tick": 40
+}

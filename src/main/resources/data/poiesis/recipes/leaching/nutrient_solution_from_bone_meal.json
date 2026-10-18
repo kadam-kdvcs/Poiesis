@@ -1,0 +1,17 @@
+{
+  "type": "poiesis:leaching",
+  "fluid_input": {
+    "fluid": "minecraft:water",
+    "amount": 2000
+  },
+  "input": {
+    "item": "minecraft:bone_meal",
+    "count": 8
+  },
+  "fluid_output": {
+    "fluid": "poiesis:nutrient_solution",
+    "amount": 1500
+  },
+  "duration": 120,
+  "energy_per_tick": 48
+}

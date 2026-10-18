@@ -1,0 +1,17 @@
+{
+  "type": "poiesis:gasification",
+  "input": {
+    "item": "minecraft:nether_wart_block",
+    "count": 2
+  },
+  "result": {
+    "item": "minecraft:charcoal",
+    "count": 1
+  },
+  "gas_output": {
+    "fluid": "poiesis:producer_gas",
+    "amount": 5000
+  },
+  "duration": 420,
+  "minimum_temperature": 390
+}

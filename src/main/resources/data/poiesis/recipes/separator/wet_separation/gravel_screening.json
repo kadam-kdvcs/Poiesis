@@ -1,0 +1,28 @@
+{
+  "type": "poiesis:separating",
+  "required_capability": "poiesis:wet_separation",
+  "inputs": [
+    {
+      "item": "minecraft:gravel",
+      "count": 4
+    }
+  ],
+  "fluid": {
+    "fluid": "minecraft:water",
+    "amount": 1000
+  },
+  "outputs": [
+    {
+      "item": "minecraft:sand",
+      "count": 3,
+      "chance": 1.0
+    },
+    {
+      "item": "minecraft:flint",
+      "count": 1,
+      "chance": 0.35
+    }
+  ],
+  "duration": 140,
+  "energy_per_tick": 24
+}

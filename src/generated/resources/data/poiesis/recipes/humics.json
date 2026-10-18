@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:wheat"
+    },
+    "A": {
+      "item": "minecraft:sugar_cane"
+    },
+    "D": {
+      "item": "minecraft:dirt"
+    }
+  },
+  "pattern": [
+    "###",
+    "AAD"
+  ],
+  "result": {
+    "count": 4,
+    "item": "poiesis:humics"
+  },
+  "show_notification": true
+}

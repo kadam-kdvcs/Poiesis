@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_plain_concrete": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "poiesis:plain_concrete"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "poiesis:pink_concrete_from_plain"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_plain_concrete",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "poiesis:pink_concrete_from_plain"
+    ]
+  },
+  "sends_telemetry_event": false
+}

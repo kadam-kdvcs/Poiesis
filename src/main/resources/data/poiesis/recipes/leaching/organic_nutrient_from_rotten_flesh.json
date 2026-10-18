@@ -1,0 +1,17 @@
+{
+  "type": "poiesis:leaching",
+  "fluid_input": {
+    "fluid": "minecraft:water",
+    "amount": 2000
+  },
+  "input": {
+    "item": "minecraft:rotten_flesh",
+    "count": 4
+  },
+  "fluid_output": {
+    "fluid": "poiesis:organic_nutrient_solution",
+    "amount": 1500
+  },
+  "duration": 140,
+  "energy_per_tick": 56
+}

@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_heavy_machine_casing": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "poiesis:heavy_machine_casing"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "poiesis:greenhouse"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_heavy_machine_casing",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "poiesis:greenhouse"
+    ]
+  },
+  "sends_telemetry_event": false
+}

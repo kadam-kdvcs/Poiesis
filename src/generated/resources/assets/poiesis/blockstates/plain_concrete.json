@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "poiesis:block/plain_concrete"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "type": "poiesis:module_fabrication",
+  "module_base": {
+    "item": "poiesis:specialization_module_substrate"
+  },
+  "materials": [
+    {
+      "item": "poiesis:filter_plate",
+      "count": 2
+    },
+    {
+      "item": "minecraft:quartz",
+      "count": 4
+    },
+    {
+      "item": "minecraft:copper_ingot",
+      "count": 2
+    },
+    {
+      "item": "poiesis:albichrome_ingot",
+      "count": 1
+    },
+    {
+      "item": "minecraft:redstone",
+      "count": 2
+    }
+  ],
+  "result": {
+    "item": "poiesis:rinsing_module",
+    "count": 1
+  },
+  "duration": 240,
+  "energy_per_tick": 28
+}

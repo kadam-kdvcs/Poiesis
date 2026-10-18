@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#poiesis:has_alder_trees",
+  "features": "poiesis:alder_tree",
+  "step": "vegetal_decoration"
+}

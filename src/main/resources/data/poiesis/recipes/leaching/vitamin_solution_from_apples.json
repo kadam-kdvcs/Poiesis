@@ -1,0 +1,17 @@
+{
+  "type": "poiesis:leaching",
+  "fluid_input": {
+    "fluid": "minecraft:water",
+    "amount": 250
+  },
+  "input": {
+    "item": "minecraft:apple",
+    "count": 3
+  },
+  "fluid_output": {
+    "fluid": "poiesis:vitamin_solution",
+    "amount": 500
+  },
+  "duration": 100,
+  "energy_per_tick": 40
+}

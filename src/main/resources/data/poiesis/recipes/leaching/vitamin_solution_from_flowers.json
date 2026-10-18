@@ -1,0 +1,17 @@
+{
+  "type": "poiesis:leaching",
+  "fluid_input": {
+    "fluid": "minecraft:water",
+    "amount": 150
+  },
+  "input": {
+    "tag": "poiesis:leacher_flowers",
+    "count": 1
+  },
+  "fluid_output": {
+    "fluid": "poiesis:vitamin_solution",
+    "amount": 150
+  },
+  "duration": 80,
+  "energy_per_tick": 32
+}

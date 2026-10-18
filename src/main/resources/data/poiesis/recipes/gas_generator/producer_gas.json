@@ -1,0 +1,9 @@
+{
+  "type": "poiesis:gas_generation",
+  "fluid": {
+    "fluid": "poiesis:producer_gas",
+    "amount": 100
+  },
+  "energy_per_mb": 32,
+  "energy_per_tick": 80
+}

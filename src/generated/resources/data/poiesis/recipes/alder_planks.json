@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "planks",
+  "ingredients": [
+    {
+      "tag": "poiesis:alder_logs"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "poiesis:alder_planks"
+  }
+}

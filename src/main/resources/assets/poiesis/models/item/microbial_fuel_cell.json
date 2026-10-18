@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "north": "poiesis:block/machine/microbial_fuel_cell_idle",
+    "south": "poiesis:block/machine/heat_resistant_steel_casing",
+    "east": "poiesis:block/machine/heat_resistant_steel_casing",
+    "west": "poiesis:block/machine/heat_resistant_steel_casing",
+    "up": "poiesis:block/machine/heat_resistant_steel_casing",
+    "down": "poiesis:block/machine/heat_resistant_steel_casing",
+    "particle": "poiesis:block/machine/microbial_fuel_cell_idle"
+  }
+}

@@ -10,3 +10,6 @@
 /outputs/
 /出处标注任务/
 /node_modules/
+
+# Local texture references
+/src/main/resources/assets/poiesis/textures/klux_textures/

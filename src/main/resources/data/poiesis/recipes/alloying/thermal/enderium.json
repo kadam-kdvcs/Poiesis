@@ -1,0 +1,20 @@
+{
+  "type": "poiesis:alloying",
+  "conditions": [
+    { "type": "forge:mod_loaded", "modid": "thermal" }
+  ],
+  "materials": [
+    { "material": "lead", "count": 3 },
+    { "tag": "forge:dusts/diamond", "count": 1 },
+    {
+      "tags": [
+        "forge:ender_pearls",
+        "forge:dusts/ender_pearl"
+      ],
+      "count": 2
+    }
+  ],
+  "result": { "tag": "forge:ingots/enderium", "count": 2 },
+  "duration": 160,
+  "energy_per_tick": 100
+}

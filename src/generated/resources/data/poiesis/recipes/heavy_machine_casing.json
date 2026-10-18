@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "poiesis:heat_resistant_steel_ingot"
+    },
+    "B": {
+      "item": "poiesis:fiber_composite"
+    },
+    "C": {
+      "item": "poiesis:machine_unit"
+    },
+    "D": {
+      "item": "poiesis:albichrome_casing"
+    },
+    "E": {
+      "item": "poiesis:control_element"
+    }
+  },
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "result": {
+    "item": "poiesis:heavy_machine_casing"
+  },
+  "show_notification": true
+}

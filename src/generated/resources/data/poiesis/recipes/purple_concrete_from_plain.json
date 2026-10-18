@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "poiesis:plain_concrete"
+    },
+    {
+      "item": "poiesis:plain_concrete"
+    },
+    {
+      "item": "poiesis:plain_concrete"
+    },
+    {
+      "item": "poiesis:plain_concrete"
+    },
+    {
+      "item": "poiesis:plain_concrete"
+    },
+    {
+      "item": "poiesis:plain_concrete"
+    },
+    {
+      "item": "poiesis:plain_concrete"
+    },
+    {
+      "item": "poiesis:plain_concrete"
+    },
+    {
+      "tag": "forge:dyes/purple"
+    }
+  ],
+  "result": {
+    "count": 8,
+    "item": "minecraft:purple_concrete"
+  }
+}

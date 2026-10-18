@@ -1,0 +1,17 @@
+{
+  "type": "poiesis:leaching",
+  "fluid_input": {
+    "fluid": "minecraft:water",
+    "amount": 1500
+  },
+  "input": {
+    "item": "poiesis:humics",
+    "count": 4
+  },
+  "fluid_output": {
+    "fluid": "poiesis:nutrient_solution",
+    "amount": 1000
+  },
+  "duration": 120,
+  "energy_per_tick": 64
+}

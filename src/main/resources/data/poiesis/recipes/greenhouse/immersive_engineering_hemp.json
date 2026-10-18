@@ -1,0 +1,40 @@
+{
+  "type": "poiesis:greenhouse",
+  "inputs": [
+    {
+      "item": "immersiveengineering:seed",
+      "count": 2
+    }
+  ],
+  "nutrient": {
+    "item": "minecraft:bone_meal",
+    "count": 4
+  },
+  "water": 8000,
+  "nutrient_fluid": {
+    "fluid": "poiesis:organic_nutrient_solution",
+    "amount": 2000
+  },
+  "results": [
+    {
+      "item": "immersiveengineering:hemp_fiber",
+      "count": 32
+    },
+    {
+      "item": "immersiveengineering:seed",
+      "count": 8
+    }
+  ],
+  "fluid_output": {
+    "fluid": "minecraft:water",
+    "amount": 1000
+  },
+  "duration": 300,
+  "energy_per_tick": 75,
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "immersiveengineering"
+    }
+  ]
+}

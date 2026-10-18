@@ -1,0 +1,17 @@
+{
+  "type": "poiesis:gasification",
+  "input": {
+    "item": "minecraft:hay_block",
+    "count": 2
+  },
+  "result": {
+    "item": "minecraft:charcoal",
+    "count": 1
+  },
+  "gas_output": {
+    "fluid": "poiesis:producer_gas",
+    "amount": 4500
+  },
+  "duration": 380,
+  "minimum_temperature": 350
+}

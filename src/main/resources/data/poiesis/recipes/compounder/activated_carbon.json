@@ -1,0 +1,19 @@
+{
+  "type": "poiesis:compounding",
+  "inputs": [
+    {
+      "item": "minecraft:charcoal",
+      "count": 4
+    },
+    {
+      "item": "minecraft:blaze_powder",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "poiesis:activated_carbon",
+    "count": 2
+  },
+  "duration": 120,
+  "energy_per_tick": 32
+}

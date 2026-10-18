@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "poiesis:block/alder_planks",
+    "side": "poiesis:block/alder_planks",
+    "top": "poiesis:block/alder_planks"
+  }
+}

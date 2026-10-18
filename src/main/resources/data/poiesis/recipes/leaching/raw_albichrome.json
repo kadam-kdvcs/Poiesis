@@ -1,0 +1,17 @@
+{
+  "type": "poiesis:leaching",
+  "fluid_input": {
+    "fluid": "minecraft:water",
+    "amount": 8000
+  },
+  "input": {
+    "item": "poiesis:raw_albichrome",
+    "count": 1
+  },
+  "fluid_output": {
+    "fluid": "poiesis:chromium_bearing_waste",
+    "amount": 6000
+  },
+  "duration": 160,
+  "energy_per_tick": 128
+}

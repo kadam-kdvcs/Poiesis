@@ -1,0 +1,16 @@
+{
+  "values": [
+    "poiesis:alder_log",
+    "poiesis:alder_wood",
+    "poiesis:stripped_alder_log",
+    "poiesis:stripped_alder_wood",
+    "poiesis:alder_planks",
+    "poiesis:alder_stairs",
+    "poiesis:alder_slab",
+    "poiesis:alder_fence",
+    "poiesis:alder_fence_gate",
+    "poiesis:alder_button",
+    "poiesis:alder_door",
+    "poiesis:alder_trapdoor"
+  ]
+}

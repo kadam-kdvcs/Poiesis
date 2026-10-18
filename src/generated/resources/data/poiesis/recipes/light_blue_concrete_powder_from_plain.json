@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "poiesis:plain_concrete_powder"
+    },
+    {
+      "item": "poiesis:plain_concrete_powder"
+    },
+    {
+      "item": "poiesis:plain_concrete_powder"
+    },
+    {
+      "item": "poiesis:plain_concrete_powder"
+    },
+    {
+      "item": "poiesis:plain_concrete_powder"
+    },
+    {
+      "item": "poiesis:plain_concrete_powder"
+    },
+    {
+      "item": "poiesis:plain_concrete_powder"
+    },
+    {
+      "item": "poiesis:plain_concrete_powder"
+    },
+    {
+      "tag": "forge:dyes/light_blue"
+    }
+  ],
+  "result": {
+    "count": 8,
+    "item": "minecraft:light_blue_concrete_powder"
+  }
+}

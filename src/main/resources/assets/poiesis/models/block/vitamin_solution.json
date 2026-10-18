@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/water",
+  "textures": {
+    "particle": "poiesis:block/fluids/vitamin_solution_still"
+  }
+}

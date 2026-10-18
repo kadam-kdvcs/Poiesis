@@ -1,0 +1,13 @@
+{
+  "type": "poiesis:microbial_fuel_cell",
+  "anolyte": {
+    "fluid": "poiesis:organic_nutrient_solution",
+    "amount": 1000
+  },
+  "catholyte": {
+    "fluid": "minecraft:water",
+    "amount": 1000
+  },
+  "total_energy": 128000,
+  "energy_per_tick": 64
+}

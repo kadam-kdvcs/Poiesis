@@ -1,0 +1,23 @@
+{
+  "type": "poiesis:separating",
+  "required_capability": "poiesis:rinsing",
+  "inputs": [
+    {
+      "tag": "poiesis:colored_concrete_powder",
+      "count": 1
+    }
+  ],
+  "fluid": {
+    "fluid": "minecraft:water",
+    "amount": 250
+  },
+  "outputs": [
+    {
+      "item": "poiesis:plain_concrete_powder",
+      "count": 1,
+      "chance": 1.0
+    }
+  ],
+  "duration": 80,
+  "energy_per_tick": 24
+}

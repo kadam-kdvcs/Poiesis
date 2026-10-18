@@ -1,0 +1,23 @@
+{
+  "type": "poiesis:separating",
+  "required_capability": "poiesis:rinsing",
+  "inputs": [
+    {
+      "tag": "forge:stained_glass_panes",
+      "count": 1
+    }
+  ],
+  "fluid": {
+    "fluid": "minecraft:water",
+    "amount": 1000
+  },
+  "outputs": [
+    {
+      "item": "minecraft:glass_pane",
+      "count": 1,
+      "chance": 1
+    }
+  ],
+  "duration": 80,
+  "energy_per_tick": 24
+}

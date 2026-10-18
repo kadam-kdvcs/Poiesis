@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_left",
+  "textures": {
+    "bottom": "poiesis:block/alder_door_bottom",
+    "top": "poiesis:block/alder_door_top"
+  }
+}

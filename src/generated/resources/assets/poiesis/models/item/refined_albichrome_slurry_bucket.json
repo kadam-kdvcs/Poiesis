@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "poiesis:item/refined_albichrome_slurry_bucket"
+  }
+}

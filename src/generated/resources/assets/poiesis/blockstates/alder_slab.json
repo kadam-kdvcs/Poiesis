@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "poiesis:block/alder_slab"
+    },
+    "type=double": {
+      "model": "poiesis:block/alder_planks"
+    },
+    "type=top": {
+      "model": "poiesis:block/alder_slab_top"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "tag": "forge:glass"
+    },
+    "B": {
+      "item": "poiesis:heavy_machine_casing"
+    },
+    "C": {
+      "item": "poiesis:control_element"
+    },
+    "D": {
+      "item": "minecraft:daylight_detector"
+    },
+    "G": {
+      "item": "minecraft:diamond"
+    },
+    "H": {
+      "item": "poiesis:machine_unit"
+    }
+  },
+  "pattern": [
+    "GDG",
+    "#B#",
+    "HCH"
+  ],
+  "result": {
+    "item": "poiesis:greenhouse"
+  },
+  "show_notification": true
+}
