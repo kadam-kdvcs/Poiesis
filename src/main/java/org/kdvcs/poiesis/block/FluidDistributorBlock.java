@@ -1,6 +1,7 @@
 package org.kdvcs.poiesis.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -94,7 +95,7 @@ public final class FluidDistributorBlock extends BaseEntityBlock {
         AdsorptionColumnControllerBlockEntity controller =
                 AdsorptionColumnStructure.findControllerEntity(level, pos);
         if (!level.isClientSide
-                && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+                && player instanceof ServerPlayer serverPlayer
                 && controller != null
                 && controller.isFormed()) {
             NetworkHooks.openScreen(serverPlayer, controller, controller.getBlockPos());

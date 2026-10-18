@@ -16,5 +16,11 @@
   },
   "separator_working": {
     "sounds": [{ "name": "poiesis:separator_working", "stream": true }]
+  },
+  "adsorber_working": {
+    "sounds": [{ "name": "poiesis:adsorber_working", "stream": true }]
+  },
+  "leacher_working": {
+    "sounds": [{ "name": "poiesis:leacher_working", "stream": true }]
   }
 }

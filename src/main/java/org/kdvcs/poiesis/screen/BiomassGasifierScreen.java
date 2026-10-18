@@ -14,6 +14,7 @@ import org.kdvcs.poiesis.network.ModNetwork;
 import org.kdvcs.poiesis.network.packet.BiomassGasifierFluidInteractPacket;
 import org.kdvcs.poiesis.screen.base.AbstractMachineScreen;
 import org.kdvcs.poiesis.screen.layout.BiomassGasifierGuiLayout;
+import org.kdvcs.poiesis.screen.widget.FluidTankWidget;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -134,41 +135,12 @@ public final class BiomassGasifierScreen
     }
 
     private void renderGas(GuiGraphics graphics, FluidStack stack) {
-        if (stack.isEmpty()) {
-            return;
-        }
-
-        IClientFluidTypeExtensions extensions =
-                IClientFluidTypeExtensions.of(stack.getFluid());
-        ResourceLocation still = extensions.getStillTexture(stack);
-        if (still == null) {
-            return;
-        }
-
-        TextureAtlasSprite sprite = Minecraft.getInstance()
-                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-                .apply(still);
-        int color = extensions.getTintColor(stack);
-        float alpha = ((color >> 24) & 0xFF) / 255.0F;
-        if (alpha <= 0.0F) {
-            alpha = 1.0F;
-        }
-
-        RenderSystem.setShaderColor(
-                ((color >> 16) & 0xFF) / 255.0F,
-                ((color >> 8) & 0xFF) / 255.0F,
-                (color & 0xFF) / 255.0F,
-                alpha
+        FluidTankWidget.render(
+                graphics, leftPos, topPos,
+                BiomassGasifierGuiLayout.GAS_X, BiomassGasifierGuiLayout.GAS_Y,
+                BiomassGasifierGuiLayout.GAS_SIZE, BiomassGasifierGuiLayout.GAS_SIZE,
+                stack, null
         );
-        graphics.blit(
-                leftPos + BiomassGasifierGuiLayout.GAS_X,
-                topPos + BiomassGasifierGuiLayout.GAS_Y,
-                0,
-                BiomassGasifierGuiLayout.GAS_SIZE,
-                BiomassGasifierGuiLayout.GAS_SIZE,
-                sprite
-        );
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     @Override

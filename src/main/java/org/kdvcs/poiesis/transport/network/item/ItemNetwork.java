@@ -24,6 +24,10 @@ public final class ItemNetwork {
     private long budgetTick = Long.MIN_VALUE;
     private int transferredThisTick;
     private int sinkRotation;
+    private List<ItemEndpoint> cachedSources = List.of();
+    private List<ItemEndpoint> cachedSinks = List.of();
+    private long endpointCacheExpires = Long.MIN_VALUE;
+    private boolean endpointsDirty = true;
 
     public ItemNetwork(long id, Set<BlockPos> pipes) {
         this.id = id;
@@ -40,6 +44,10 @@ public final class ItemNetwork {
 
     public int transferLimit() {
         return ItemPipeBlock.TRANSFER_RATE;
+    }
+
+    public void invalidateEndpoints() {
+        endpointsDirty = true;
     }
 
     public void tick(ServerLevel level) {
@@ -251,36 +259,19 @@ public final class ItemNetwork {
     }
 
     private void collectSources(ServerLevel level, List<ItemEndpoint> sources) {
-        Set<ItemEndpoint> sourceSet = new LinkedHashSet<>();
-
-        for (BlockPos pipePos : pipes) {
-            if (!(level.getBlockEntity(pipePos) instanceof ItemPipeBlockEntity pipe)) {
-                continue;
-            }
-
-            for (Direction direction : Direction.values()) {
-                if (pipe.endpointMode(direction) != PipeEndpointMode.EXTRACT) {
-                    continue;
-                }
-
-                BlockPos endpointPos = pipePos.relative(direction);
-
-                if (level.getBlockState(endpointPos).getBlock() instanceof ItemPipeBlock) {
-                    continue;
-                }
-
-                ItemEndpoint endpoint = new ItemEndpoint(endpointPos, direction.getOpposite());
-
-                if (resolveHandler(level, endpoint) != null) {
-                    sourceSet.add(endpoint);
-                }
-            }
-        }
-
-        sources.addAll(sourceSet);
+        refreshEndpointCache(level);
+        sources.addAll(cachedSources);
     }
 
     private void collectEndpoints(ServerLevel level, List<ItemEndpoint> sources, List<ItemEndpoint> sinks) {
+        refreshEndpointCache(level);
+        sources.addAll(cachedSources);
+        sinks.addAll(cachedSinks);
+    }
+
+    private void refreshEndpointCache(ServerLevel level) {
+        long gameTime = level.getGameTime();
+        if (!endpointsDirty && gameTime < endpointCacheExpires) return;
         Set<ItemEndpoint> sourceSet = new LinkedHashSet<>();
         Set<ItemEndpoint> sinkSet = new LinkedHashSet<>();
 
@@ -316,38 +307,15 @@ public final class ItemNetwork {
             }
         }
 
-        sources.addAll(sourceSet);
-        sinks.addAll(sinkSet);
+        cachedSources = List.copyOf(sourceSet);
+        cachedSinks = List.copyOf(sinkSet);
+        endpointCacheExpires = gameTime + 100L;
+        endpointsDirty = false;
     }
 
     private void collectSinks(ServerLevel level, List<ItemEndpoint> sinks) {
-        Set<ItemEndpoint> sinkSet = new LinkedHashSet<>();
-
-        for (BlockPos pipePos : pipes) {
-            if (!(level.getBlockEntity(pipePos) instanceof ItemPipeBlockEntity pipe)) {
-                continue;
-            }
-
-            for (Direction direction : Direction.values()) {
-                if (pipe.endpointMode(direction) != PipeEndpointMode.INSERT) {
-                    continue;
-                }
-
-                BlockPos endpointPos = pipePos.relative(direction);
-
-                if (level.getBlockState(endpointPos).getBlock() instanceof ItemPipeBlock) {
-                    continue;
-                }
-
-                ItemEndpoint endpoint = new ItemEndpoint(endpointPos, direction.getOpposite());
-
-                if (resolveHandler(level, endpoint) != null) {
-                    sinkSet.add(endpoint);
-                }
-            }
-        }
-
-        sinks.addAll(sinkSet);
+        refreshEndpointCache(level);
+        sinks.addAll(cachedSinks);
     }
 
     private IItemHandler resolveHandler(ServerLevel level, ItemEndpoint endpoint) {

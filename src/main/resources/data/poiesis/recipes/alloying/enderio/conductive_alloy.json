@@ -3,7 +3,7 @@
   "conditions": [{ "type": "forge:mod_loaded", "modid": "enderio" }],
   "materials": [
     { "tag": "forge:ingots/copper_alloy", "count": 1 },
-    { "tag": "forge:ingots/iron", "count": 1 },
+    { "tags": ["forge:ingots/iron", "forge:dusts/iron"], "count": 1 },
     { "tag": "forge:dusts/redstone", "count": 1 }
   ],
   "result": { "tag": "forge:ingots/conductive_alloy", "count": 1 },

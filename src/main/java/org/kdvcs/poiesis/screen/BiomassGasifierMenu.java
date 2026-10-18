@@ -23,7 +23,7 @@ public final class BiomassGasifierMenu extends AbstractMachineMenu {
     private static final int INPUT_MENU_SLOT = 0;
     private static final int MACHINE_SLOT_COUNT = 2;
 
-    public static final int DATA_COUNT = 8;
+    public static final int DATA_COUNT = 10;
 
     private final BiomassGasifierBlockEntity blockEntity;
 
@@ -103,15 +103,15 @@ public final class BiomassGasifierMenu extends AbstractMachineMenu {
     }
 
     public int gasAmount() {
-        return dataValue(4) & 0xFFFF;
+        return int32DataValue(4, 8);
     }
 
     public int gasCapacity() {
-        return dataValue(5) & 0xFFFF;
+        return int32DataValue(5, 9);
     }
 
     public FluidStack gasStack() {
-        Fluid fluid = BuiltInRegistries.FLUID.byId(dataValue(6) & 0xFFFF);
+        Fluid fluid = BuiltInRegistries.FLUID.byId(unsignedDataValue(6));
         if (fluid == null || fluid == Fluids.EMPTY || gasAmount() <= 0) {
             return FluidStack.EMPTY;
         }

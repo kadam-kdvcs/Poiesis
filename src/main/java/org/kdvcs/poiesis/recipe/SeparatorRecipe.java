@@ -11,6 +11,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+import org.kdvcs.poiesis.registry.ModItems;
 import org.kdvcs.poiesis.registry.ModRecipeSerializers;
 import org.kdvcs.poiesis.registry.ModRecipeTypes;
 
@@ -24,6 +25,7 @@ public final class SeparatorRecipe implements Recipe<Container> {
     private final List<CountedIngredient> inputs;
     private final List<ChanceOutput> outputs;
     private final FluidIngredient fluid;
+    private final ResourceLocation requiredCapability;
     private final int duration;
     private final int baseEnergyPerTick;
 
@@ -32,6 +34,7 @@ public final class SeparatorRecipe implements Recipe<Container> {
             List<CountedIngredient> inputs,
             List<ChanceOutput> outputs,
             @Nullable FluidIngredient fluid,
+            @Nullable ResourceLocation requiredCapability,
             int duration,
             int baseEnergyPerTick
     ) {
@@ -44,11 +47,22 @@ public final class SeparatorRecipe implements Recipe<Container> {
         if (duration <= 0 || baseEnergyPerTick < 0) {
             throw new IllegalArgumentException("Invalid Separator duration or energy cost");
         }
+        if ((ModItems.WET_SEPARATION.equals(requiredCapability)
+                || ModItems.RINSING.equals(requiredCapability))
+                && fluid == null) {
+            throw new IllegalArgumentException(
+                    "Wet Separator recipes require a fluid input"
+            );
+        }
+        if (ModItems.ELECTROSTATIC_SEPARATION.equals(requiredCapability) && fluid != null) {
+            throw new IllegalArgumentException("Electrostatic Separator recipes cannot use fluid");
+        }
 
         this.id = id;
         this.inputs = List.copyOf(inputs);
         this.outputs = List.copyOf(outputs);
         this.fluid = fluid;
+        this.requiredCapability = requiredCapability;
         this.duration = duration;
         this.baseEnergyPerTick = baseEnergyPerTick;
     }
@@ -111,6 +125,11 @@ public final class SeparatorRecipe implements Recipe<Container> {
 
     public boolean isWet() {
         return fluid != null;
+    }
+
+    @Nullable
+    public ResourceLocation requiredCapability() {
+        return requiredCapability;
     }
 
     public int duration() {

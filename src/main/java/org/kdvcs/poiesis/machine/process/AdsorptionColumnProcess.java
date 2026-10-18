@@ -11,12 +11,14 @@ import org.kdvcs.poiesis.machine.api.MachineContext;
 import org.kdvcs.poiesis.machine.energy.EnergyComponent;
 import org.kdvcs.poiesis.machine.energy.OperatingPowerPolicy;
 import org.kdvcs.poiesis.machine.energy.PowerAllocation;
-import org.kdvcs.poiesis.machine.fluid.AdsorptionOutputFluidComponent;
+import org.kdvcs.poiesis.machine.fluid.OutputFluidComponent;
 import org.kdvcs.poiesis.machine.fluid.FluidComponent;
 import org.kdvcs.poiesis.machine.inventory.InventoryComponent;
 import org.kdvcs.poiesis.machine.inventory.ItemOutputTransaction;
+import org.kdvcs.poiesis.machine.transaction.MachineBatchTransaction;
 import org.kdvcs.poiesis.recipe.AdsorptionRecipe;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -25,7 +27,7 @@ public final class AdsorptionColumnProcess implements MachineComponent {
     private final MachineContext owner;
     private final InventoryComponent inventory;
     private final FluidComponent inputFluid;
-    private final AdsorptionOutputFluidComponent outputFluid;
+    private final OutputFluidComponent outputFluid;
     private final EnergyComponent energy;
     private final OperatingPowerPolicy powerPolicy;
     private final RecipeType<AdsorptionRecipe> recipeType;
@@ -41,7 +43,7 @@ public final class AdsorptionColumnProcess implements MachineComponent {
             MachineContext owner,
             InventoryComponent inventory,
             FluidComponent inputFluid,
-            AdsorptionOutputFluidComponent outputFluid,
+            OutputFluidComponent outputFluid,
             EnergyComponent energy,
             OperatingPowerPolicy powerPolicy,
             RecipeType<AdsorptionRecipe> recipeType
@@ -162,7 +164,7 @@ public final class AdsorptionColumnProcess implements MachineComponent {
                 inventory.items(),
                 1,
                 2,
-                java.util.List.of(recipe.result())
+                List.of(recipe.result())
         ).orElse(null);
         FluidStack fluidResult = recipe.fluidOutput();
         return itemPlan != null
@@ -181,7 +183,7 @@ public final class AdsorptionColumnProcess implements MachineComponent {
                 inventory.items(),
                 1,
                 2,
-                java.util.List.of(recipe.result())
+                List.of(recipe.result())
         ).orElse(null);
         FluidStack fluidResult = recipe.fluidOutput();
         if (itemPlan == null
@@ -206,38 +208,22 @@ public final class AdsorptionColumnProcess implements MachineComponent {
             return false;
         }
 
-        ItemStack itemInputBefore = inventory.items().getStackInSlot(0).copy();
-        ItemStack itemOutputBefore = inventory.items().getStackInSlot(1).copy();
-        FluidStack fluidInputBefore = inputFluid.fluid().copy();
-        FluidStack fluidOutputBefore = outputFluid.fluid().copy();
-
-        ItemStack consumedItem = inventory.items().extractItem(
-                0,
-                recipe.adsorbent().count(),
-                false
-        );
-        FluidStack consumedFluid = inputFluid.tank().drain(
-                recipe.fluidInput().amount(),
-                IFluidHandler.FluidAction.EXECUTE
-        );
-        boolean committed = consumedItem.getCount() == recipe.adsorbent().count()
-                && recipe.fluidInput().matches(consumedFluid)
-                && itemPlan.commit(inventory.items());
-
-        int filled = outputFluid.tank().fill(
-                fluidResult,
-                IFluidHandler.FluidAction.EXECUTE
-        );
-        committed = committed && filled == fluidResult.getAmount();
-
-        if (!committed) {
-            inventory.items().setStackInSlot(0, itemInputBefore);
-            inventory.items().setStackInSlot(1, itemOutputBefore);
-            inputFluid.tank().setFluid(fluidInputBefore);
-            outputFluid.tank().setFluid(fluidOutputBefore);
-            return false;
-        }
-        return true;
+        return MachineBatchTransaction.builder()
+                .watchItems(inventory.items(), 0, 1)
+                .watchFluid(inputFluid.tank())
+                .watchFluid(outputFluid.tank())
+                .mutate(() -> inventory.items().extractItem(
+                        0, recipe.adsorbent().count(), false
+                ).getCount() == recipe.adsorbent().count())
+                .mutate(() -> recipe.fluidInput().matches(inputFluid.tank().drain(
+                        recipe.fluidInput().amount(), IFluidHandler.FluidAction.EXECUTE
+                )))
+                .mutate(() -> itemPlan.commit(inventory.items()))
+                .mutate(() -> outputFluid.tank().fill(
+                        fluidResult, IFluidHandler.FluidAction.EXECUTE
+                ) == fluidResult.getAmount())
+                .build()
+                .commit();
     }
 
     private void resetRecipe() {

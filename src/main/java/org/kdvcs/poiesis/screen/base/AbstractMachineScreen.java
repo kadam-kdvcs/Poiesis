@@ -18,6 +18,12 @@ import org.kdvcs.poiesis.screen.widget.IoConfigButton;
 public abstract class AbstractMachineScreen<M extends AbstractMachineMenu>
         extends AbstractContainerScreen<M> {
 
+    private static final ResourceLocation ENERGY_BAR_BASE =
+            containerTexture("widget/energy_bar_base");
+
+    private static final ResourceLocation BATTERY_SLOT =
+            containerTexture("widget/battery_slot");
+
     private static final int IO_BUTTON_SIZE = 10;
     private static final int IO_BUTTON_RIGHT_MARGIN = 6;
     private static final int IO_BUTTON_TOP_MARGIN = 6;
@@ -123,6 +129,48 @@ public abstract class AbstractMachineScreen<M extends AbstractMachineMenu>
             int mouseX,
             int mouseY
     ) {
+    }
+
+    /**
+     * Draws the energy bar frame as a screen widget.  The fill remains a
+     * machine-specific element, but the frame is deliberately kept out of
+     * every background texture so all machines share the same presentation.
+     */
+    protected final void drawEnergyBarFrame(
+            GuiGraphics graphics,
+            int energyX,
+            int energyBottomY
+    ) {
+        graphics.blit(
+                ENERGY_BAR_BASE,
+                leftPos + energyX - 1,
+                topPos + energyBottomY - 46,
+                0,
+                0,
+                14,
+                48,
+                14,
+                48
+        );
+    }
+
+    /** Draws the standalone battery slot overlay behind the slot item. */
+    protected final void drawBatterySlot(
+            GuiGraphics graphics,
+            int batteryX,
+            int batteryY
+    ) {
+        graphics.blit(
+                BATTERY_SLOT,
+                leftPos + batteryX - 1,
+                topPos + batteryY - 1,
+                0,
+                0,
+                18,
+                18,
+                18,
+                18
+        );
     }
 
     /**

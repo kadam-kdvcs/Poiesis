@@ -3,6 +3,8 @@ package org.kdvcs.poiesis.machine.io;
 public enum SideIoMode {
     NONE(false, false),
     INPUT(true, false),
+    INPUT_ANODE(true, false),
+    INPUT_CATHODE(true, false),
     OUTPUT(false, true),
     INPUT_OUTPUT(true, true);
 

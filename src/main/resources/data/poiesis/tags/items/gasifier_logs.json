@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
+    "poiesis:alder_log",
+    "poiesis:stripped_alder_log",
     "minecraft:oak_log",
     "minecraft:stripped_oak_log",
     "minecraft:spruce_log",

@@ -18,7 +18,8 @@ public record AlloyMaterial(String material, int count) {
         String value = material == null ? "" : material;
         boolean valid = switch (descriptorType(value)) {
             case "item", "tag" -> ResourceLocation.tryParse(descriptorValue(value)) != null;
-            case "items" -> Arrays.stream(descriptorValue(value).split(","))
+            case "items", "tags" -> Arrays.stream(descriptorValue(value).split(","))
+                    .map(String::trim)
                     .allMatch(id -> ResourceLocation.tryParse(id) != null);
             default -> !descriptorValue(value).isBlank()
                     && ResourceLocation.isValidPath(descriptorValue(value));
@@ -32,6 +33,15 @@ public record AlloyMaterial(String material, int count) {
     }
 
     public CountedIngredient asIngredient() {
+        if (material.startsWith("tags:")) {
+            List<Ingredient> alternatives = Arrays.stream(
+                            material.substring("tags:".length()).split(","))
+                    .map(String::trim)
+                    .map(ResourceLocation::tryParse)
+                    .map(id -> Ingredient.of(TagKey.create(Registries.ITEM, id)))
+                    .collect(Collectors.toList());
+            return new CountedIngredient(mergeAvailable(alternatives), count);
+        }
         if (material.startsWith("items:")) {
             List<Ingredient> alternatives = Arrays.stream(
                             material.substring("items:".length()).split(","))
@@ -44,7 +54,7 @@ public record AlloyMaterial(String material, int count) {
                         return Ingredient.of(BuiltInRegistries.ITEM.get(id));
                     })
                     .collect(Collectors.toList());
-            return new CountedIngredient(Ingredient.merge(alternatives), count);
+            return new CountedIngredient(mergeAvailable(alternatives), count);
         }
         if (material.startsWith("item:")) {
             ResourceLocation id = ResourceLocation.tryParse(material.substring("item:".length()));
@@ -73,7 +83,7 @@ public record AlloyMaterial(String material, int count) {
         TagKey<Item> ingots = tag("ingots/" + canonical);
         TagKey<Item> dusts = tag("dusts/" + canonical);
         return new CountedIngredient(
-                Ingredient.merge(List.of(
+                mergeAvailable(List.of(
                         Ingredient.of(ingots),
                         Ingredient.of(dusts)
                 )),
@@ -81,7 +91,28 @@ public record AlloyMaterial(String material, int count) {
         );
     }
 
+    /**
+     * Optional compatibility tags may not exist in the current mod set.
+     * Drop empty alternatives so JEI never receives a blank ingredient entry.
+     */
+    private static Ingredient mergeAvailable(List<Ingredient> alternatives) {
+        // Ingredient#isEmpty() can remain false for a tag-backed ingredient
+        // until its tag values are dissolved. Resolve the stacks here so an
+        // optional compatibility tag with no registered items is truly
+        // removed before it reaches the machine or JEI.
+        List<Ingredient> available = alternatives.stream()
+                .filter(ingredient -> ingredient.getItems().length > 0)
+                .toList();
+        if (available.isEmpty()) {
+            throw new IllegalArgumentException("Alloy material has no registered item alternatives");
+        }
+        return available.size() == 1
+                ? available.get(0)
+                : Ingredient.merge(available);
+    }
+
     private static String descriptorType(String value) {
+        if (value.startsWith("tags:")) return "tags";
         if (value.startsWith("items:")) return "items";
         if (value.startsWith("item:")) return "item";
         if (value.startsWith("tag:")) return "tag";

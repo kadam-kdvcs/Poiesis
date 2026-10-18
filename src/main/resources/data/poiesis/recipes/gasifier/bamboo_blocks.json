@@ -6,12 +6,12 @@
   },
   "result": {
     "item": "minecraft:charcoal",
-    "count": 1
+    "count": 3
   },
   "gas_output": {
     "fluid": "poiesis:producer_gas",
     "amount": 4000
   },
-  "duration": 450,
-  "minimum_temperature": 450
+  "duration": 550,
+  "minimum_temperature": 417
 }

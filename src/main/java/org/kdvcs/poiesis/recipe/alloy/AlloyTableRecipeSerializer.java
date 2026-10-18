@@ -40,9 +40,23 @@ public final class AlloyTableRecipeSerializer implements RecipeSerializer<AlloyT
                     ids.append(item.getAsString());
                 }
                 descriptor = ids.toString();
+            } else if (material.has("tags")) {
+                JsonArray tags = GsonHelper.getAsJsonArray(material, "tags");
+                if (tags.isEmpty()) {
+                    throw new IllegalArgumentException("Alloy material tags array cannot be empty");
+                }
+                StringBuilder ids = new StringBuilder("tags:");
+                for (JsonElement tag : tags) {
+                    if (!tag.isJsonPrimitive() || !tag.getAsJsonPrimitive().isString()) {
+                        throw new IllegalArgumentException("Alloy material tags must be tag id strings");
+                    }
+                    if (ids.length() > "tags:".length()) ids.append(',');
+                    ids.append(tag.getAsString());
+                }
+                descriptor = ids.toString();
             } else {
                 throw new IllegalArgumentException(
-                        "Alloy material must define material, item, tag, or items"
+                        "Alloy material must define material, item, tag, items, or tags"
                 );
             }
             materials.add(new AlloyMaterial(descriptor, count));

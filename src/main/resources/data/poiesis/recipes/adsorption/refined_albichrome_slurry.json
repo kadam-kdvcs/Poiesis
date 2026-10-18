@@ -1,0 +1,21 @@
+{
+  "type": "poiesis:adsorption",
+  "fluid_input": {
+    "fluid": "poiesis:chromium_bearing_waste",
+    "amount": 32000
+  },
+  "adsorbent": {
+    "item": "poiesis:activated_carbon",
+    "count": 1
+  },
+  "fluid_output": {
+    "fluid": "poiesis:refined_albichrome_slurry",
+    "amount": 24000
+  },
+  "result": {
+    "item": "minecraft:coal",
+    "count": 1
+  },
+  "duration": 360,
+  "energy_per_tick": 256
+}

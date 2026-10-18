@@ -1,7 +1,6 @@
 package org.kdvcs.poiesis.machine.alloy;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import org.kdvcs.poiesis.machine.MachineRuntime;
 import org.kdvcs.poiesis.machine.api.MachineContext;
@@ -19,8 +18,10 @@ public final class AlloyFactoryRuntime extends MachineRuntime {
     private final AlloyFactoryProcess process;
 
     public AlloyFactoryRuntime(MachineContext owner, MachineDefinition definition) {
-        super(owner, definition, (slot, stack) ->
-                isValidAlloyMaterial(owner, slot, stack));
+        // The input inventory is intentionally unrestricted. Recipe matching
+        // decides what can actually be processed, while players and item
+        // automation may use the 18 input slots as a general material buffer.
+        super(owner, definition);
 
         modules = addComponent(
                 ModuleComponent.class,
@@ -37,18 +38,6 @@ public final class AlloyFactoryRuntime extends MachineRuntime {
                 AlloyFactoryProcess.class,
                 new AlloyFactoryProcess(inventory(), modules, energy(), this::findRecipeById)
         );
-    }
-
-    private static boolean isValidAlloyMaterial(
-            MachineContext owner,
-            int slot,
-            ItemStack stack
-    ) {
-        if (slot < AlloyFactoryProcess.FIRST_INPUT_SLOT
-                || slot >= AlloyFactoryProcess.INPUT_SLOT_END) {
-            return false;
-        }
-        return AlloyRecipeIndex.acceptsInput(owner.level(), stack);
     }
 
     public Optional<AlloyDefinition> findRecipeById(ResourceLocation id) {

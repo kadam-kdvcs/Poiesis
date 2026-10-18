@@ -21,6 +21,7 @@ import org.kdvcs.poiesis.registry.ModBlockEntities;
 import org.kdvcs.poiesis.registry.ModSounds;
 import org.kdvcs.poiesis.registry.ModRecipeTypes;
 import org.kdvcs.poiesis.screen.BiomassGasifierMenu;
+import org.kdvcs.poiesis.screen.menu.MenuDataCodec;
 
 public final class BiomassGasifierBlockEntity
         extends AbstractMachineBlockEntity<BiomassGasifierRuntime> {
@@ -67,6 +68,8 @@ public final class BiomassGasifierBlockEntity
                                 : gas.fluid().getFluid()
                 );
                 case 7 -> process.state().ordinal();
+                case 8 -> MenuDataCodec.highWord(gas.amount());
+                case 9 -> MenuDataCodec.highWord(gas.capacity());
                 default -> 0;
             };
         }

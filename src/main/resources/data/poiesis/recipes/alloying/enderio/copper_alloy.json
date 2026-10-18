@@ -2,7 +2,7 @@
   "type": "poiesis:alloying",
   "conditions": [{ "type": "forge:mod_loaded", "modid": "enderio" }],
   "materials": [
-    { "tag": "forge:ingots/copper", "count": 1 },
+    { "tags": ["forge:ingots/copper", "forge:dusts/copper"], "count": 1 },
     { "tag": "forge:silicon", "count": 1 }
   ],
   "result": { "tag": "forge:ingots/copper_alloy", "count": 1 },

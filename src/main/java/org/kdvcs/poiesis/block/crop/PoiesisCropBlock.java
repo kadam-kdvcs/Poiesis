@@ -155,13 +155,11 @@ public final class PoiesisCropBlock extends CropBlock {
         int productCount = 1 + level.random.nextInt(fortuneLevel * 2 + 1);
         giveOrDrop(level, pos, player, stack(productId, productCount));
 
-        // The mature-crop loot table drops 1-3 seeds plus a uniform Fortune
-        // bonus. One seed remains planted here, so only the remainder is given.
-        int extraSeeds = level.random.nextInt(3)
+        // Match the mature-crop loot table: right-click harvesting also gives
+        // 1-3 seeds, with Fortune adding a uniform bonus.
+        int seedCount = 1 + level.random.nextInt(3)
                 + level.random.nextInt(fortuneLevel + 1);
-        if (extraSeeds > 0) {
-            giveOrDrop(level, pos, player, stack(seedId, extraSeeds));
-        }
+        giveOrDrop(level, pos, player, stack(seedId, seedCount));
         level.setBlock(pos, getStateForAge(0), 2);
         return InteractionResult.CONSUME;
     }

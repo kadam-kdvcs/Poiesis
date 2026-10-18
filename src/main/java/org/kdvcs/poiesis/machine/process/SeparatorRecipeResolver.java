@@ -11,6 +11,7 @@ import org.kdvcs.poiesis.recipe.MaterialPlan;
 import org.kdvcs.poiesis.recipe.SeparatorRecipe;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /** Strictly isolates the Separator's dry and wet recipe modes. */
@@ -21,6 +22,8 @@ public final class SeparatorRecipeResolver {
     private final ModuleComponent modules;
     private final RecipeType<SeparatorRecipe> recipeType;
     private final ResourceLocation wetCapability;
+    private final ResourceLocation rinsingCapability;
+    private final ResourceLocation electrostaticCapability;
 
     private long lastInventoryVersion = Long.MIN_VALUE;
     private long lastFluidVersion = Long.MIN_VALUE;
@@ -33,7 +36,9 @@ public final class SeparatorRecipeResolver {
             FluidComponent fluid,
             ModuleComponent modules,
             RecipeType<SeparatorRecipe> recipeType,
-            ResourceLocation wetCapability
+            ResourceLocation wetCapability,
+            ResourceLocation rinsingCapability,
+            ResourceLocation electrostaticCapability
     ) {
         this.owner = owner;
         this.inventory = inventory;
@@ -41,6 +46,8 @@ public final class SeparatorRecipeResolver {
         this.modules = modules;
         this.recipeType = recipeType;
         this.wetCapability = wetCapability;
+        this.rinsingCapability = rinsingCapability;
+        this.electrostaticCapability = electrostaticCapability;
     }
 
     public Optional<SeparatorRecipe> resolve(ModuleSnapshot snapshot) {
@@ -73,13 +80,20 @@ public final class SeparatorRecipeResolver {
                 .getRecipeManager()
                 .getAllRecipesFor(recipeType);
 
-        boolean wetMode =
-                snapshot.capabilities().contains(wetCapability);
+        ResourceLocation activeCapability =
+                snapshot.capabilities().contains(wetCapability)
+                        ? wetCapability
+                        : snapshot.capabilities().contains(rinsingCapability)
+                        ? rinsingCapability
+                        : snapshot.capabilities().contains(electrostaticCapability)
+                        ? electrostaticCapability
+                        : null;
 
         return recipes.stream()
-                .filter(recipe -> recipe.isWet() == wetMode)
+                .filter(recipe -> Objects.equals(
+                        recipe.requiredCapability(), activeCapability))
                 .filter(this::matchesItems)
-                .filter(recipe -> !wetMode
+                .filter(recipe -> recipe.fluid() == null
                         || recipe.fluid().matches(fluid.fluid()))
                 .findFirst();
     }

@@ -12,6 +12,8 @@ import net.minecraft.world.level.Level;
 import org.kdvcs.poiesis.registry.ModRecipeSerializers;
 import org.kdvcs.poiesis.registry.ModRecipeTypes;
 
+import java.util.List;
+
 public final class MechanicalProcessingRecipe
         implements MaterialProcessRecipe {
 
@@ -121,8 +123,8 @@ public final class MechanicalProcessingRecipe
     }
 
     @Override
-    public java.util.List<CountedIngredient> inputs() {
-        return java.util.List.of(input);
+    public List<CountedIngredient> inputs() {
+        return List.of(input);
     }
 
     public CountedIngredient input() {

@@ -2,7 +2,6 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'net.minecraftforge.gradle' version '6.0.46'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
 group = mod_group_id
@@ -75,6 +74,16 @@ repositories {
         }
     }
 
+    maven {
+        name = "FTB Maven"
+        url = "https://maven.ftb.dev/releases"
+    }
+
+    maven {
+        name = "Architectury Maven"
+        url = "https://maven.architectury.dev/"
+    }
+
     mavenCentral()
 }
 
@@ -97,13 +106,59 @@ dependencies {
     if (!project.hasProperty("without_enderio")) {
         runtimeOnly fg.deobf("curse.maven:ender-io-64578:7726916")
     }
+    compileOnly fg.deobf("curse.maven:immersive-engineering-231951:6206989")
+    if (!project.hasProperty("without_immersive_engineering")) {
+        runtimeOnly fg.deobf("curse.maven:immersive-engineering-231951:6206989")
+    }
     if (!project.hasProperty("without_thermal")) {
         runtimeOnly fg.deobf("curse.maven:cofh-core-69162:5374122")
         runtimeOnly fg.deobf("curse.maven:thermal-foundation-222880:5443583")
         runtimeOnly fg.deobf("curse.maven:thermal-expansion-69163:4970700")
     }
 
+    // Survival-test utility for the 1.20.1 Forge dev instance.
+    // This is the current FTB Ultimine release, not the old FTB Ultimate modpack.
+    if (!project.hasProperty("without_ftb_ultimine")) {
+        // The published POM references an unpublished EZ Crystals snapshot.
+        // Keep the actual runtime libraries explicit and omit that optional
+        // integration so the dev instance remains resolvable.
+        def ftbUltimine = fg.deobf("dev.ftb.mods:ftb-ultimine-forge:2001.1.8")
+        ftbUltimine.transitive = false
+        runtimeOnly ftbUltimine
+        runtimeOnly fg.deobf("dev.architectury:architectury-forge:9.2.14")
+        runtimeOnly fg.deobf("dev.ftb.mods:ftb-library-forge:2001.2.1")
+        runtimeOnly fg.deobf("dev.ftb.mods:ftb-ranks-forge:2001.1.3")
+    }
 
+    // Forge has no official Sodium build. Embeddium is the maintained Forge
+    // renderer in the Sodium family. Use -Prenderer=rubidium to test the
+    // older Rubidium fork instead; never load both at the same time.
+    def renderer = (project.findProperty("renderer") ?: "embeddium").toString()
+    if (renderer.equalsIgnoreCase("rubidium")) {
+        runtimeOnly fg.deobf("curse.maven:rubidium-574856:4952685")
+    } else if (!renderer.equalsIgnoreCase("none")) {
+        runtimeOnly fg.deobf("curse.maven:embeddium-908741:5681725")
+        if (!project.hasProperty("without_dynamic_lights")) {
+            // Sodium/Embeddium Dynamic Lights, Forge 1.20.1.
+            runtimeOnly fg.deobf("curse.maven:dynamiclights-reforged-551736:6044481")
+        }
+    }
+
+    testImplementation platform("org.junit:junit-bom:5.10.2")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+
+
+}
+
+// FTB Ultimine 2001.1.8 publishes an optional dependency on an unpublished
+// EZ Crystals snapshot. ForgeGradle creates an internal obfuscated
+// configuration, so apply the exclusion there as well as on the declaration.
+configurations.configureEach {
+    exclude group: "dev.ftb.mods", module: "ftb-ez-crystals"
+}
+
+tasks.named('test', Test).configure {
+    useJUnitPlatform()
 }
 
 tasks.named('processResources', ProcessResources).configure {

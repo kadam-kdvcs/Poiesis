@@ -9,7 +9,11 @@ import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.recipe.AdsorptionRecipe;
 import org.kdvcs.poiesis.recipe.CompounderRecipe;
 import org.kdvcs.poiesis.recipe.GasificationRecipe;
+import org.kdvcs.poiesis.recipe.GasGenerationRecipe;
+import org.kdvcs.poiesis.recipe.GreenhouseRecipe;
 import org.kdvcs.poiesis.recipe.MechanicalProcessingRecipe;
+import org.kdvcs.poiesis.recipe.MicrobialFuelCellRecipe;
+import org.kdvcs.poiesis.recipe.LeachingRecipe;
 import org.kdvcs.poiesis.recipe.ModuleFabricationRecipe;
 import org.kdvcs.poiesis.recipe.SeparatorRecipe;
 import org.kdvcs.poiesis.recipe.alloy.AlloyTableRecipe;
@@ -36,13 +40,32 @@ public final class ModRecipeTypes {
             RECIPE_TYPES.register("adsorption", () -> new RecipeType<>() {
                 @Override public String toString() { return Poiesis.MOD_ID + ":adsorption"; }
             });
+    public static final RegistryObject<RecipeType<LeachingRecipe>> LEACHING =
+            RECIPE_TYPES.register("leaching", () -> new RecipeType<>() {
+                @Override public String toString() { return Poiesis.MOD_ID + ":leaching"; }
+            });
     public static final RegistryObject<RecipeType<GasificationRecipe>> GASIFICATION =
             RECIPE_TYPES.register("gasification", () -> new RecipeType<>() {
                 @Override public String toString() { return Poiesis.MOD_ID + ":gasification"; }
             });
+    public static final RegistryObject<RecipeType<GasGenerationRecipe>> GAS_GENERATION =
+            RECIPE_TYPES.register("gas_generation", () -> new RecipeType<>() {
+                @Override public String toString() { return Poiesis.MOD_ID + ":gas_generation"; }
+            });
+    public static final RegistryObject<RecipeType<MicrobialFuelCellRecipe>>
+            MICROBIAL_FUEL_CELL =
+            RECIPE_TYPES.register("microbial_fuel_cell", () -> new RecipeType<>() {
+                @Override public String toString() {
+                    return Poiesis.MOD_ID + ":microbial_fuel_cell";
+                }
+            });
     public static final RegistryObject<RecipeType<AlloyTableRecipe>> ALLOYING =
             RECIPE_TYPES.register("alloying", () -> new RecipeType<>() {
                 @Override public String toString() { return Poiesis.MOD_ID + ":alloying"; }
+            });
+    public static final RegistryObject<RecipeType<GreenhouseRecipe>> GREENHOUSE =
+            RECIPE_TYPES.register("greenhouse", () -> new RecipeType<>() {
+                @Override public String toString() { return Poiesis.MOD_ID + ":greenhouse"; }
             });
     private ModRecipeTypes() { }
     public static void register(IEventBus eventBus) { RECIPE_TYPES.register(eventBus); }

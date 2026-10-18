@@ -178,6 +178,8 @@ public final class SideModeButton extends AbstractButton {
         return switch (mode) {
             case NONE -> 0xFF4A4A4A;
             case INPUT -> 0xFF3E7CB1;
+            case INPUT_ANODE -> 0xFF3E7CB1;
+            case INPUT_CATHODE -> 0xFF3E9B86;
             case OUTPUT -> 0xFFB16B3E;
             case INPUT_OUTPUT -> 0xFF6C4AA0;
         };

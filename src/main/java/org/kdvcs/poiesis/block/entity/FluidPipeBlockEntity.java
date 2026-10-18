@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -27,26 +26,12 @@ public final class FluidPipeBlockEntity extends BlockEntity {
 
     private final Map<Direction, PipeEndpointMode> endpointModes = new EnumMap<>(Direction.class);
     private final Map<Direction, LazyOptional<IFluidHandler>> gatewayCapabilities = new EnumMap<>(Direction.class);
-    private long lastConnectionRefresh = Long.MIN_VALUE;
 
     public FluidPipeBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FLUID_PIPE.get(), pos, state);
 
         for (Direction direction : Direction.values()) {
             endpointModes.put(direction, DEFAULT_ENDPOINT_MODE);
-        }
-    }
-
-    public static void serverTick(Level level, BlockPos pos, BlockState state, FluidPipeBlockEntity blockEntity) {
-        if (!(level instanceof ServerLevel serverLevel)) {
-            return;
-        }
-
-        FluidNetworkManager.get(serverLevel).tickPipe(serverLevel, pos);
-
-        if (level.getGameTime() - blockEntity.lastConnectionRefresh >= 20L) {
-            blockEntity.refreshConnections();
-            blockEntity.lastConnectionRefresh = level.getGameTime();
         }
     }
 
@@ -79,10 +64,11 @@ public final class FluidPipeBlockEntity extends BlockEntity {
     }
 
     public void neighborChanged() {
-        if (!(level instanceof ServerLevel)) {
+        if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
 
+        FluidNetworkManager.get(serverLevel).invalidateEndpoints(worldPosition);
         refreshConnections();
     }
 
@@ -111,6 +97,10 @@ public final class FluidPipeBlockEntity extends BlockEntity {
         invalidateGatewayCapability(direction);
         setChanged();
         refreshConnections();
+
+        if (level instanceof ServerLevel serverLevel) {
+            FluidNetworkManager.get(serverLevel).invalidateEndpoints(worldPosition);
+        }
 
         if (level != null) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);

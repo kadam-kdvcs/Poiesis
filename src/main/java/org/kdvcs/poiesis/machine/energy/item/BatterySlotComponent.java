@@ -17,15 +17,8 @@ public final class BatterySlotComponent
     private final EnergyComponent energy;
     private final ItemStackHandler items;
     private final Runnable changed;
+    private final boolean machineChargesItem;
 
-    /*
-     * 一次性能源物品被消耗后，
-     * 尚未完全注入机器的剩余能量。
-     *
-     * 这样即使一个物品价值 10000 FE，
-     * 机器每 tick 只能接收 400 FE，
-     * 也不会损失剩余的 9600 FE。
-     */
     private int pendingEnergy;
 
     public BatterySlotComponent(
@@ -33,9 +26,19 @@ public final class BatterySlotComponent
             EnergyComponent energy,
             Runnable changed
     ) {
+        this(spec, energy, changed, false);
+    }
+
+    public BatterySlotComponent(
+            BatterySpec spec,
+            EnergyComponent energy,
+            Runnable changed,
+            boolean machineChargesItem
+    ) {
         this.spec = spec;
         this.energy = energy;
         this.changed = changed;
+        this.machineChargesItem = machineChargesItem;
 
         this.items = new ItemStackHandler(1) {
             @Override
@@ -50,7 +53,9 @@ public final class BatterySlotComponent
                     int slot,
                     ItemStack stack
             ) {
-                return isValidBatteryItem(stack);
+                return machineChargesItem
+                        ? isChargeableBatteryItem(stack)
+                        : isValidBatteryItem(stack);
             }
 
             @Override
@@ -76,10 +81,11 @@ public final class BatterySlotComponent
     }
 
     public void tick() {
-        /*
-         * 如果之前已经消耗了一个固定能源物品，
-         * 优先把它剩余的能量送入机器。
-         */
+        if (machineChargesItem) {
+            tickMachineChargesItem();
+            return;
+        }
+
         if (pendingEnergy > 0) {
             transferPendingEnergy();
 
@@ -95,19 +101,52 @@ public final class BatterySlotComponent
             return;
         }
 
-        /*
-         * 优先识别真正拥有 Forge ENERGY Capability
-         * 的能源物品。
-         */
         if (tryTransferEnergyItem(stack)) {
             return;
         }
 
-        /*
-         * 没有 ENERGY Capability 时，
-         * 再查询固定能量物品注册表。
-         */
         tryConsumeFixedEnergyItem(stack);
+    }
+
+    private void tickMachineChargesItem() {
+        ItemStack stack = items.getStackInSlot(SLOT);
+        if (stack.isEmpty()) {
+            return;
+        }
+
+        var optional = stack.getCapability(ForgeCapabilities.ENERGY);
+        if (!optional.isPresent()) {
+            return;
+        }
+        var itemEnergy = optional.orElseThrow(IllegalStateException::new);
+        if (!itemEnergy.canReceive()) {
+            return;
+        }
+
+        int itemCapacity = itemEnergy.receiveEnergy(Integer.MAX_VALUE, true);
+        int request = Math.min(
+                Math.min(energy.stored(), spec.transferPerTick()),
+                Math.max(0, itemCapacity)
+        );
+        if (request <= 0) {
+            return;
+        }
+
+        int itemAccepts = itemEnergy.receiveEnergy(request, true);
+        int available = energy.extractInternalEnergy(itemAccepts, true);
+        int transfer = Math.min(itemAccepts, available);
+        if (transfer <= 0) {
+            return;
+        }
+
+        int extracted = energy.extractInternalEnergy(transfer, false);
+        int received = itemEnergy.receiveEnergy(extracted, false);
+        if (received < extracted) {
+            energy.produce(extracted - received, false);
+        }
+        if (received > 0 || extracted != received) {
+            changed.run();
+        }
     }
 
     private boolean tryTransferEnergyItem(
@@ -145,10 +184,6 @@ public final class BatterySlotComponent
                         spec.transferPerTick()
                 );
 
-        /*
-         * 先询问机器这一 tick 实际能接收多少。
-         * 这样仍然遵守 EnergySpec.maxReceive。
-         */
         int machineAccepts =
                 energy.view()
                         .receiveEnergy(
@@ -160,9 +195,6 @@ public final class BatterySlotComponent
             return true;
         }
 
-        /*
-         * 再询问电池能实际提供多少。
-         */
         int available =
                 itemEnergy.extractEnergy(
                         machineAccepts,
@@ -197,11 +229,6 @@ public final class BatterySlotComponent
                         );
 
         if (received > 0) {
-            /*
-             * ItemStack 内部能源 NBT 改变，
-             * 但这并不会触发 ItemStackHandler 的
-             * onContentsChanged，所以手动标脏。
-             */
             changed.run();
         }
 
@@ -219,9 +246,6 @@ public final class BatterySlotComponent
             return;
         }
 
-        /*
-         * 当前还有缓存能量时不继续吃下一个。
-         */
         if (pendingEnergy > 0) {
             return;
         }
@@ -232,9 +256,6 @@ public final class BatterySlotComponent
 
         changed.run();
 
-        /*
-         * 消耗后当前 tick 就可以开始送电。
-         */
         transferPendingEnergy();
     }
 
@@ -283,6 +304,16 @@ public final class BatterySlotComponent
         ).orElse(false);
     }
 
+    public static boolean isChargeableBatteryItem(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        return stack.getCapability(ForgeCapabilities.ENERGY)
+                .map(energy -> energy.canReceive()
+                        && energy.receiveEnergy(Integer.MAX_VALUE, true) > 0)
+                .orElse(false);
+    }
+
     @Override
     public void save(
             CompoundTag tag
@@ -313,6 +344,5 @@ public final class BatterySlotComponent
     }
 
     @Override
-    public void invalidate() {
-    }
+    public void invalidate() {}
 }

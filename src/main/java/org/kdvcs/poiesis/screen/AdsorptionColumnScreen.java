@@ -14,6 +14,7 @@ import org.kdvcs.poiesis.network.ModNetwork;
 import org.kdvcs.poiesis.network.packet.AdsorptionColumnFluidInteractPacket;
 import org.kdvcs.poiesis.screen.base.AbstractMachineScreen;
 import org.kdvcs.poiesis.screen.layout.AdsorptionColumnGuiLayout;
+import org.kdvcs.poiesis.screen.widget.FluidTankWidget;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -60,6 +61,8 @@ public final class AdsorptionColumnScreen extends AbstractMachineScreen<Adsorpti
             int mouseX,
             int mouseY
     ) {
+        drawEnergyBarFrame(graphics, ENERGY_X, ENERGY_BOTTOM_Y - 1);
+        drawBatterySlot(graphics, AdsorptionColumnGuiLayout.BATTERY_X, AdsorptionColumnGuiLayout.BATTERY_Y);
         renderProgress(graphics);
         renderEnergy(graphics);
         renderFluidSlot(
@@ -109,52 +112,12 @@ public final class AdsorptionColumnScreen extends AbstractMachineScreen<Adsorpti
             int x,
             int y
     ) {
-        renderFluid(graphics, stack, x, y);
-        graphics.blit(
-                FLUID_OVERLAY,
-                leftPos + x,
-                topPos + y,
-                0,
-                0,
+        FluidTankWidget.render(
+                graphics, leftPos, topPos, x, y,
                 AdsorptionColumnGuiLayout.FLUID_SIZE,
                 AdsorptionColumnGuiLayout.FLUID_SIZE,
-                AdsorptionColumnGuiLayout.FLUID_SIZE,
-                AdsorptionColumnGuiLayout.FLUID_SIZE
+                stack, FLUID_OVERLAY
         );
-    }
-
-    private void renderFluid(GuiGraphics graphics, FluidStack stack, int x, int y) {
-        if (stack.isEmpty()) {
-            return;
-        }
-        IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(stack.getFluid());
-        ResourceLocation still = extensions.getStillTexture(stack);
-        if (still == null) {
-            return;
-        }
-        TextureAtlasSprite sprite = Minecraft.getInstance()
-                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-                .apply(still);
-        int color = extensions.getTintColor(stack);
-        float alpha = ((color >> 24) & 0xFF) / 255.0F;
-        if (alpha <= 0.0F) {
-            alpha = 1.0F;
-        }
-        RenderSystem.setShaderColor(
-                ((color >> 16) & 0xFF) / 255.0F,
-                ((color >> 8) & 0xFF) / 255.0F,
-                (color & 0xFF) / 255.0F,
-                alpha
-        );
-        graphics.blit(
-                leftPos + x,
-                topPos + y,
-                0,
-                AdsorptionColumnGuiLayout.FLUID_SIZE,
-                AdsorptionColumnGuiLayout.FLUID_SIZE,
-                sprite
-        );
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     @Override
@@ -254,32 +217,17 @@ public final class AdsorptionColumnScreen extends AbstractMachineScreen<Adsorpti
             int mouseX,
             int mouseY
     ) {
-        Component name = fluid.isEmpty()
-                ? Component.translatable("gui.poiesis.separator.empty_fluid")
-                : fluid.getDisplayName();
-        graphics.renderComponentTooltip(
-                font,
-                List.of(
-                        name,
-                        Component.translatable(
-                                "gui.poiesis.separator.fluid_amount",
-                                format(amount),
-                                format(capacity)
-                        )
-                ),
-                mouseX,
-                mouseY
+        FluidTankWidget.renderTooltip(
+                graphics, font, fluid, amount, capacity, mouseX, mouseY
         );
     }
 
     private boolean isHoveringFluid(int x, int y, double mouseX, double mouseY) {
-        return isHovering(
-                x,
-                y,
+        return FluidTankWidget.isHovered(
+                leftPos, topPos, x, y,
                 AdsorptionColumnGuiLayout.FLUID_SIZE,
                 AdsorptionColumnGuiLayout.FLUID_SIZE,
-                mouseX,
-                mouseY
+                mouseX, mouseY
         );
     }
 

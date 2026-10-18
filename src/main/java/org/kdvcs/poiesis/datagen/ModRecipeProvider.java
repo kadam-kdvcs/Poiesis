@@ -2,15 +2,24 @@ package org.kdvcs.poiesis.datagen;
 
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.registry.ModBlocks;
@@ -31,6 +40,129 @@ public final class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+
+        ShapelessRecipeBuilder.shapeless(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        ModBlocks.ALDER_PLANKS.get(),
+                        4
+                )
+                .requires(Ingredient.of(ModTags.Items.ALDER_LOGS))
+                .group("planks")
+                .unlockedBy("has_alder_logs", has(ModTags.Items.ALDER_LOGS))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "alder_planks"));
+
+        ShapedRecipeBuilder.shaped(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        ModBlocks.ALDER_WOOD.get(),
+                        3
+                )
+                .pattern("##")
+                .pattern("##")
+                .define('#', ModBlocks.ALDER_LOG.get())
+                .group("bark")
+                .unlockedBy(getHasName(ModBlocks.ALDER_LOG.get()), has(ModBlocks.ALDER_LOG.get()))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "alder_wood"));
+
+        ShapedRecipeBuilder.shaped(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        ModBlocks.STRIPPED_ALDER_WOOD.get(),
+                        3
+                )
+                .pattern("##")
+                .pattern("##")
+                .define('#', ModBlocks.STRIPPED_ALDER_LOG.get())
+                .group("bark")
+                .unlockedBy(
+                        getHasName(ModBlocks.STRIPPED_ALDER_LOG.get()),
+                        has(ModBlocks.STRIPPED_ALDER_LOG.get())
+                )
+                .save(
+                        consumer,
+                        new ResourceLocation(Poiesis.MOD_ID, "stripped_alder_wood")
+                );
+
+        ShapedRecipeBuilder.shaped(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        ModBlocks.ALDER_STAIRS.get(),
+                        4
+                )
+                .pattern("#  ")
+                .pattern("## ")
+                .pattern("###")
+                .define('#', ModBlocks.ALDER_PLANKS.get())
+                .group("wooden_stairs")
+                .unlockedBy(getHasName(ModBlocks.ALDER_PLANKS.get()), has(ModBlocks.ALDER_PLANKS.get()))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "alder_stairs"));
+
+        ShapedRecipeBuilder.shaped(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        ModBlocks.ALDER_SLAB.get(),
+                        6
+                )
+                .pattern("###")
+                .define('#', ModBlocks.ALDER_PLANKS.get())
+                .group("wooden_slab")
+                .unlockedBy(getHasName(ModBlocks.ALDER_PLANKS.get()), has(ModBlocks.ALDER_PLANKS.get()))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "alder_slab"));
+
+        ShapedRecipeBuilder.shaped(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        ModBlocks.ALDER_FENCE.get(),
+                        3
+                )
+                .pattern("#S#")
+                .pattern("#S#")
+                .define('#', ModBlocks.ALDER_PLANKS.get())
+                .define('S', Items.STICK)
+                .group("wooden_fence")
+                .unlockedBy(getHasName(ModBlocks.ALDER_PLANKS.get()), has(ModBlocks.ALDER_PLANKS.get()))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "alder_fence"));
+
+        ShapedRecipeBuilder.shaped(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        ModBlocks.ALDER_FENCE_GATE.get()
+                )
+                .pattern("S#S")
+                .pattern("S#S")
+                .define('#', ModBlocks.ALDER_PLANKS.get())
+                .define('S', Items.STICK)
+                .group("wooden_fence_gate")
+                .unlockedBy(getHasName(ModBlocks.ALDER_PLANKS.get()), has(ModBlocks.ALDER_PLANKS.get()))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "alder_fence_gate"));
+
+        ShapelessRecipeBuilder.shapeless(
+                        RecipeCategory.REDSTONE,
+                        ModBlocks.ALDER_BUTTON.get()
+                )
+                .requires(ModBlocks.ALDER_PLANKS.get())
+                .group("wooden_button")
+                .unlockedBy(getHasName(ModBlocks.ALDER_PLANKS.get()), has(ModBlocks.ALDER_PLANKS.get()))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "alder_button"));
+
+        ShapedRecipeBuilder.shaped(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        ModBlocks.ALDER_DOOR.get(),
+                        3
+                )
+                .pattern("##")
+                .pattern("##")
+                .pattern("##")
+                .define('#', ModBlocks.ALDER_PLANKS.get())
+                .group("wooden_door")
+                .unlockedBy(getHasName(ModBlocks.ALDER_PLANKS.get()), has(ModBlocks.ALDER_PLANKS.get()))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "alder_door"));
+
+        ShapedRecipeBuilder.shaped(
+                        RecipeCategory.REDSTONE,
+                        ModBlocks.ALDER_TRAPDOOR.get(),
+                        2
+                )
+                .pattern("###")
+                .pattern("###")
+                .define('#', ModBlocks.ALDER_PLANKS.get())
+                .group("wooden_trapdoor")
+                .unlockedBy(getHasName(ModBlocks.ALDER_PLANKS.get()), has(ModBlocks.ALDER_PLANKS.get()))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "alder_trapdoor"));
 
         //  GENERATE A SMELTING RECIPE, p250789(Exp); p252144(Ticks), p251687(Group)
         oreSmelting(consumer, ALBICHROME_ORES, RecipeCategory.MISC, ModItems.ALBICHROME_INGOT.get(),
@@ -72,6 +204,67 @@ public final class ModRecipeProvider extends RecipeProvider {
                 )
                 .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "heat_resistant_steel_ingot_from_dust"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.GRAPHITE_BLOCK.get())
+                .pattern("##")
+                .pattern("##")
+                .define('#', ModTags.Items.DUSTS_GRAPHITE)
+                .unlockedBy(getHasName(ModItems.GRAPHITE_DUST.get()), has(ModItems.GRAPHITE_DUST.get()))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "graphite_block_from_dust"));
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.GRAPHITE_DUST.get(), 4)
+                .requires(ModBlocks.GRAPHITE_BLOCK.get())
+                .unlockedBy(getHasName(ModBlocks.GRAPHITE_BLOCK.get()), has(ModBlocks.GRAPHITE_BLOCK.get()))
+                .save(consumer, new ResourceLocation(Poiesis.MOD_ID, "graphite_dust_from_block"));
+
+        // Neutral concrete follows vanilla concrete powder behaviour: it is
+        // made from sand and gravel, hardens on contact with water, and can be
+        // dyed into any of the sixteen vanilla concrete colours.
+        ShapelessRecipeBuilder.shapeless(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        ModBlocks.PLAIN_CONCRETE_POWDER.get(),
+                        8
+                )
+                .requires(Items.SAND, 4)
+                .requires(Items.GRAVEL, 4)
+                .unlockedBy(getHasName(Items.SAND), has(Items.SAND))
+                .save(
+                        consumer,
+                        new ResourceLocation(Poiesis.MOD_ID, "plain_concrete_powder_from_sand_and_gravel")
+                );
+
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("white"),
+                Blocks.WHITE_CONCRETE_POWDER, Blocks.WHITE_CONCRETE, "white");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("orange"),
+                Blocks.ORANGE_CONCRETE_POWDER, Blocks.ORANGE_CONCRETE, "orange");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("magenta"),
+                Blocks.MAGENTA_CONCRETE_POWDER, Blocks.MAGENTA_CONCRETE, "magenta");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("light_blue"),
+                Blocks.LIGHT_BLUE_CONCRETE_POWDER, Blocks.LIGHT_BLUE_CONCRETE, "light_blue");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("yellow"),
+                Blocks.YELLOW_CONCRETE_POWDER, Blocks.YELLOW_CONCRETE, "yellow");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("lime"),
+                Blocks.LIME_CONCRETE_POWDER, Blocks.LIME_CONCRETE, "lime");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("pink"),
+                Blocks.PINK_CONCRETE_POWDER, Blocks.PINK_CONCRETE, "pink");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("gray"),
+                Blocks.GRAY_CONCRETE_POWDER, Blocks.GRAY_CONCRETE, "gray");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("light_gray"),
+                Blocks.LIGHT_GRAY_CONCRETE_POWDER, Blocks.LIGHT_GRAY_CONCRETE, "light_gray");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("cyan"),
+                Blocks.CYAN_CONCRETE_POWDER, Blocks.CYAN_CONCRETE, "cyan");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("purple"),
+                Blocks.PURPLE_CONCRETE_POWDER, Blocks.PURPLE_CONCRETE, "purple");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("blue"),
+                Blocks.BLUE_CONCRETE_POWDER, Blocks.BLUE_CONCRETE, "blue");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("brown"),
+                Blocks.BROWN_CONCRETE_POWDER, Blocks.BROWN_CONCRETE, "brown");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("green"),
+                Blocks.GREEN_CONCRETE_POWDER, Blocks.GREEN_CONCRETE, "green");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("red"),
+                Blocks.RED_CONCRETE_POWDER, Blocks.RED_CONCRETE, "red");
+        plainConcreteDyeRecipes(consumer, forgeDyeTag("black"),
+                Blocks.BLACK_CONCRETE_POWDER, Blocks.BLACK_CONCRETE, "black");
+
         ShapelessRecipeBuilder.shapeless(
                         RecipeCategory.MISC,
                         ModItems.HEAT_RESISTANT_STEEL_DUST.get(),
@@ -80,6 +273,15 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .requires(Ingredient.of(ModTags.Items.DUSTS_IRON), 3)
                 .requires(Ingredient.of(ModTags.Items.DUSTS_ALBICHROME))
                 .unlockedBy(getHasName(ModItems.IRON_DUST.get()), has(ModItems.IRON_DUST.get()))
+                .save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.HUMICS.get(),4)
+                .pattern("###")
+                .pattern("AAD")
+                .define('#', Items.WHEAT)
+                .define('A', Items.SUGAR_CANE)
+                .define('D', Blocks.DIRT)
+                .unlockedBy(getHasName(ModItems.HUMICS.get()), has(ModItems.HUMICS.get()))
                 .save(consumer);
 
         armorRecipe(
@@ -125,16 +327,43 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModBlocks.BIOMASS_GASIFIER.get()), has(ModBlocks.BIOMASS_GASIFIER.get()))
                 .save(consumer);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.HEAVY_MACHINE_CASING.get())
+                .pattern("ABA")
+                .pattern("CDC")
+                .pattern("AEA")
+                .define('A', ModItems.HEAT_RESISTANT_STEEL_INGOT.get())
+                .define('B', ModItems.FIBER_COMPOSITE.get())
+                .define('C', ModItems.MACHINE_UNIT.get())
+                .define('D', ModBlocks.ALBICHROME_CASING.get())
+                .define('E', ModItems.CONTROL_ELEMENT.get())
+                .unlockedBy(getHasName(ModBlocks.HEAVY_MACHINE_CASING.get()), has(ModBlocks.HEAVY_MACHINE_CASING.get()))
+                .save(consumer);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.ALLOY_FACTORY.get())
-                .pattern("HAH")
+                .pattern("QAQ")
+                .pattern("#B#")
+                .pattern("ZCZ")
+                .define('Q', Items.DIAMOND)
+                .define('A', Items.BLAST_FURNACE)
+                .define('#', ModBlocks.HEAT_RESISTANT_STEEL_BLOCK.get())
+                .define('B', ModBlocks.HEAVY_MACHINE_CASING.get())
+                .define('C', ModItems.CONTROL_ELEMENT.get())
+                .define('Z', ModItems.MACHINE_UNIT.get())
+                .unlockedBy(getHasName(ModBlocks.ALLOY_FACTORY.get()), has(ModBlocks.ALLOY_FACTORY.get()))
+                .save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.GREENHOUSE.get())
+                .pattern("GDG")
                 .pattern("#B#")
                 .pattern("HCH")
-                .define('H', ModItems.HEAT_RESISTANT_STEEL_INGOT.get())
-                .define('A', Items.BLAST_FURNACE)
-                .define('#', ModItems.MACHINE_UNIT.get())
-                .define('B', ModBlocks.ALBICHROME_CASING.get())
+                .define('G', Items.DIAMOND)
+                .define('D', Items.DAYLIGHT_DETECTOR)
+                .define('#', Tags.Items.GLASS)
+                .define('B', ModBlocks.HEAVY_MACHINE_CASING.get())
+                .define('H', ModItems.MACHINE_UNIT.get())
                 .define('C', ModItems.CONTROL_ELEMENT.get())
-                .unlockedBy(getHasName(ModBlocks.ALLOY_FACTORY.get()), has(ModBlocks.ALLOY_FACTORY.get()))
+                .unlockedBy(getHasName(ModBlocks.HEAVY_MACHINE_CASING.get()),
+                        has(ModBlocks.HEAVY_MACHINE_CASING.get()))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.ALBICHROME_CASING.get())
@@ -352,6 +581,59 @@ public final class ModRecipeProvider extends RecipeProvider {
                         )
                 );
 
+    }
+
+    private void plainConcreteDyeRecipes(
+            Consumer<FinishedRecipe> consumer,
+            TagKey<Item> dye,
+            ItemLike coloredPowder,
+            ItemLike coloredConcrete,
+            String color
+    ) {
+        ShapelessRecipeBuilder.shapeless(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        coloredPowder,
+                        8
+                )
+                .requires(ModBlocks.PLAIN_CONCRETE_POWDER.get(), 8)
+                .requires(dye)
+                .unlockedBy(
+                        getHasName(ModBlocks.PLAIN_CONCRETE_POWDER.get()),
+                        has(ModBlocks.PLAIN_CONCRETE_POWDER.get())
+                )
+                .save(
+                        consumer,
+                        new ResourceLocation(
+                                Poiesis.MOD_ID,
+                                "" + color + "_concrete_powder_from_plain"
+                        )
+                );
+
+        ShapelessRecipeBuilder.shapeless(
+                        RecipeCategory.BUILDING_BLOCKS,
+                        coloredConcrete,
+                        8
+                )
+                .requires(ModBlocks.PLAIN_CONCRETE.get(), 8)
+                .requires(dye)
+                .unlockedBy(
+                        getHasName(ModBlocks.PLAIN_CONCRETE.get()),
+                        has(ModBlocks.PLAIN_CONCRETE.get())
+                )
+                .save(
+                        consumer,
+                        new ResourceLocation(
+                                Poiesis.MOD_ID,
+                                "" + color + "_concrete_from_plain"
+                        )
+                );
+    }
+
+    private static TagKey<Item> forgeDyeTag(String color) {
+        return TagKey.create(
+                Registries.ITEM,
+                new ResourceLocation("forge", "dyes/" + color)
+        );
     }
 
     private void armorRecipe(

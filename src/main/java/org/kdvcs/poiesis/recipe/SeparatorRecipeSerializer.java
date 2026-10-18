@@ -7,6 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import org.kdvcs.poiesis.registry.ModItems;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +37,23 @@ public final class SeparatorRecipeSerializer
                 ? FluidIngredient.fromJson(GsonHelper.getAsJsonObject(json, "fluid"))
                 : null;
 
+        ResourceLocation requiredCapability = null;
+        if (json.has("required_capability")) {
+            String value = GsonHelper.getAsString(json, "required_capability", "");
+            if (!value.isBlank()) {
+                requiredCapability = new ResourceLocation(value);
+            }
+        } else if (fluid != null) {
+            // Existing fluid recipes remain wet-specialization recipes.
+            requiredCapability = ModItems.WET_SEPARATION;
+        }
+
         return new SeparatorRecipe(
                 id,
                 inputs,
                 outputs,
                 fluid,
+                requiredCapability,
                 GsonHelper.getAsInt(json, "duration", 200),
                 GsonHelper.getAsInt(json, "energy_per_tick", 20)
         );
@@ -64,11 +77,16 @@ public final class SeparatorRecipeSerializer
                 ? FluidIngredient.fromNetwork(buffer)
                 : null;
 
+        ResourceLocation requiredCapability = buffer.readBoolean()
+                ? buffer.readResourceLocation()
+                : null;
+
         return new SeparatorRecipe(
                 id,
                 inputs,
                 outputs,
                 fluid,
+                requiredCapability,
                 buffer.readVarInt(),
                 buffer.readVarInt()
         );
@@ -85,6 +103,11 @@ public final class SeparatorRecipeSerializer
         buffer.writeBoolean(recipe.fluid() != null);
         if (recipe.fluid() != null) {
             recipe.fluid().toNetwork(buffer);
+        }
+
+        buffer.writeBoolean(recipe.requiredCapability() != null);
+        if (recipe.requiredCapability() != null) {
+            buffer.writeResourceLocation(recipe.requiredCapability());
         }
 
         buffer.writeVarInt(recipe.duration());

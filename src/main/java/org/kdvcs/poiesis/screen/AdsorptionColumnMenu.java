@@ -23,7 +23,7 @@ import org.kdvcs.poiesis.screen.slot.BatterySlot;
 import org.kdvcs.poiesis.screen.slot.OutputSlot;
 
 public final class AdsorptionColumnMenu extends AbstractMachineMenu {
-    public static final int DATA_COUNT = 16;
+    public static final int DATA_COUNT = 20;
     private static final int INPUT_MENU_SLOT = 0;
     private static final int OUTPUT_MENU_SLOT = 1;
     private static final int BATTERY_MENU_SLOT = 2;
@@ -112,22 +112,18 @@ public final class AdsorptionColumnMenu extends AbstractMachineMenu {
     public int progress() { return dataValue(0); }
     public int maxProgress() { return dataValue(1); }
     public int energy() {
-        return joinUnsignedShorts(dataValue(2), dataValue(14));
+        return int32DataValue(2, 14);
     }
     public int energyCapacity() {
-        return joinUnsignedShorts(dataValue(3), dataValue(15));
+        return int32DataValue(3, 15);
     }
     public int activeEnergyPerTick() { return dataValue(4); }
     public int stateOrdinal() { return dataValue(6); }
-    public int inputFluidAmount() { return dataValue(7) & 0xFFFF; }
-    public int inputFluidCapacity() { return dataValue(8) & 0xFFFF; }
-    public int outputFluidAmount() { return dataValue(10) & 0xFFFF; }
-    public int outputFluidCapacity() { return dataValue(11) & 0xFFFF; }
+    public int inputFluidAmount() { return int32DataValue(7, 16); }
+    public int inputFluidCapacity() { return int32DataValue(8, 17); }
+    public int outputFluidAmount() { return int32DataValue(10, 18); }
+    public int outputFluidCapacity() { return int32DataValue(11, 19); }
     public int bedCount() { return dataValue(13); }
-
-    private static int joinUnsignedShorts(int low, int high) {
-        return (low & 0xFFFF) | ((high & 0xFFFF) << 16);
-    }
 
     public FluidStack inputFluidStack() {
         return fluidStack(dataValue(9), inputFluidAmount());

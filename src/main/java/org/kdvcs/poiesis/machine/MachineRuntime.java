@@ -2,9 +2,12 @@ package org.kdvcs.poiesis.machine;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import org.kdvcs.poiesis.machine.api.ComponentContainer;
+import org.kdvcs.poiesis.machine.api.MachineComponent;
 import org.kdvcs.poiesis.machine.api.MachineContext;
+import org.kdvcs.poiesis.machine.definition.BatterySpec;
 import org.kdvcs.poiesis.machine.definition.MachineDefinition;
 import org.kdvcs.poiesis.machine.energy.EnergyComponent;
 import org.kdvcs.poiesis.machine.energy.item.BatterySlotComponent;
@@ -56,7 +59,7 @@ public abstract class MachineRuntime {
     protected MachineRuntime(
             MachineContext owner,
             MachineDefinition definition,
-            BiPredicate<Integer, net.minecraft.world.item.ItemStack> inputValidator
+            BiPredicate<Integer, ItemStack> inputValidator
     ) {
         this.owner = owner;
         this.definition = definition;
@@ -84,7 +87,7 @@ public abstract class MachineRuntime {
         battery = definition.hasBatterySlot()
                 ? components.add(
                 BatterySlotComponent.class,
-                new BatterySlotComponent(definition.battery(), energy, changed)
+                createBatteryComponent(definition.battery(), energy, changed)
         )
                 : null;
 
@@ -122,8 +125,17 @@ public abstract class MachineRuntime {
         }
     }
 
+    /** Allows specialized machines to reverse the direction of battery transfer. */
+    protected BatterySlotComponent createBatteryComponent(
+            BatterySpec spec,
+            EnergyComponent energy,
+            Runnable changed
+    ) {
+        return new BatterySlotComponent(spec, energy, changed);
+    }
+
     /** Called by the constructor of a subclass after its own process is ready. */
-    protected final <T extends org.kdvcs.poiesis.machine.api.MachineComponent> T addComponent(
+    protected final <T extends MachineComponent> T addComponent(
             Class<T> type,
             T component
     ) {

@@ -2,10 +2,9 @@ package org.kdvcs.poiesis.block.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -17,14 +16,13 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kdvcs.poiesis.block.AdsorptionBedBlock;
 import org.kdvcs.poiesis.block.AdsorptionColumnControllerBlock;
-import org.kdvcs.poiesis.block.FluidDistributorBlock;
-import org.kdvcs.poiesis.block.entity.base.AbstractMachineBlockEntity;
+import org.kdvcs.poiesis.block.entity.base.AbstractMultiblockControllerBlockEntity;
 import org.kdvcs.poiesis.machine.AdsorptionColumnRuntime;
 import org.kdvcs.poiesis.machine.definition.BatterySpec;
 import org.kdvcs.poiesis.machine.definition.EnergySpec;
@@ -36,18 +34,24 @@ import org.kdvcs.poiesis.machine.io.RelativeSide;
 import org.kdvcs.poiesis.machine.io.SideIoMode;
 import org.kdvcs.poiesis.machine.io.fluid.RoutedFluidHandler;
 import org.kdvcs.poiesis.multiblock.AdsorptionColumnStructure;
+import org.kdvcs.poiesis.multiblock.AdsorptionColumnVisualController;
+import org.kdvcs.poiesis.multiblock.DirectionalCapabilityCache;
 import org.kdvcs.poiesis.registry.ModBlockEntities;
-import org.kdvcs.poiesis.registry.ModBlocks;
 import org.kdvcs.poiesis.registry.ModRecipeTypes;
+import org.kdvcs.poiesis.registry.ModSounds;
 import org.kdvcs.poiesis.recipe.AdsorptionRecipe;
 import org.kdvcs.poiesis.screen.AdsorptionColumnMenu;
+import org.kdvcs.poiesis.screen.menu.MenuDataCodec;
 
-import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Objects;
 
 
 public final class AdsorptionColumnControllerBlockEntity
-        extends AbstractMachineBlockEntity<AdsorptionColumnRuntime> {
+        extends AbstractMultiblockControllerBlockEntity<
+        AdsorptionColumnRuntime,
+        AdsorptionColumnStructure.ValidationResult
+        > {
     public static final int FLUID_CAPACITY = 48_000;
     public static final MachineDefinition DEFINITION = new MachineDefinition(
             "adsorption_column",
@@ -70,13 +74,13 @@ public final class AdsorptionColumnControllerBlockEntity
             new FluidSpec(FLUID_CAPACITY)
     );
 
-    private final EnumMap<Direction, LazyOptional<IFluidHandler>> cleanFluidCapabilities =
-            new EnumMap<>(Direction.class);
+    private final DirectionalCapabilityCache<IFluidHandler> cleanFluidCapabilities =
+            new DirectionalCapabilityCache<>();
 
-    private boolean formed;
-    private int bedCount;
-    @Nullable
-    private BlockPos distributorPos;
+    @Override
+    protected SoundEvent workingSound() {
+        return ModSounds.ADSORBER_WORKING.get();
+    }
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -98,9 +102,13 @@ public final class AdsorptionColumnControllerBlockEntity
                 case 10 -> output.amount();
                 case 11 -> output.capacity();
                 case 12 -> fluidId(output.fluid());
-                case 13 -> bedCount;
-                case 14 -> runtime().energy().stored() >>> 16;
-                case 15 -> runtime().energy().capacity() >>> 16;
+                case 13 -> bedCount();
+                case 14 -> MenuDataCodec.highWord(runtime().energy().stored());
+                case 15 -> MenuDataCodec.highWord(runtime().energy().capacity());
+                case 16 -> MenuDataCodec.highWord(input.amount());
+                case 17 -> MenuDataCodec.highWord(input.capacity());
+                case 18 -> MenuDataCodec.highWord(output.amount());
+                case 19 -> MenuDataCodec.highWord(output.capacity());
                 default -> 0;
             };
         }
@@ -131,23 +139,19 @@ public final class AdsorptionColumnControllerBlockEntity
                             controller::isFormed,
                             controller::bedCount
                     );
-                }
+                },
+                AdsorptionColumnStructure.DEFINITION
         );
-        createCapabilityViews();
     }
 
-    private static int fluidId(net.minecraftforge.fluids.FluidStack stack) {
+    private static int fluidId(FluidStack stack) {
         return BuiltInRegistries.FLUID.getId(
                 stack.isEmpty() ? Fluids.EMPTY : stack.getFluid()
         );
     }
 
-    public boolean isFormed() {
-        return formed;
-    }
-
     public int bedCount() {
-        return bedCount;
+        return structureState().bedCount();
     }
 
     public FluidTank dirtyInputTank() {
@@ -158,56 +162,39 @@ public final class AdsorptionColumnControllerBlockEntity
         return runtime().outputFluid().tank();
     }
 
-    public void validateStructure() {
-        if (level != null && !level.isClientSide) {
-            applyStructureState(AdsorptionColumnStructure.validate(level, worldPosition));
-        }
-    }
-
-    public void unform() {
-        applyStructureState(AdsorptionColumnStructure.ValidationResult.invalid());
-    }
-
     /** Clears the remaining part visuals without placing the controller back. */
     public void dismantleForControllerRemoval() {
         if (level == null || level.isClientSide) {
             return;
         }
 
-        int oldBedCount = bedCount;
-        BlockPos oldDistributorPos = distributorPos;
-        formed = false;
-        bedCount = 0;
-        distributorPos = null;
+        AdsorptionColumnStructure.ValidationResult previous = clearStructureStateForRemoval();
 
-        updatePartVisualStates(oldBedCount, oldDistributorPos, false, false);
-        refreshDistributor(oldDistributorPos);
+        updatePartVisualStates(previous.bedCount(), previous.distributorPos(), false, false);
+        refreshDistributor(previous.distributorPos());
     }
 
-    public void applyStructureState(AdsorptionColumnStructure.ValidationResult result) {
-        if (level == null || level.isClientSide) {
-            return;
-        }
-
-        boolean wasFormed = formed;
-        int oldBedCount = bedCount;
-        BlockPos oldDistributorPos = distributorPos;
+    @Override
+    protected void onStructureStateChanged(
+            AdsorptionColumnStructure.ValidationResult previous,
+            AdsorptionColumnStructure.ValidationResult result
+    ) {
+        boolean wasFormed = previous.formed();
+        int oldBedCount = previous.bedCount();
+        BlockPos oldDistributorPos = previous.distributorPos();
         BlockState controllerState = getBlockState();
         boolean working = result.formed()
                 && controllerState.getValue(AdsorptionColumnControllerBlock.WORKING);
         boolean changed = wasFormed != result.formed()
                 || oldBedCount != result.bedCount()
-                || !java.util.Objects.equals(oldDistributorPos, result.distributorPos());
+                || !Objects.equals(oldDistributorPos, result.distributorPos());
 
         if (changed) {
             updatePartVisualStates(oldBedCount, oldDistributorPos, false, false);
         }
 
-        formed = result.formed();
-        bedCount = result.bedCount();
-        distributorPos = result.distributorPos();
-        if (formed) {
-            int structureCapacity = bedCount * AdsorptionRecipe.FLUID_PER_BED;
+        if (result.formed()) {
+            int structureCapacity = result.bedCount() * AdsorptionRecipe.FLUID_PER_BED;
             dirtyInputTank().setCapacity(Math.max(
                     structureCapacity,
                     dirtyInputTank().getFluidAmount()
@@ -219,13 +206,13 @@ public final class AdsorptionColumnControllerBlockEntity
         }
 
         BlockState visualState = getBlockState()
-                .setValue(AdsorptionColumnControllerBlock.FORMED, formed)
+                .setValue(AdsorptionColumnControllerBlock.FORMED, result.formed())
                 .setValue(AdsorptionColumnControllerBlock.WORKING, working);
         if (!visualState.equals(getBlockState())) {
             level.setBlock(worldPosition, visualState, 2);
         }
-        if (formed) {
-            updatePartVisualStates(bedCount, distributorPos, true, working);
+        if (result.formed()) {
+            updatePartVisualStates(result.bedCount(), result.distributorPos(), true, working);
         }
 
         if (!changed) {
@@ -234,19 +221,23 @@ public final class AdsorptionColumnControllerBlockEntity
 
         refreshCapabilityViews();
         refreshDistributor(oldDistributorPos);
-        refreshDistributor(distributorPos);
+        refreshDistributor(result.distributorPos());
         setChanged();
         level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
 
-        if (!wasFormed && formed && level instanceof ServerLevel serverLevel) {
-            emitFormationParticles(serverLevel);
+        if (!wasFormed && result.formed() && level instanceof ServerLevel serverLevel) {
+            AdsorptionColumnVisualController.emitFormationParticles(
+                    serverLevel, worldPosition, result.bedCount()
+            );
         }
     }
 
     @Override
     protected void onWorkingStateChanged(boolean working) {
-        if (formed) {
-            updatePartVisualStates(bedCount, distributorPos, true, working);
+        if (isFormed()) {
+            updatePartVisualStates(
+                    bedCount(), structureState().distributorPos(), true, working
+            );
         }
     }
 
@@ -256,48 +247,15 @@ public final class AdsorptionColumnControllerBlockEntity
             boolean targetFormed,
             boolean targetWorking
     ) {
-        if (level == null) {
-            return;
-        }
-        for (int index = 1; index <= targetBedCount; index++) {
-            BlockPos bedPos = worldPosition.above(index);
-            BlockState bedState = level.getBlockState(bedPos);
-            if (!bedState.is(ModBlocks.ADSORPTION_BED.get())) {
-                continue;
-            }
-            BlockState next = bedState
-                    .setValue(AdsorptionBedBlock.FORMED, targetFormed)
-                    .setValue(AdsorptionBedBlock.BOTTOM, targetFormed && index == 1)
-                    .setValue(AdsorptionBedBlock.WORKING, targetFormed && targetWorking);
-            if (!next.equals(bedState)) {
-                level.setBlock(bedPos, next, 2);
-            }
-        }
-        if (targetDistributorPos != null) {
-            BlockState state = level.getBlockState(targetDistributorPos);
-            if (state.is(ModBlocks.FLUID_DISTRIBUTOR.get())) {
-                BlockState next = state.setValue(FluidDistributorBlock.FORMED, targetFormed);
-                if (!next.equals(state)) {
-                    level.setBlock(targetDistributorPos, next, 2);
-                }
-            }
-        }
-    }
-
-    private void emitFormationParticles(ServerLevel serverLevel) {
-        int height = bedCount + 2;
-        for (int offset = 0; offset < height; offset++) {
-            double x = worldPosition.getX() + 0.5D;
-            double y = worldPosition.getY() + offset + 0.5D;
-            double z = worldPosition.getZ() + 0.5D;
-            serverLevel.sendParticles(DustParticleOptions.REDSTONE, x - 0.58D, y, z,
-                    8, 0.08D, 0.46D, 0.46D, 0.0D);
-            serverLevel.sendParticles(DustParticleOptions.REDSTONE, x + 0.58D, y, z,
-                    8, 0.08D, 0.46D, 0.46D, 0.0D);
-            serverLevel.sendParticles(DustParticleOptions.REDSTONE, x, y, z - 0.58D,
-                    8, 0.46D, 0.46D, 0.08D, 0.0D);
-            serverLevel.sendParticles(DustParticleOptions.REDSTONE, x, y, z + 0.58D,
-                    8, 0.46D, 0.46D, 0.08D, 0.0D);
+        if (level != null) {
+            AdsorptionColumnVisualController.updateParts(
+                    level,
+                    worldPosition,
+                    targetBedCount,
+                    targetDistributorPos,
+                    targetFormed,
+                    targetWorking
+            );
         }
     }
 
@@ -309,7 +267,7 @@ public final class AdsorptionColumnControllerBlockEntity
     }
 
     public boolean ownsDistributor(BlockPos pos) {
-        return formed && pos.equals(distributorPos);
+        return isFormed() && pos.equals(structureState().distributorPos());
     }
 
     public SimpleContainer inventoryForDrops() {
@@ -328,47 +286,19 @@ public final class AdsorptionColumnControllerBlockEntity
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putBoolean("formed", formed);
-        tag.putInt("bed_count", bedCount);
-        if (distributorPos != null) {
-            tag.putLong("distributor_pos", distributorPos.asLong());
-        }
-    }
-
-    @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        formed = tag.getBoolean("formed");
-        bedCount = tag.getInt("bed_count");
-        distributorPos = tag.contains("distributor_pos")
-                ? BlockPos.of(tag.getLong("distributor_pos"))
-                : null;
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        if (level instanceof ServerLevel serverLevel) {
-            serverLevel.scheduleTick(worldPosition, getBlockState().getBlock(), 1);
-        }
-    }
-
-    @Override
     public @NotNull <T> LazyOptional<T> getCapability(
             @NotNull Capability<T> capability,
             @Nullable Direction side
     ) {
         if (capability == ForgeCapabilities.ITEM_HANDLER
                 || capability == ForgeCapabilities.ENERGY) {
-            if (!formed || side == null || !side.getAxis().isHorizontal()) {
+            if (!isFormed() || side == null || !side.getAxis().isHorizontal()) {
                 return LazyOptional.empty();
             }
             return super.getCapability(capability, side);
         }
         if (capability == ForgeCapabilities.FLUID_HANDLER) {
-            if (!formed || side == null || !side.getAxis().isHorizontal()) {
+            if (!isFormed() || side == null || !side.getAxis().isHorizontal()) {
                 return LazyOptional.empty();
             }
             RelativeSide relativeSide = RelativeSide.fromWorldSide(side, facing());
@@ -376,43 +306,36 @@ public final class AdsorptionColumnControllerBlockEntity
                     .allowsOutput(IoChannel.FLUID, relativeSide)) {
                 return LazyOptional.empty();
             }
-            return cleanFluidCapabilities.computeIfAbsent(
+            return cleanFluidCapabilities.get(
                     side,
-                    worldSide -> LazyOptional.of(() -> new RoutedFluidHandler(
+                    worldSide -> new RoutedFluidHandler(
                             cleanOutputTank(),
-                            () -> formed,
+                            this::isFormed,
                             () -> false,
                             () -> runtime().sideConfiguration().orElseThrow()
                                     .allowsOutput(
                                             IoChannel.FLUID,
                                             RelativeSide.fromWorldSide(worldSide, facing())
                                     )
-                    ))
+                    )
             ).cast();
         }
         return super.getCapability(capability, side);
     }
 
-    private void createCapabilityViews() {
-        cleanFluidCapabilities.clear();
-    }
-
     private void refreshCapabilityViews() {
-        cleanFluidCapabilities.values().forEach(LazyOptional::invalidate);
-        createCapabilityViews();
+        cleanFluidCapabilities.invalidate();
         runtime().refreshIoCapabilities();
     }
 
     @Override
     public void invalidateCaps() {
-        cleanFluidCapabilities.values().forEach(LazyOptional::invalidate);
-        cleanFluidCapabilities.clear();
+        cleanFluidCapabilities.invalidate();
         super.invalidateCaps();
     }
 
     @Override
     public void reviveCaps() {
         super.reviveCaps();
-        createCapabilityViews();
     }
 }

@@ -8,8 +8,13 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 public record CountedIngredient(
         Ingredient ingredient,
-        int count
+        int count,
+        boolean consumes
 ) {
+
+    public CountedIngredient(Ingredient ingredient, int count) {
+        this(ingredient, count, true);
+    }
 
     public CountedIngredient {
         if (ingredient == null || ingredient.isEmpty()) {
@@ -36,10 +41,16 @@ public record CountedIngredient(
                 "count",
                 1
         );
+        boolean consumes = GsonHelper.getAsBoolean(
+                json,
+                "consume",
+                true
+        );
 
         return new CountedIngredient(
                 ingredient,
-                count
+                count,
+                consumes
         );
     }
 
@@ -53,7 +64,8 @@ public record CountedIngredient(
 
         return new CountedIngredient(
                 ingredient,
-                count
+                count,
+                buffer.readBoolean()
         );
     }
 
@@ -62,6 +74,7 @@ public record CountedIngredient(
     ) {
         ingredient.toNetwork(buffer);
         buffer.writeVarInt(count);
+        buffer.writeBoolean(consumes);
     }
 
     public boolean test(ItemStack stack) {

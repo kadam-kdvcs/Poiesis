@@ -3,6 +3,7 @@ package org.kdvcs.poiesis.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -33,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kdvcs.poiesis.block.base.AbstractMachineBlock;
 import org.kdvcs.poiesis.block.entity.AdsorptionColumnControllerBlockEntity;
 import org.kdvcs.poiesis.multiblock.AdsorptionColumnStructure;
+import org.kdvcs.poiesis.registry.ModBlockEntities;
 
 public final class AdsorptionColumnControllerBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = AbstractMachineBlock.FACING;
@@ -94,11 +96,15 @@ public final class AdsorptionColumnControllerBlock extends BaseEntityBlock {
             BlockEntityType<T> type
     ) {
         if (level.isClientSide) {
-            return null;
+            return createTickerHelper(
+                    type,
+                    ModBlockEntities.ADSORPTION_COLUMN_CONTROLLER.get(),
+                    (tickerLevel, tickerPos, tickerState, controller) -> controller.tickClient()
+            );
         }
         return createTickerHelper(
                 type,
-                org.kdvcs.poiesis.registry.ModBlockEntities.ADSORPTION_COLUMN_CONTROLLER.get(),
+                ModBlockEntities.ADSORPTION_COLUMN_CONTROLLER.get(),
                 (tickerLevel, tickerPos, tickerState, controller) -> controller.tickServer()
         );
     }
@@ -154,7 +160,7 @@ public final class AdsorptionColumnControllerBlock extends BaseEntityBlock {
         }
 
         if (!level.isClientSide
-                && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+                && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos)
                 instanceof AdsorptionColumnControllerBlockEntity controller
                 && controller.isFormed()) {

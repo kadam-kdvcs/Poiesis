@@ -91,7 +91,11 @@ public final class ModuleFabricationProcess implements MachineComponent {
             return;
         }
 
-        if (!hasBase(active) || !hasMaterials(active) || !canAcceptResult(active.result())) {
+        if (!hasBase(active) || !hasMaterials(active)) {
+            cancelActive(workingSetter, changed);
+            return;
+        }
+        if (!canAcceptResult(active.result())) {
             workingSetter.accept(false);
             activeEnergyPerTick = 0;
             return;

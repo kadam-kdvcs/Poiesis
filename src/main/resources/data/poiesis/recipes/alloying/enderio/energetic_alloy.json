@@ -3,7 +3,7 @@
   "conditions": [{ "type": "forge:mod_loaded", "modid": "enderio" }],
   "materials": [
     { "tag": "forge:dusts/redstone", "count": 1 },
-    { "tag": "forge:ingots/gold", "count": 1 },
+    { "tags": ["forge:ingots/gold", "forge:dusts/gold"], "count": 1 },
     { "tag": "forge:dusts/glowstone", "count": 1 }
   ],
   "result": { "tag": "forge:ingots/energetic_alloy", "count": 1 },

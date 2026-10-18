@@ -32,6 +32,7 @@ public final class MachineCapabilityRouter {
 
     private final EnumMap<Direction, LazyOptional<IEnergyStorage>> energyCapabilities =
             new EnumMap<>(Direction.class);
+    private LazyOptional<IEnergyStorage> unsidedEnergyCapability = LazyOptional.empty();
 
     private final EnumMap<Direction, LazyOptional<IFluidHandler>> fluidCapabilities =
             new EnumMap<>(Direction.class);
@@ -100,7 +101,49 @@ public final class MachineCapabilityRouter {
         }
 
         if (worldSide == null) {
-            return energy.capability();
+            if (!unsidedEnergyCapability.isPresent()) {
+                var channel = definition.io().channel(IoChannel.ENERGY).orElseThrow();
+                boolean allowsAnyInput = channel.allowedModes().stream()
+                        .anyMatch(SideIoMode::allowsInput);
+                boolean allowsAnyOutput = channel.allowedModes().stream()
+                        .anyMatch(SideIoMode::allowsOutput);
+                unsidedEnergyCapability = LazyOptional.of(() -> new IEnergyStorage() {
+                    @Override
+                    public int receiveEnergy(int maxReceive, boolean simulate) {
+                        return allowsAnyInput
+                                ? energy.view().receiveEnergy(maxReceive, simulate)
+                                : 0;
+                    }
+
+                    @Override
+                    public int extractEnergy(int maxExtract, boolean simulate) {
+                        return allowsAnyOutput
+                                ? energy.view().extractEnergy(maxExtract, simulate)
+                                : 0;
+                    }
+
+                    @Override
+                    public int getEnergyStored() {
+                        return energy.stored();
+                    }
+
+                    @Override
+                    public int getMaxEnergyStored() {
+                        return energy.capacity();
+                    }
+
+                    @Override
+                    public boolean canExtract() {
+                        return allowsAnyOutput && energy.view().canExtract();
+                    }
+
+                    @Override
+                    public boolean canReceive() {
+                        return allowsAnyInput && energy.view().canReceive();
+                    }
+                });
+            }
+            return unsidedEnergyCapability;
         }
 
         RelativeSide relativeSide =
@@ -195,6 +238,8 @@ public final class MachineCapabilityRouter {
                 );
 
         energyCapabilities.clear();
+        unsidedEnergyCapability.invalidate();
+        unsidedEnergyCapability = LazyOptional.empty();
 
         fluidCapabilities.values().forEach(LazyOptional::invalidate);
         fluidCapabilities.clear();

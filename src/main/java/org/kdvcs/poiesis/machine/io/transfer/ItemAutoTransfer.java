@@ -7,6 +7,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import org.kdvcs.poiesis.machine.api.MachineContext;
 import org.kdvcs.poiesis.machine.definition.MachineDefinition;
 import org.kdvcs.poiesis.machine.inventory.InventoryComponent;
@@ -311,7 +312,7 @@ public final class ItemAutoTransfer {
             int sourceSlot,
             ItemStack remainder
     ) {
-        if (source instanceof net.minecraftforge.items.ItemStackHandler handler) {
+        if (source instanceof ItemStackHandler handler) {
             ItemStack current = handler.getStackInSlot(sourceSlot);
 
             if (current.isEmpty()) {
@@ -326,4 +327,5 @@ public final class ItemAutoTransfer {
             }
         }
     }
+
 }

@@ -24,6 +24,10 @@ public final class FluidNetwork {
     private long budgetTick = Long.MIN_VALUE;
     private int transferredThisTick;
     private int sinkRotation;
+    private List<FluidEndpoint> cachedSources = List.of();
+    private List<FluidEndpoint> cachedSinks = List.of();
+    private long endpointCacheExpires = Long.MIN_VALUE;
+    private boolean endpointsDirty = true;
 
     public FluidNetwork(long id, Set<BlockPos> pipes) {
         this.id = id;
@@ -40,6 +44,10 @@ public final class FluidNetwork {
 
     public int transferLimit() {
         return FluidPipeBlock.TRANSFER_RATE;
+    }
+
+    public void invalidateEndpoints() {
+        endpointsDirty = true;
     }
 
     public void tick(ServerLevel level) {
@@ -314,36 +322,19 @@ public final class FluidNetwork {
     }
 
     private void collectSources(ServerLevel level, List<FluidEndpoint> sources) {
-        Set<FluidEndpoint> sourceSet = new LinkedHashSet<>();
-
-        for (BlockPos pipePos : pipes) {
-            if (!(level.getBlockEntity(pipePos) instanceof FluidPipeBlockEntity pipe)) {
-                continue;
-            }
-
-            for (Direction direction : Direction.values()) {
-                if (pipe.endpointMode(direction) != PipeEndpointMode.EXTRACT) {
-                    continue;
-                }
-
-                BlockPos endpointPos = pipePos.relative(direction);
-
-                if (level.getBlockState(endpointPos).getBlock() instanceof FluidPipeBlock) {
-                    continue;
-                }
-
-                FluidEndpoint endpoint = new FluidEndpoint(endpointPos, direction.getOpposite());
-
-                if (resolveHandler(level, endpoint) != null) {
-                    sourceSet.add(endpoint);
-                }
-            }
-        }
-
-        sources.addAll(sourceSet);
+        refreshEndpointCache(level);
+        sources.addAll(cachedSources);
     }
 
     private void collectEndpoints(ServerLevel level, List<FluidEndpoint> sources, List<FluidEndpoint> sinks) {
+        refreshEndpointCache(level);
+        sources.addAll(cachedSources);
+        sinks.addAll(cachedSinks);
+    }
+
+    private void refreshEndpointCache(ServerLevel level) {
+        long gameTime = level.getGameTime();
+        if (!endpointsDirty && gameTime < endpointCacheExpires) return;
         Set<FluidEndpoint> sourceSet = new LinkedHashSet<>();
         Set<FluidEndpoint> sinkSet = new LinkedHashSet<>();
 
@@ -379,38 +370,15 @@ public final class FluidNetwork {
             }
         }
 
-        sources.addAll(sourceSet);
-        sinks.addAll(sinkSet);
+        cachedSources = List.copyOf(sourceSet);
+        cachedSinks = List.copyOf(sinkSet);
+        endpointCacheExpires = gameTime + 100L;
+        endpointsDirty = false;
     }
 
     private void collectSinks(ServerLevel level, List<FluidEndpoint> sinks) {
-        Set<FluidEndpoint> sinkSet = new LinkedHashSet<>();
-
-        for (BlockPos pipePos : pipes) {
-            if (!(level.getBlockEntity(pipePos) instanceof FluidPipeBlockEntity pipe)) {
-                continue;
-            }
-
-            for (Direction direction : Direction.values()) {
-                if (pipe.endpointMode(direction) != PipeEndpointMode.INSERT) {
-                    continue;
-                }
-
-                BlockPos endpointPos = pipePos.relative(direction);
-
-                if (level.getBlockState(endpointPos).getBlock() instanceof FluidPipeBlock) {
-                    continue;
-                }
-
-                FluidEndpoint endpoint = new FluidEndpoint(endpointPos, direction.getOpposite());
-
-                if (resolveHandler(level, endpoint) != null) {
-                    sinkSet.add(endpoint);
-                }
-            }
-        }
-
-        sinks.addAll(sinkSet);
+        refreshEndpointCache(level);
+        sinks.addAll(cachedSinks);
     }
 
     private IFluidHandler resolveHandler(ServerLevel level, FluidEndpoint endpoint) {

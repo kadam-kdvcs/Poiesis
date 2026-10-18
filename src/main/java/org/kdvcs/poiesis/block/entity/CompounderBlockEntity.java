@@ -22,6 +22,7 @@ import org.kdvcs.poiesis.registry.ModItems;
 import org.kdvcs.poiesis.registry.ModRecipeTypes;
 import org.kdvcs.poiesis.registry.ModSounds;
 import org.kdvcs.poiesis.screen.CompounderMenu;
+import org.kdvcs.poiesis.screen.menu.MenuDataCodec;
 
 public final class CompounderBlockEntity
         extends AbstractMachineBlockEntity<MaterialMachineRuntime<CompounderRecipe>> {
@@ -51,6 +52,8 @@ public final class CompounderBlockEntity
                         .snapshot()
                         .capabilities()
                         .contains(ModItems.HIGH_SHEAR) ? 1 : 0;
+                case 8 -> MenuDataCodec.highWord(runtime().energy().stored());
+                case 9 -> MenuDataCodec.highWord(runtime().energy().capacity());
                 default -> 0;
             };
         }

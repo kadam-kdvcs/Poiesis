@@ -17,6 +17,7 @@ import org.kdvcs.poiesis.machine.io.MachineIoSpec;
 import org.kdvcs.poiesis.registry.ModBlockEntities;
 import org.kdvcs.poiesis.registry.ModSounds;
 import org.kdvcs.poiesis.screen.AlloyFactoryMenu;
+import org.kdvcs.poiesis.screen.menu.MenuDataCodec;
 
 public final class AlloyFactoryBlockEntity extends AbstractMachineBlockEntity<AlloyFactoryRuntime> {
     public static final MachineDefinition DEFINITION = new MachineDefinition(
@@ -40,12 +41,14 @@ public final class AlloyFactoryBlockEntity extends AbstractMachineBlockEntity<Al
                 case 4 -> runtime().process().activeEnergyPerTick();
                 case 5 -> runtime().process().autoCrafting() ? 1 : 0;
                 case 6 -> runtime().process().isProcessing() ? 1 : 0;
+                case 7 -> MenuDataCodec.highWord(runtime().energy().stored());
+                case 8 -> MenuDataCodec.highWord(runtime().energy().capacity());
                 default -> 0;
             };
         }
 
         @Override public void set(int index, int value) { }
-        @Override public int getCount() { return 7; }
+        @Override public int getCount() { return 9; }
     };
 
     public AlloyFactoryBlockEntity(BlockPos pos, BlockState state) {

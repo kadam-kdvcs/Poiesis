@@ -23,6 +23,8 @@ import java.util.function.Supplier;
  */
 public final class MachineTooltip implements TooltipAppender {
 
+    private static final String MODULE_PREFIX = "模块：";
+
     private static final NumberFormat NUMBER_FORMAT =
             NumberFormat.getIntegerInstance(Locale.US);
 
@@ -74,10 +76,12 @@ public final class MachineTooltip implements TooltipAppender {
 
         for (Supplier<? extends ItemLike> module
                 : specializationModules) {
-            Component moduleName =
-                    module.get()
-                            .asItem()
-                            .getDescription();
+            Component moduleDescription =
+                    module.get().asItem().getDescription();
+            String moduleName = moduleDescription.getString();
+            if (moduleName.startsWith(MODULE_PREFIX)) {
+                moduleName = moduleName.substring(MODULE_PREFIX.length());
+            }
 
             tooltip.add(
                     Component.translatable(

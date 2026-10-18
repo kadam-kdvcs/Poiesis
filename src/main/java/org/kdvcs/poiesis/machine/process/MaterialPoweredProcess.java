@@ -195,11 +195,13 @@ public final class MaterialPoweredProcess<R extends MaterialProcessRecipe>
             return activeRecipe;
         }
 
-        if (activeRecipe != null && inputsStillBelongTo(activeRecipe)) {
+        if (activeRecipe != null
+                && inputsStillBelongTo(activeRecipe)
+                && findConsumptionPlan(activeRecipe) != null) {
             return activeRecipe;
         }
 
-        if (activeRecipe != null && !allInputSlotsEmpty()) {
+        if (activeRecipe != null) {
             clearActiveRecipe();
             progress = 0;
             maxProgress = 0;
@@ -238,15 +240,6 @@ public final class MaterialPoweredProcess<R extends MaterialProcessRecipe>
             }
         }
 
-        return true;
-    }
-
-    private boolean allInputSlotsEmpty() {
-        for (int slot = inputStart; slot < inputEndExclusive; slot++) {
-            if (!inventory.items().getStackInSlot(slot).isEmpty()) {
-                return false;
-            }
-        }
         return true;
     }
 

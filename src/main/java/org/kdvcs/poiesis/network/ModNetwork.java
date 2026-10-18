@@ -14,9 +14,14 @@ import org.kdvcs.poiesis.network.packet.ToggleModuleFabricatorAutoPacket;
 import org.kdvcs.poiesis.network.packet.SeparatorFluidInteractPacket;
 import org.kdvcs.poiesis.network.packet.AdsorptionColumnFluidInteractPacket;
 import org.kdvcs.poiesis.network.packet.BiomassGasifierFluidInteractPacket;
+import org.kdvcs.poiesis.network.packet.LeacherFluidInteractPacket;
 import org.kdvcs.poiesis.network.packet.SelectAlloyFactoryRecipePacket;
 import org.kdvcs.poiesis.network.packet.StartAlloyFactoryPacket;
 import org.kdvcs.poiesis.network.packet.ToggleAlloyFactoryAutoPacket;
+import org.kdvcs.poiesis.network.packet.GreenhouseFluidInteractPacket;
+import org.kdvcs.poiesis.network.packet.GasGeneratorFluidInteractPacket;
+import org.kdvcs.poiesis.network.packet.MicrobialFuelCellFluidInteractPacket;
+import org.kdvcs.poiesis.network.packet.MicrobialFuelCellSwapPacket;
 
 import java.util.Optional;
 
@@ -100,10 +105,38 @@ public final class ModNetwork {
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
         CHANNEL.registerMessage(
+                nextId++, LeacherFluidInteractPacket.class,
+                LeacherFluidInteractPacket::encode,
+                LeacherFluidInteractPacket::decode,
+                LeacherFluidInteractPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
                 nextId++, BiomassGasifierFluidInteractPacket.class,
                 BiomassGasifierFluidInteractPacket::encode,
                 BiomassGasifierFluidInteractPacket::decode,
                 BiomassGasifierFluidInteractPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, GasGeneratorFluidInteractPacket.class,
+                GasGeneratorFluidInteractPacket::encode,
+                GasGeneratorFluidInteractPacket::decode,
+                GasGeneratorFluidInteractPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, MicrobialFuelCellFluidInteractPacket.class,
+                MicrobialFuelCellFluidInteractPacket::encode,
+                MicrobialFuelCellFluidInteractPacket::decode,
+                MicrobialFuelCellFluidInteractPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, MicrobialFuelCellSwapPacket.class,
+                MicrobialFuelCellSwapPacket::encode,
+                MicrobialFuelCellSwapPacket::decode,
+                MicrobialFuelCellSwapPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
         CHANNEL.registerMessage(
@@ -125,6 +158,13 @@ public final class ModNetwork {
                 ToggleAlloyFactoryAutoPacket::encode,
                 ToggleAlloyFactoryAutoPacket::decode,
                 ToggleAlloyFactoryAutoPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        CHANNEL.registerMessage(
+                nextId++, GreenhouseFluidInteractPacket.class,
+                GreenhouseFluidInteractPacket::encode,
+                GreenhouseFluidInteractPacket::decode,
+                GreenhouseFluidInteractPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
     }

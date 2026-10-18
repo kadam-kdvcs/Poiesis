@@ -35,7 +35,7 @@ public final class CompounderMenu
     private static final int BATTERY_MENU_SLOT = 6;
 
     private static final int MACHINE_SLOT_COUNT = 7;
-    public static final int DATA_COUNT = 8;
+    public static final int DATA_COUNT = 10;
 
 
     private final CompounderBlockEntity blockEntity;
@@ -248,11 +248,11 @@ public final class CompounderMenu
     }
 
     public int energy() {
-        return dataValue(2);
+        return int32DataValue(2, 8);
     }
 
     public int capacity() {
-        return dataValue(3);
+        return int32DataValue(3, 9);
     }
 
     public int activeEnergyPerTick() {

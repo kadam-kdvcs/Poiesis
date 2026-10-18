@@ -34,6 +34,7 @@ public final class EnergyComponent implements MachineComponent {
         this.storage = new MachineEnergyStorage(
                 spec.capacity(),
                 spec.maxReceive(),
+                spec.maxExtract(),
                 changed
         );
 
@@ -54,7 +55,7 @@ public final class EnergyComponent implements MachineComponent {
                     int maxExtract,
                     boolean simulate
             ) {
-                return 0;
+                return storage.extractEnergy(maxExtract, simulate);
             }
 
             @Override
@@ -69,7 +70,7 @@ public final class EnergyComponent implements MachineComponent {
 
             @Override
             public boolean canExtract() {
-                return false;
+                return spec.maxExtract() > 0;
             }
 
             @Override
@@ -115,6 +116,16 @@ public final class EnergyComponent implements MachineComponent {
                 amount,
                 false
         ) == amount;
+    }
+
+    /** Extracts internal energy for machine-owned transfers such as battery charging. */
+    public int extractInternalEnergy(int amount, boolean simulate) {
+        return storage.extractInternal(amount, simulate);
+    }
+
+    /** Adds generated energy without treating it as external FE input. */
+    public int produce(int amount, boolean simulate) {
+        return storage.receiveInternal(amount, simulate);
     }
 
     @Override

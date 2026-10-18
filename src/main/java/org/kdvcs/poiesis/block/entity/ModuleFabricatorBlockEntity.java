@@ -17,6 +17,7 @@ import org.kdvcs.poiesis.machine.io.MachineIoSpec;
 import org.kdvcs.poiesis.registry.ModBlockEntities;
 import org.kdvcs.poiesis.registry.ModSounds;
 import org.kdvcs.poiesis.screen.ModuleFabricatorMenu;
+import org.kdvcs.poiesis.screen.menu.MenuDataCodec;
 
 public final class ModuleFabricatorBlockEntity
         extends AbstractMachineBlockEntity<ModuleFabricatorRuntime> {
@@ -42,6 +43,8 @@ public final class ModuleFabricatorBlockEntity
                 case 4 -> runtime().process().activeEnergyPerTick();
                 case 5 -> runtime().process().autoCrafting() ? 1 : 0;
                 case 6 -> runtime().process().isProcessing() ? 1 : 0;
+                case 7 -> MenuDataCodec.highWord(runtime().energy().stored());
+                case 8 -> MenuDataCodec.highWord(runtime().energy().capacity());
                 default -> 0;
             };
         }
@@ -52,7 +55,7 @@ public final class ModuleFabricatorBlockEntity
 
         @Override
         public int getCount() {
-            return 7;
+            return 9;
         }
     };
 

@@ -10,13 +10,17 @@ import org.kdvcs.poiesis.screen.SeparatorMenu;
 
 import java.util.function.Supplier;
 
-public record SeparatorFluidInteractPacket(BlockPos pos) {
+public record SeparatorFluidInteractPacket(BlockPos pos, boolean output) {
     public static void encode(SeparatorFluidInteractPacket packet, FriendlyByteBuf buffer) {
         buffer.writeBlockPos(packet.pos);
+        buffer.writeBoolean(packet.output);
     }
 
     public static SeparatorFluidInteractPacket decode(FriendlyByteBuf buffer) {
-        return new SeparatorFluidInteractPacket(buffer.readBlockPos());
+        return new SeparatorFluidInteractPacket(
+                buffer.readBlockPos(),
+                buffer.readBoolean()
+        );
     }
 
     public static void handle(
@@ -39,14 +43,19 @@ public record SeparatorFluidInteractPacket(BlockPos pos) {
 
             if (!(player.level().getBlockEntity(packet.pos)
                     instanceof SeparatorBlockEntity separator)
-                    || !separator.runtime().fluidSlotEnabled()) {
+                    || !separator.runtime().fluidSlotEnabled()
+                    || (packet.output && !separator.runtime().rinsingModuleInstalled())) {
                 return;
             }
 
             FluidContainerInteraction.interact(
                     player,
                     menu,
-                    separator.runtime().fluid().orElseThrow().tank()
+                    packet.output
+                            ? separator.outputTank()
+                            : separator.inputTank(),
+                    !packet.output,
+                    packet.output
             );
         });
         context.setPacketHandled(true);

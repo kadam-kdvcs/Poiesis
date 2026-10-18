@@ -56,23 +56,6 @@ public final class AlloyRecipeIndex {
                 .flatMap(recipe -> expandOutputVariants(recipe).stream().findFirst());
     }
 
-    /**
-     * Returns whether an item is used by at least one currently loaded alloy
-     * recipe. This keeps the alloy-factory input slots open to recipe-defined
-     * tags/items such as Ender IO silicon and ender pearls, instead of
-     * hard-coding only forge dust and ingot tags.
-     */
-    public static boolean acceptsInput(Level level, ItemStack stack) {
-        if (level == null || stack == null || stack.isEmpty()) {
-            return false;
-        }
-        return level.getRecipeManager()
-                .getAllRecipesFor(ModRecipeTypes.ALLOYING.get())
-                .stream()
-                .flatMap(recipe -> recipe.inputs().stream())
-                .anyMatch(input -> input.ingredient().test(stack));
-    }
-
     private static List<AlloyDefinition> expandOutputVariants(AlloyTableRecipe recipe) {
         TagKey<Item> outputTag = TagKey.create(Registries.ITEM, recipe.resultTag());
         return BuiltInRegistries.ITEM.getTag(outputTag)

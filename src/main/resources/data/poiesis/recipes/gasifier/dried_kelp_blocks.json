@@ -8,6 +8,6 @@
     "fluid": "poiesis:producer_gas",
     "amount": 6000
   },
-  "duration": 400,
-  "minimum_temperature": 450
+  "duration": 280,
+  "minimum_temperature": 276
 }

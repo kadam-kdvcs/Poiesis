@@ -24,6 +24,10 @@ public final class ModSounds {
             register("module_fabricator_working");
     public static final RegistryObject<SoundEvent> SEPARATOR_WORKING =
             register("separator_working");
+    public static final RegistryObject<SoundEvent> ADSORBER_WORKING =
+            register("adsorber_working");
+    public static final RegistryObject<SoundEvent> LEACHER_WORKING =
+            register("leacher_working");
 
     private ModSounds() {
     }

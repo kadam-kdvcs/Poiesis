@@ -66,7 +66,7 @@ public final class MachineIoSpec {
         public Builder item() {
             return channel(
                     IoChannel.ITEM,
-                    EnumSet.allOf(SideIoMode.class),
+                    generalModes(),
                     SideIoMode.NONE,
                     true,
                     true
@@ -76,7 +76,7 @@ public final class MachineIoSpec {
         public Builder fluid() {
             return channel(
                     IoChannel.FLUID,
-                    EnumSet.allOf(SideIoMode.class),
+                    generalModes(),
                     SideIoMode.NONE,
                     true,
                     true
@@ -88,6 +88,25 @@ public final class MachineIoSpec {
                     IoChannel.FLUID,
                     EnumSet.of(SideIoMode.NONE, SideIoMode.INPUT),
                     SideIoMode.INPUT,
+                    false,
+                    false
+            );
+        }
+
+        /**
+         * MFC fluid input with an explicit electrochemical chamber route.
+         * The default keeps legacy MFC sides on the anode input until the
+         * player assigns them to the cathode or disables them.
+         */
+        public Builder mfcFluidInput() {
+            return channel(
+                    IoChannel.FLUID,
+                    EnumSet.of(
+                            SideIoMode.NONE,
+                            SideIoMode.INPUT_ANODE,
+                            SideIoMode.INPUT_CATHODE
+                    ),
+                    SideIoMode.INPUT_ANODE,
                     false,
                     false
             );
@@ -126,7 +145,7 @@ public final class MachineIoSpec {
         public Builder energyBidirectional() {
             return channel(
                     IoChannel.ENERGY,
-                    EnumSet.allOf(SideIoMode.class),
+                    generalModes(),
                     SideIoMode.INPUT,
                     true,
                     true
@@ -172,6 +191,15 @@ public final class MachineIoSpec {
 
         public MachineIoSpec build() {
             return new MachineIoSpec(channels);
+        }
+
+        private static EnumSet<SideIoMode> generalModes() {
+            return EnumSet.of(
+                    SideIoMode.NONE,
+                    SideIoMode.INPUT,
+                    SideIoMode.OUTPUT,
+                    SideIoMode.INPUT_OUTPUT
+            );
         }
     }
 }

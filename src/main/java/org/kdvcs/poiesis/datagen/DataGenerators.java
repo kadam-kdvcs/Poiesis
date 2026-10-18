@@ -36,6 +36,10 @@ public final class DataGenerators {
         generator.addProvider(event.includeClient(), new ModItemModelProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(), new ModLanguageProvider(output, "en_us"));
         generator.addProvider(event.includeClient(), new ModLanguageProvider(output, "zh_cn"));
+        generator.addProvider(
+                event.includeServer(),
+                new ModBiomeTagProvider(output, lookupProvider, existingFileHelper)
+        );
 
         RegistrySetBuilder registryBuilder = new RegistrySetBuilder()
                 .add(Registries.CONFIGURED_FEATURE, ModConfiguredFeatures::bootstrap)

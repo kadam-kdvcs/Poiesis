@@ -17,6 +17,27 @@ public final class FluidAutoTransfer {
     private FluidAutoTransfer() {
     }
 
+    public static void pullInputs(
+            MachineContext owner,
+            IFluidHandler destination,
+            SideConfigurationComponent configuration,
+            int maximumPerSide
+    ) {
+        Level level = owner.level();
+        if (level == null || level.isClientSide || maximumPerSide <= 0) return;
+
+        for (RelativeSide side : RelativeSide.values()) {
+            if (!configuration.allowsInput(IoChannel.FLUID, side)) continue;
+            Direction worldSide = side.toWorldSide(owner.facing());
+            BlockEntity blockEntity = level.getBlockEntity(owner.pos().relative(worldSide));
+            if (blockEntity == null) continue;
+            blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, worldSide.getOpposite())
+                    .ifPresent(source -> FluidUtil.tryFluidTransfer(
+                            destination, source, maximumPerSide, true
+                    ));
+        }
+    }
+
     public static void pushOutputs(
             MachineContext owner,
             IFluidHandler source,

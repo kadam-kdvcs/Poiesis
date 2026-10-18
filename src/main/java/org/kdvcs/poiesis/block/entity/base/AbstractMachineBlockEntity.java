@@ -95,10 +95,15 @@ public abstract class AbstractMachineBlockEntity<R extends MachineRuntime>
     @Override
     public final void refreshIoCapabilities() {
         runtime.refreshIoCapabilities();
+        onIoCapabilitiesRefreshed();
 
         if (level != null && !level.isClientSide) {
             level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
         }
+    }
+
+    /** Hook for machines that expose capabilities outside the shared router. */
+    protected void onIoCapabilitiesRefreshed() {
     }
 
     @Override

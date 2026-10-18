@@ -154,7 +154,7 @@ public final class MaterialPlan {
         for (int ingredient = 0; ingredient < ingredientCount; ingredient++) {
             for (int slot = 0; slot < slotCount; slot++) {
                 int used = flow[ingredientStart + ingredient][slotStart + slot];
-                if (used > 0) {
+                if (used > 0 && requirements.get(ingredient).consumes()) {
                     consumePerSlot[slot] += used;
                 }
             }

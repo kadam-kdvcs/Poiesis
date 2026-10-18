@@ -2,8 +2,12 @@
   "values": [
     "poiesis:mechanical_processor",
     "poiesis:compounder",
+    "poiesis:leacher",
     "poiesis:biomass_gasifier",
+    "poiesis:gas_generator",
+    "poiesis:microbial_fuel_cell",
     "poiesis:alloy_factory",
+    "poiesis:greenhouse",
     "poiesis:adsorption_column_controller",
     "poiesis:adsorption_bed",
     "poiesis:fluid_distributor",
@@ -17,6 +21,8 @@
     "poiesis:basic_item_pipe",
     "poiesis:basic_fluid_pipe",
     "poiesis:silica_rock",
-    "poiesis:heavy_machine_casing"
+    "poiesis:heavy_machine_casing",
+    "poiesis:graphite_block",
+    "poiesis:plain_concrete"
   ]
 }

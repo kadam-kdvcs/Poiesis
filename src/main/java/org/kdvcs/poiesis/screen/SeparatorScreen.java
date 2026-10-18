@@ -14,6 +14,7 @@ import org.kdvcs.poiesis.network.ModNetwork;
 import org.kdvcs.poiesis.network.packet.SeparatorFluidInteractPacket;
 import org.kdvcs.poiesis.screen.base.AbstractMachineScreen;
 import org.kdvcs.poiesis.screen.layout.SeparatorGuiLayout;
+import org.kdvcs.poiesis.screen.widget.FluidTankWidget;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -37,6 +38,8 @@ public final class SeparatorScreen extends AbstractMachineScreen<SeparatorMenu> 
             containerTexture("widget/slot");
     private static final ResourceLocation LOCKED_FLUID_SLOT_FRAME =
             containerTexture("widget/locked_slot");
+    private static final ResourceLocation ELECTRODE_SLOT_FRAME =
+            containerTexture("widget/electrode_slot");
     private static final ResourceLocation FLUID_SLOT_OVERLAY =
             containerTexture("widget/fluid_slot");
 
@@ -64,6 +67,8 @@ public final class SeparatorScreen extends AbstractMachineScreen<SeparatorMenu> 
             int mouseX,
             int mouseY
     ) {
+        drawEnergyBarFrame(graphics, ENERGY_X, ENERGY_BOTTOM_Y - 1);
+        drawBatterySlot(graphics, SeparatorGuiLayout.BATTERY_X, SeparatorGuiLayout.BATTERY_Y);
         drawProgressIndicator(
                 graphics,
                 SeparatorGuiLayout.PROGRESS,
@@ -71,13 +76,21 @@ public final class SeparatorScreen extends AbstractMachineScreen<SeparatorMenu> 
                 menu.maxProgress()
         );
         renderEnergy(graphics);
-        renderFluidSlot(graphics);
+        renderSpecializationSlot(graphics);
+        if (menu.rinsingModuleInstalled()) {
+            renderWastewaterSlot(graphics);
+        }
     }
 
-    private void renderFluidSlot(GuiGraphics graphics) {
-        ResourceLocation frame = menu.fluidSlotEnabled()
-                ? FLUID_SLOT_FRAME
-                : LOCKED_FLUID_SLOT_FRAME;
+    private void renderSpecializationSlot(GuiGraphics graphics) {
+        ResourceLocation frame;
+        if (menu.fluidSlotEnabled()) {
+            frame = FLUID_SLOT_FRAME;
+        } else if (menu.electrodeSlotVisible()) {
+            frame = ELECTRODE_SLOT_FRAME;
+        } else {
+            frame = LOCKED_FLUID_SLOT_FRAME;
+        }
 
         graphics.blit(
                 frame,
@@ -129,47 +142,56 @@ public final class SeparatorScreen extends AbstractMachineScreen<SeparatorMenu> 
     }
 
     private void renderFluid(GuiGraphics graphics, FluidStack stack) {
-        if (stack.isEmpty()) {
-            return;
-        }
+        FluidTankWidget.render(
+                graphics, leftPos, topPos,
+                SeparatorGuiLayout.FLUID_X, SeparatorGuiLayout.FLUID_Y,
+                SeparatorGuiLayout.FLUID_SIZE, SeparatorGuiLayout.FLUID_SIZE,
+                stack, null
+        );
+    }
 
-        IClientFluidTypeExtensions extensions =
-                IClientFluidTypeExtensions.of(stack.getFluid());
-        ResourceLocation still = extensions.getStillTexture(stack);
-        if (still == null) {
-            return;
-        }
-
-        TextureAtlasSprite sprite = Minecraft.getInstance()
-                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-                .apply(still);
-
-        int color = extensions.getTintColor(stack);
-        float alpha = ((color >> 24) & 0xFF) / 255.0F;
-        if (alpha <= 0.0F) {
-            alpha = 1.0F;
-        }
-
-        RenderSystem.setShaderColor(
-                ((color >> 16) & 0xFF) / 255.0F,
-                ((color >> 8) & 0xFF) / 255.0F,
-                (color & 0xFF) / 255.0F,
-                alpha
+    private void renderWastewaterSlot(GuiGraphics graphics) {
+        int x = SeparatorGuiLayout.OUTPUT_X[3];
+        int y = SeparatorGuiLayout.OUTPUT_Y[3];
+        graphics.blit(
+                FLUID_SLOT_FRAME,
+                leftPos + x - FLUID_SLOT_FRAME_OFFSET,
+                topPos + y - FLUID_SLOT_FRAME_OFFSET,
+                0,
+                0,
+                FLUID_SLOT_FRAME_SIZE,
+                FLUID_SLOT_FRAME_SIZE,
+                FLUID_SLOT_FRAME_SIZE,
+                FLUID_SLOT_FRAME_SIZE
+        );
+        FluidTankWidget.render(
+                graphics,
+                leftPos,
+                topPos,
+                x,
+                y,
+                SeparatorGuiLayout.FLUID_SIZE,
+                SeparatorGuiLayout.FLUID_SIZE,
+                menu.wastewaterStack(),
+                null
         );
         graphics.blit(
-                leftPos + SeparatorGuiLayout.FLUID_X,
-                topPos + SeparatorGuiLayout.FLUID_Y,
+                FLUID_SLOT_OVERLAY,
+                leftPos + x,
+                topPos + y,
+                0,
                 0,
                 SeparatorGuiLayout.FLUID_SIZE,
                 SeparatorGuiLayout.FLUID_SIZE,
-                sprite
+                SeparatorGuiLayout.FLUID_SIZE,
+                SeparatorGuiLayout.FLUID_SIZE
         );
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if ((button == 0 || button == 1)
+        if (menu.fluidSlotEnabled()
+                && (button == 0 || button == 1)
                 && isHovering(
                 SeparatorGuiLayout.FLUID_X,
                 SeparatorGuiLayout.FLUID_Y,
@@ -178,9 +200,23 @@ public final class SeparatorScreen extends AbstractMachineScreen<SeparatorMenu> 
                 mouseX,
                 mouseY
         )) {
-            if (menu.fluidSlotEnabled()) {
-                ModNetwork.sendToServer(new SeparatorFluidInteractPacket(menu.machinePos()));
-            }
+            ModNetwork.sendToServer(new SeparatorFluidInteractPacket(menu.machinePos(), false));
+            return true;
+        }
+        if (menu.rinsingModuleInstalled()
+                && (button == 0 || button == 1)
+                && isHovering(
+                SeparatorGuiLayout.OUTPUT_X[3],
+                SeparatorGuiLayout.OUTPUT_Y[3],
+                SeparatorGuiLayout.FLUID_SIZE,
+                SeparatorGuiLayout.FLUID_SIZE,
+                mouseX,
+                mouseY
+        )) {
+            ModNetwork.sendToServer(new SeparatorFluidInteractPacket(
+                    menu.machinePos(),
+                    true
+            ));
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -190,7 +226,24 @@ public final class SeparatorScreen extends AbstractMachineScreen<SeparatorMenu> 
     protected void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
         super.renderTooltip(graphics, mouseX, mouseY);
 
-        if (isHovering(
+        if (menu.rinsingModuleInstalled()
+                && isHovering(
+                SeparatorGuiLayout.OUTPUT_X[3],
+                SeparatorGuiLayout.OUTPUT_Y[3],
+                SeparatorGuiLayout.FLUID_SIZE,
+                SeparatorGuiLayout.FLUID_SIZE,
+                mouseX,
+                mouseY
+        )) {
+            renderFluidTooltip(
+                    graphics,
+                    menu.wastewaterStack(),
+                    menu.wastewaterAmount(),
+                    menu.wastewaterCapacity(),
+                    mouseX,
+                    mouseY
+            );
+        } else if (isHovering(
                 SeparatorGuiLayout.FLUID_X,
                 SeparatorGuiLayout.FLUID_Y,
                 SeparatorGuiLayout.FLUID_SIZE,
@@ -198,16 +251,7 @@ public final class SeparatorScreen extends AbstractMachineScreen<SeparatorMenu> 
                 mouseX,
                 mouseY
         )) {
-            if (!menu.fluidSlotEnabled()) {
-                graphics.renderComponentTooltip(
-                        font,
-                        List.of(Component.translatable(
-                                "gui.poiesis.separator.needs_specialization_module"
-                        )),
-                        mouseX,
-                        mouseY
-                );
-            } else {
+            if (menu.fluidSlotEnabled()) {
                 FluidStack fluid = menu.fluidStack();
                 Component name = fluid.isEmpty()
                         ? Component.translatable("gui.poiesis.separator.empty_fluid")
@@ -222,6 +266,15 @@ public final class SeparatorScreen extends AbstractMachineScreen<SeparatorMenu> 
                                         format(menu.fluidCapacity())
                                 )
                         ),
+                        mouseX,
+                        mouseY
+                );
+            } else if (!menu.electrodeSlotVisible()) {
+                graphics.renderComponentTooltip(
+                        font,
+                        List.of(Component.translatable(
+                                "gui.poiesis.separator.needs_specialization_module"
+                        )),
                         mouseX,
                         mouseY
                 );
@@ -257,6 +310,25 @@ public final class SeparatorScreen extends AbstractMachineScreen<SeparatorMenu> 
 
     private static String format(int value) {
         return NUMBER_FORMAT.format(Math.max(0, value));
+    }
+
+    private void renderFluidTooltip(
+            GuiGraphics graphics,
+            FluidStack fluid,
+            int amount,
+            int capacity,
+            int mouseX,
+            int mouseY
+    ) {
+        FluidTankWidget.renderTooltip(
+                graphics,
+                font,
+                fluid,
+                amount,
+                capacity,
+                mouseX,
+                mouseY
+        );
     }
 
     @Override

@@ -6,6 +6,8 @@ import net.minecraftforge.items.SlotItemHandler;
 import org.kdvcs.poiesis.machine.module.MachineModuleItem;
 import org.kdvcs.poiesis.machine.module.ModuleKind;
 
+import java.util.function.Predicate;
+
 /**
  * GUI slot for machine modules.
  *
@@ -17,6 +19,7 @@ import org.kdvcs.poiesis.machine.module.ModuleKind;
 public final class ModuleSlot extends SlotItemHandler {
 
     private final ModuleKind acceptedKind;
+    private final Predicate<ItemStack> additionalValidator;
 
     public ModuleSlot(
             IItemHandler itemHandler,
@@ -25,15 +28,28 @@ public final class ModuleSlot extends SlotItemHandler {
             int y,
             ModuleKind acceptedKind
     ) {
+        this(itemHandler, slot, x, y, acceptedKind, stack -> true);
+    }
+
+    public ModuleSlot(
+            IItemHandler itemHandler,
+            int slot,
+            int x,
+            int y,
+            ModuleKind acceptedKind,
+            Predicate<ItemStack> additionalValidator
+    ) {
         super(itemHandler, slot, x, y);
         this.acceptedKind = acceptedKind;
+        this.additionalValidator = additionalValidator;
     }
 
     @Override
     public boolean mayPlace(ItemStack stack) {
         return super.mayPlace(stack)
                 && stack.getItem() instanceof MachineModuleItem module
-                && module.kind() == acceptedKind;
+                && module.kind() == acceptedKind
+                && additionalValidator.test(stack);
     }
 
     @Override

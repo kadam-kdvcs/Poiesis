@@ -5,7 +5,7 @@
 		"0": "poiesis:block/machine/biomass_gasifier_side_fan_idle",
 		"1": "poiesis:block/machine/biomass_gasifier_top",
 		"2": "poiesis:block/machine/biomass_gasifier_idle",
-		"3": "poiesis:block/machine/biomass_gasifier_side",
+		"3": "poiesis:block/machine/heat_resistant_steel_casing",
 		"particle": "poiesis:block/machine/biomass_gasifier_idle"
 	},
 	"elements": [

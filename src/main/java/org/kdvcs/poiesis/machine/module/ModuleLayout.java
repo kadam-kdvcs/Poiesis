@@ -88,6 +88,15 @@ public final class ModuleLayout {
         );
     }
 
+    /** Visible placeholder slots for generators before generator modules exist. */
+    public static ModuleLayout disabledGeneratorSlots() {
+        return of(
+                process(module -> false),
+                new SlotRule(Role.PERFORMANCE, module -> false),
+                new SlotRule(Role.PERFORMANCE, module -> false)
+        );
+    }
+
     public int size() {
         return slots.size();
     }

@@ -14,11 +14,13 @@ import net.minecraftforge.common.world.BiomeModifier;
 import net.minecraftforge.common.world.ForgeBiomeModifiers;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.kdvcs.poiesis.Poiesis;
+import org.kdvcs.poiesis.tag.ModTags;
 
 public final class ModBiomeModifiers {
 
     public static final ResourceKey<BiomeModifier> ADD_ALBICHROME_ORE = registerKey("add_albichrome_ore");
     public static final ResourceKey<BiomeModifier> ADD_SILICA_SURFACE = registerKey("add_silica_surface");
+    public static final ResourceKey<BiomeModifier> ADD_ALDER_TREES = registerKey("add_alder_trees");
 
     public static void bootstrap(BootstapContext<BiomeModifier> context) {
         HolderGetter<Biome> biomes = context.lookup(Registries.BIOME);
@@ -38,6 +40,18 @@ public final class ModBiomeModifiers {
                         biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
                         HolderSet.direct(placedFeatures.getOrThrow(ModPlacedFeatures.SILICA_SURFACE_PLACED_KEY)),
                         GenerationStep.Decoration.TOP_LAYER_MODIFICATION
+                )
+        );
+        context.register(
+                ADD_ALDER_TREES,
+                new ForgeBiomeModifiers.AddFeaturesBiomeModifier(
+                        biomes.getOrThrow(ModTags.Biomes.HAS_ALDER_TREES),
+                        HolderSet.direct(
+                                placedFeatures.getOrThrow(
+                                        ModPlacedFeatures.ALDER_TREE_PLACED_KEY
+                                )
+                        ),
+                        GenerationStep.Decoration.VEGETAL_DECORATION
                 )
         );
     }

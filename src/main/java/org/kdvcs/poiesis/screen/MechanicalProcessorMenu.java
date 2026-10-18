@@ -35,7 +35,7 @@ public final class MechanicalProcessorMenu
     private static final int BATTERY_MENU_SLOT = 5;
 
     private static final int MACHINE_SLOT_COUNT = 6;
-    private static final int DATA_COUNT = 8;
+    private static final int DATA_COUNT = 10;
 
     private static final int DATA_PROGRESS = 0;
     private static final int DATA_MAX_PROGRESS = 1;
@@ -45,9 +45,11 @@ public final class MechanicalProcessorMenu
     private static final int DATA_VOLTAGE = 5;
     private static final int DATA_STATE = 6;
     private static final int DATA_MODE = 7;
+    private static final int DATA_ENERGY_HIGH = 8;
+    private static final int DATA_CAPACITY_HIGH = 9;
 
-    private static final int BATTERY_SLOT_X = 8;
-    private static final int BATTERY_SLOT_Y = 59;
+        private static final int BATTERY_SLOT_X = 8;
+        private static final int BATTERY_SLOT_Y = 59;
 
     private final MechanicalProcessorBlockEntity blockEntity;
 
@@ -250,15 +252,11 @@ public final class MechanicalProcessorMenu
     }
 
     public int energy() {
-        return dataValue(
-                DATA_ENERGY
-        );
+        return int32DataValue(DATA_ENERGY, DATA_ENERGY_HIGH);
     }
 
     public int capacity() {
-        return dataValue(
-                DATA_CAPACITY
-        );
+        return int32DataValue(DATA_CAPACITY, DATA_CAPACITY_HIGH);
     }
 
     public int activeEnergyPerTick() {

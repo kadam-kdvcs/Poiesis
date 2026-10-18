@@ -2,6 +2,8 @@ package org.kdvcs.poiesis.registry;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -10,6 +12,9 @@ import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.item.HeatResistantSteelArmorMaterial;
 import org.kdvcs.poiesis.item.HeatResistantSteelArmorItem;
 import org.kdvcs.poiesis.item.PipeConfiguratorItem;
+import org.kdvcs.poiesis.item.FeedbackLetterItem;
+import org.kdvcs.poiesis.item.GrindingStoneItem;
+import org.kdvcs.poiesis.item.HumicsItem;
 import net.minecraft.world.item.ArmorItem;
 import org.kdvcs.poiesis.machine.module.MachineModuleItem;
 import org.kdvcs.poiesis.machine.module.MechanicalMode;
@@ -32,11 +37,53 @@ public final class ModItems {
     public static final ResourceLocation EXTRUSION = capability("extrusion");
     public static final ResourceLocation HIGH_SHEAR = capability("high_shear");
     public static final ResourceLocation WET_SEPARATION = capability("wet_separation");
+    public static final ResourceLocation RINSING = capability("rinsing");
+    public static final ResourceLocation ELECTROSTATIC_SEPARATION =
+            capability("electrostatic_separation");
 
     public static final RegistryObject<Item> SILICA_POWDER = registerItem("silica_powder");
+    public static final RegistryObject<Item> ACTIVATED_CARBON = registerItem("activated_carbon");
+    public static final RegistryObject<Item> HUMICS = registerItem("humics", HumicsItem::new);
     public static final RegistryObject<Item> IRON_DUST = registerItem("iron_dust");
     public static final RegistryObject<Item> HEAT_RESISTANT_STEEL_DUST = registerItem("heat_resistant_steel_dust");
     public static final RegistryObject<Item> HEAT_RESISTANT_STEEL_INGOT = registerItem("heat_resistant_steel_ingot");
+    public static final RegistryObject<Item> GRAPHITE_DUST = registerItem("graphite_dust");
+    public static final RegistryObject<Item> VITAMIN_POWDER = registerItem("vitamin_powder");
+    public static final RegistryObject<Item> GRAPHITE_ELECTRODE = registerItem(
+            "graphite_electrode",
+            properties -> new Item(properties.stacksTo(1))
+    );
+    public static final RegistryObject<Item> GRAPHITE_PLATE = registerItem("graphite_plate");
+    public static final RegistryObject<Item> REFINED_ALBICHROME_SLURRY_BUCKET = registerItem(
+            "refined_albichrome_slurry_bucket",
+            properties -> new BucketItem(ModFluids.REFINED_ALBICHROME_SLURRY, properties
+                    .craftRemainder(Items.BUCKET).stacksTo(1))
+    );
+    public static final RegistryObject<Item> CHROMIUM_BEARING_WASTE_BUCKET = registerItem(
+            "chromium_bearing_waste_bucket",
+            properties -> new BucketItem(ModFluids.CHROMIUM_BEARING_WASTE, properties
+                    .craftRemainder(Items.BUCKET).stacksTo(1))
+    );
+    public static final RegistryObject<Item> NUTRIENT_SOLUTION_BUCKET = registerItem(
+            "nutrient_solution_bucket",
+            properties -> new BucketItem(ModFluids.NUTRIENT_SOLUTION, properties
+                    .craftRemainder(Items.BUCKET).stacksTo(1))
+    );
+    public static final RegistryObject<Item> ORGANIC_NUTRIENT_SOLUTION_BUCKET = registerItem(
+            "organic_nutrient_solution_bucket",
+            properties -> new BucketItem(ModFluids.ORGANIC_NUTRIENT_SOLUTION, properties
+                    .craftRemainder(Items.BUCKET).stacksTo(1))
+    );
+    public static final RegistryObject<Item> VITAMIN_SOLUTION_BUCKET = registerItem(
+            "vitamin_solution_bucket",
+            properties -> new BucketItem(ModFluids.VITAMIN_SOLUTION, properties
+                    .craftRemainder(Items.BUCKET).stacksTo(1))
+    );
+    public static final RegistryObject<Item> WASTEWATER_BUCKET = registerItem(
+            "wastewater_bucket",
+            properties -> new BucketItem(ModFluids.WASTEWATER, properties
+                    .craftRemainder(Items.BUCKET).stacksTo(1))
+    );
     public static final RegistryObject<Item> HEAT_RESISTANT_STEEL_HELMET = registerItem(
             "heat_resistant_steel_helmet",
             properties -> new HeatResistantSteelArmorItem(
@@ -83,11 +130,17 @@ public final class ModItems {
     public static final RegistryObject<Item> ALBICHROME_DUST = registerItem("albichrome_dust");
     public static final RegistryObject<Item> MACHINE_UNIT = registerItem("machine_unit");
     public static final RegistryObject<Item> CONTROL_ELEMENT = registerItem("control_element");
+    public static final RegistryObject<Item> CONTROL_CORE = registerItem("control_core");
+    public static final RegistryObject<Item> MACHINE_INTERFACE = registerItem("machine_interface");
+    public static final RegistryObject<Item> POWER_COUPLER = registerItem("power_coupler");
+    public static final RegistryObject<Item> PROCESS_ASSEMBLY = registerItem("process_assembly");
+    public static final RegistryObject<Item> CALIBRATION_UNIT = registerItem("calibration_unit");
+    public static final RegistryObject<Item> FEEDBACK_LETTER = registerItem("feedback_letter", FeedbackLetterItem::new);
     public static final RegistryObject<PipeConfiguratorItem> PIPE_CONFIGURATOR = registerItem("pipe_configurator", PipeConfiguratorItem::new);
 
     public static final RegistryObject<Item> GRINDING_STONE = registerItem(
             "grinding_stone",
-            properties -> new Item(properties.durability(64))
+            properties -> new GrindingStoneItem(properties.durability(64))
     );
 
     public static final RegistryObject<MachineModuleItem> PRESSING_MODULE =
@@ -126,6 +179,26 @@ public final class ModItems {
                     ModuleKind.PROCESS,
                     MechanicalMode.NONE,
                     Set.of(WET_SEPARATION),
+                    0,
+                    1.0D
+            );
+
+    public static final RegistryObject<MachineModuleItem> RINSING_MODULE =
+            registerModule(
+                    "rinsing_module",
+                    ModuleKind.PROCESS,
+                    MechanicalMode.NONE,
+                    Set.of(RINSING),
+                    0,
+                    1.0D
+            );
+
+    public static final RegistryObject<MachineModuleItem> ELECTROSTATIC_SEPARATION_MODULE =
+            registerModule(
+                    "electrostatic_separation_module",
+                    ModuleKind.PROCESS,
+                    MechanicalMode.NONE,
+                    Set.of(ELECTROSTATIC_SEPARATION),
                     0,
                     1.0D
             );

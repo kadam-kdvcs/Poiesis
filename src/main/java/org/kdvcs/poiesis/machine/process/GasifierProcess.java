@@ -11,6 +11,7 @@ import org.kdvcs.poiesis.machine.api.MachineContext;
 import org.kdvcs.poiesis.machine.fluid.FluidComponent;
 import org.kdvcs.poiesis.machine.inventory.InventoryComponent;
 import org.kdvcs.poiesis.machine.inventory.ItemOutputTransaction;
+import org.kdvcs.poiesis.machine.transaction.MachineBatchTransaction;
 import org.kdvcs.poiesis.recipe.GasificationRecipe;
 
 import java.util.List;
@@ -172,30 +173,18 @@ public final class GasifierProcess implements MachineComponent {
             return false;
         }
 
-        ItemStack inputBefore = inventory.items().getStackInSlot(0).copy();
-        ItemStack outputBefore = inventory.items().getStackInSlot(1).copy();
-        FluidStack fluidBefore = gasTank.fluid().copy();
-
-        ItemStack consumed = inventory.items().extractItem(
-                0,
-                recipe.input().count(),
-                false
-        );
-        boolean committed = consumed.getCount() == recipe.input().count()
-                && itemPlan.commit(inventory.items());
-        int filled = gasTank.tank().fill(
-                gasOutput,
-                IFluidHandler.FluidAction.EXECUTE
-        );
-        committed = committed && filled == gasOutput.getAmount();
-
-        if (!committed) {
-            inventory.items().setStackInSlot(0, inputBefore);
-            inventory.items().setStackInSlot(1, outputBefore);
-            gasTank.tank().setFluid(fluidBefore);
-            return false;
-        }
-        return true;
+        return MachineBatchTransaction.builder()
+                .watchItems(inventory.items(), 0, 1)
+                .watchFluid(gasTank.tank())
+                .mutate(() -> inventory.items().extractItem(
+                        0, recipe.input().count(), false
+                ).getCount() == recipe.input().count())
+                .mutate(() -> itemPlan.commit(inventory.items()))
+                .mutate(() -> gasTank.tank().fill(
+                        gasOutput, IFluidHandler.FluidAction.EXECUTE
+                ) == gasOutput.getAmount())
+                .build()
+                .commit();
     }
 
     private void cool(Runnable changed) {

@@ -5,9 +5,14 @@ import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.recipe.CompounderRecipe;
 import org.kdvcs.poiesis.recipe.AdsorptionRecipe;
 import org.kdvcs.poiesis.recipe.GasificationRecipe;
+import org.kdvcs.poiesis.recipe.GasGenerationRecipe;
+import org.kdvcs.poiesis.recipe.LeachingRecipe;
+import org.kdvcs.poiesis.recipe.GreenhouseRecipe;
 import org.kdvcs.poiesis.recipe.MechanicalProcessingRecipe;
+import org.kdvcs.poiesis.recipe.MicrobialFuelCellRecipe;
 import org.kdvcs.poiesis.recipe.ModuleFabricationRecipe;
 import org.kdvcs.poiesis.recipe.SeparatorRecipe;
+import org.kdvcs.poiesis.recipe.alloy.AlloyTableRecipe;
 
 /**
  * JEI recipe types are deliberately separate from Minecraft RecipeType.
@@ -68,6 +73,20 @@ public final class PoiesisJeiRecipeTypes {
                     SeparatorRecipe.class
             );
 
+    public static final RecipeType<SeparatorRecipe> RINSING_SEPARATING =
+            RecipeType.create(
+                    Poiesis.MOD_ID,
+                    "separator/rinsing",
+                    SeparatorRecipe.class
+            );
+
+    public static final RecipeType<SeparatorRecipe> ELECTROSTATIC_SEPARATING =
+            RecipeType.create(
+                    Poiesis.MOD_ID,
+                    "separator/electrostatic",
+                    SeparatorRecipe.class
+            );
+
     public static final RecipeType<ModuleFabricationRecipe> SPECIALIZATION_MODULE_FABRICATION =
             RecipeType.create(
                     Poiesis.MOD_ID,
@@ -94,6 +113,41 @@ public final class PoiesisJeiRecipeTypes {
                     Poiesis.MOD_ID,
                     "gasifier",
                     GasificationRecipe.class
+            );
+
+    public static final RecipeType<GasGenerationRecipe> GAS_GENERATION =
+            RecipeType.create(
+                    Poiesis.MOD_ID,
+                    "gas_generator",
+                    GasGenerationRecipe.class
+            );
+
+    public static final RecipeType<MicrobialFuelCellRecipe> MICROBIAL_FUEL_CELL =
+            RecipeType.create(
+                    Poiesis.MOD_ID,
+                    "microbial_fuel_cell",
+                    MicrobialFuelCellRecipe.class
+            );
+
+    public static final RecipeType<LeachingRecipe> LEACHING =
+            RecipeType.create(
+                    Poiesis.MOD_ID,
+                    "leacher",
+                    LeachingRecipe.class
+            );
+
+    public static final RecipeType<GreenhouseRecipe> GREENHOUSE =
+            RecipeType.create(
+                    Poiesis.MOD_ID,
+                    "greenhouse",
+                    GreenhouseRecipe.class
+            );
+
+    public static final RecipeType<AlloyTableRecipe> ALLOYING =
+            RecipeType.create(
+                    Poiesis.MOD_ID,
+                    "alloy_factory",
+                    AlloyTableRecipe.class
             );
 
     private PoiesisJeiRecipeTypes() {

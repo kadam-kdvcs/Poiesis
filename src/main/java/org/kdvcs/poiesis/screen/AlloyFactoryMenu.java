@@ -28,8 +28,10 @@ import org.kdvcs.poiesis.screen.slot.OutputSlot;
 import java.util.List;
 
 public final class AlloyFactoryMenu extends AbstractMachineMenu {
-    private static final int FIRST_INPUT_MENU_SLOT = 0;
-    private static final int INPUT_MENU_SLOT_END = 18;
+    public static final int FIRST_INPUT_MENU_SLOT = 0;
+    public static final int INPUT_MENU_SLOT_COUNT = 18;
+    private static final int INPUT_MENU_SLOT_END =
+            FIRST_INPUT_MENU_SLOT + INPUT_MENU_SLOT_COUNT;
     private static final int FIRST_OUTPUT_MENU_SLOT = 18;
     private static final int OUTPUT_MENU_SLOT_END = 24;
     private static final int SPECIALIZATION_MENU_SLOT = 24;
@@ -37,7 +39,9 @@ public final class AlloyFactoryMenu extends AbstractMachineMenu {
     private static final int PERFORMANCE_MENU_SLOT_END = 27;
     private static final int BATTERY_MENU_SLOT = 27;
     private static final int MACHINE_SLOT_COUNT = 28;
-    private static final int DATA_COUNT = 7;
+    public static final int PLAYER_INVENTORY_MENU_SLOT = MACHINE_SLOT_COUNT;
+    public static final int PLAYER_INVENTORY_SLOT_COUNT = 36;
+    private static final int DATA_COUNT = 9;
 
     private final AlloyFactoryBlockEntity blockEntity;
     private ResourceLocation selectedRecipeId;
@@ -99,7 +103,7 @@ public final class AlloyFactoryMenu extends AbstractMachineMenu {
         addSlot(new ModuleSlot(modules, ModuleComponent.SECOND_PERFORMANCE_SLOT, 232, 55, ModuleKind.PERFORMANCE));
 
         blockEntity.runtime().battery().ifPresent(battery ->
-                addSlot(new BatterySlot(battery.items(), 0, 8, 82))
+            addSlot(new BatterySlot(battery.items(), 0, 8, 82))
         );
     }
 
@@ -162,8 +166,8 @@ public final class AlloyFactoryMenu extends AbstractMachineMenu {
     public void setSelectedRecipeId(ResourceLocation id) { selectedRecipeId = id; }
     public int progress() { return dataValue(0); }
     public int maxProgress() { return dataValue(1); }
-    public int energy() { return dataValue(2); }
-    public int capacity() { return dataValue(3); }
+    public int energy() { return int32DataValue(2, 7); }
+    public int capacity() { return int32DataValue(3, 8); }
     public int activeEnergyPerTick() { return dataValue(4); }
     public boolean autoCrafting() { return dataValue(5) != 0; }
     public boolean processing() { return dataValue(6) != 0; }

@@ -1,6 +1,7 @@
 package org.kdvcs.poiesis.compat.jei.category;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -8,9 +9,11 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 import org.kdvcs.poiesis.Poiesis;
@@ -21,12 +24,15 @@ import org.kdvcs.poiesis.recipe.ChanceOutput;
 import org.kdvcs.poiesis.recipe.CountedIngredient;
 import org.kdvcs.poiesis.recipe.FluidIngredient;
 import org.kdvcs.poiesis.recipe.SeparatorRecipe;
+import org.kdvcs.poiesis.registry.ModFluids;
 import org.kdvcs.poiesis.screen.layout.SeparatorGuiLayout;
+import org.kdvcs.poiesis.tag.ModTags;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
-/** Shared JEI layout for the Separator's dry and wet processing pages. */
+/** Shared JEI layout for all strictly isolated Separator process modes. */
 public final class SeparatorCategory
         implements IRecipeCategory<SeparatorRecipe> {
 
@@ -82,10 +88,17 @@ public final class SeparatorCategory
                     "textures/container/widget/fluid_slot.png"
             );
 
+    private static final ResourceLocation ELECTRODE_SLOT =
+            new ResourceLocation(
+                    Poiesis.MOD_ID,
+                    "textures/container/widget/electrode_slot.png"
+            );
+
     private final SeparatorJeiMode mode;
     private final IDrawable background;
     private final IDrawable icon;
     private final IDrawable fluidSlotOverlay;
+    private final IDrawable electrodeSlot;
     private final JeiProgressIndicator progressIndicator;
 
     public SeparatorCategory(
@@ -105,6 +118,18 @@ public final class SeparatorCategory
                 .setTextureSize(
                         SeparatorGuiLayout.FLUID_SIZE,
                         SeparatorGuiLayout.FLUID_SIZE
+                )
+                .build();
+        this.electrodeSlot = guiHelper.drawableBuilder(
+                        ELECTRODE_SLOT,
+                        0,
+                        0,
+                        SeparatorGuiLayout.SLOT_SIZE,
+                        SeparatorGuiLayout.SLOT_SIZE
+                )
+                .setTextureSize(
+                        SeparatorGuiLayout.SLOT_SIZE,
+                        SeparatorGuiLayout.SLOT_SIZE
                 )
                 .build();
         this.progressIndicator = JeiProgressIndicator.create(
@@ -141,17 +166,30 @@ public final class SeparatorCategory
             IFocusGroup focuses
     ) {
         addItemInputs(builder, recipe.inputs());
-        addOutputs(builder, recipe.outputs());
+        addOutputs(builder, recipe);
 
         if (mode.wet()) {
             addFluidInput(builder, recipe.fluid());
+        } else if (mode.electrostatic()) {
+            builder.addSlot(
+                            RecipeIngredientRole.CATALYST,
+                            FLUID_X,
+                            FLUID_Y
+                    )
+                    .setSlotName("electrode")
+                    .addItemStacks(Arrays.asList(
+                            Ingredient.of(ModTags.Items.ELECTRODES).getItems()
+                    ));
+        }
+
+        if (!mode.requiredModuleStack().isEmpty()) {
             builder.addSlot(
                             RecipeIngredientRole.CATALYST,
                             MODULE_X,
                             MODULE_Y
                     )
                     .setStandardSlotBackground()
-                    .setSlotName("wet_separation_module")
+                    .setSlotName("specialization_module")
                     .addItemStack(mode.requiredModuleStack());
         }
     }
@@ -161,17 +199,32 @@ public final class SeparatorCategory
             List<CountedIngredient> inputs
     ) {
         if (!inputs.isEmpty()) {
-            builder.addInputSlot(INPUT_X, FIRST_INPUT_Y)
+            var slot = builder.addInputSlot(INPUT_X, FIRST_INPUT_Y)
                     .setStandardSlotBackground()
                     .setSlotName("input_1")
                     .addItemStacks(JeiStacks.displayStacks(inputs.get(0)));
+            addNonConsumedTooltip(slot, inputs.get(0));
         }
 
         if (inputs.size() >= 2) {
-            builder.addInputSlot(INPUT_X, SECOND_INPUT_Y)
+            var slot = builder.addInputSlot(INPUT_X, SECOND_INPUT_Y)
                     .setStandardSlotBackground()
                     .setSlotName("input_2")
                     .addItemStacks(JeiStacks.displayStacks(inputs.get(1)));
+            addNonConsumedTooltip(slot, inputs.get(1));
+        }
+    }
+
+    private static void addNonConsumedTooltip(
+            IRecipeSlotBuilder slot,
+            CountedIngredient input
+    ) {
+        if (!input.consumes()) {
+            slot.addTooltipCallback((slotView, tooltip) ->
+                    tooltip.add(Component.translatable(
+                            "jei.poiesis.recipe.input_not_consumed"
+                    ).withStyle(ChatFormatting.RED))
+            );
         }
     }
 
@@ -198,24 +251,48 @@ public final class SeparatorCategory
         }
     }
 
-    private static void addOutputs(
+    private void addOutputs(
             IRecipeLayoutBuilder builder,
-            List<ChanceOutput> outputs
+            SeparatorRecipe recipe
     ) {
-        for (int index = 0; index < outputs.size(); index++) {
+        List<ChanceOutput> outputs = recipe.outputs();
+        int itemOutputCount = mode.rinsing()
+                ? Math.min(SeparatorRecipe.MAX_OUTPUTS - 1, outputs.size())
+                : outputs.size();
+        for (int index = 0; index < itemOutputCount; index++) {
             ChanceOutput output = outputs.get(index);
 
-            builder.addOutputSlot(OUTPUT_X[index], OUTPUT_Y[index])
+            var slot = builder.addOutputSlot(OUTPUT_X[index], OUTPUT_Y[index])
                     // JEI's emphasized output frame is wider than 18px and
                     // overlaps in the Separator's compact 2x2 output grid.
                     .setStandardSlotBackground()
                     .setSlotName("output_" + (index + 1))
-                    .addItemStack(output.stack())
-                    .addTooltipCallback((slotView, tooltip) ->
-                            tooltip.add(Component.translatable(
-                                    "jei.poiesis.recipe.output_chance",
-                                    formatChance(output.chance())
-                            ))
+                    .addItemStack(output.stack());
+
+            if (output.chance() < 1.0D) {
+                slot.addTooltipCallback((slotView, tooltip) ->
+                        tooltip.add(Component.translatable(
+                                "jei.poiesis.recipe.output_chance",
+                                formatChance(output.chance())
+                        ))
+                );
+            }
+        }
+
+        if (mode.rinsing() && recipe.fluid() != null) {
+            int lastOutputIndex = Math.max(0, itemOutputCount - 1);
+            builder.addOutputSlot(
+                            OUTPUT_X[lastOutputIndex]
+                                    + SeparatorGuiLayout.SLOT_SIZE,
+                            OUTPUT_Y[lastOutputIndex]
+                    )
+                    .setStandardSlotBackground()
+                    .setFluidRenderer(recipe.fluid().amount(), false, 16, 16)
+                    .setOverlay(fluidSlotOverlay, 0, 0)
+                    .setSlotName("wastewater_output")
+                    .addFluidStack(
+                            ModFluids.WASTEWATER.get(),
+                            recipe.fluid().amount()
                     );
         }
     }
@@ -235,6 +312,9 @@ public final class SeparatorCategory
             double mouseX,
             double mouseY
     ) {
+        if (mode.electrostatic()) {
+            electrodeSlot.draw(graphics, FLUID_X - 1, FLUID_Y - 1);
+        }
         progressIndicator.draw(graphics, ARROW_X, ARROW_Y);
     }
 

@@ -3,7 +3,6 @@ package org.kdvcs.poiesis.block.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -12,23 +11,9 @@ import org.kdvcs.poiesis.registry.ModBlockEntities;
 import org.kdvcs.poiesis.transport.network.energy.EnergyNetworkManager;
 
 public final class EnergyPipeBlockEntity extends BlockEntity {
-    private long lastConnectionRefresh = Long.MIN_VALUE;
 
     public EnergyPipeBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ENERGY_PIPE.get(), pos, state);
-    }
-
-    public static void serverTick(Level level, BlockPos pos, BlockState state, EnergyPipeBlockEntity blockEntity) {
-        if (!(level instanceof ServerLevel serverLevel)) {
-            return;
-        }
-
-        EnergyNetworkManager.get(serverLevel).tickPipe(serverLevel, pos);
-
-        if (level.getGameTime() - blockEntity.lastConnectionRefresh >= 20L) {
-            blockEntity.refreshConnections();
-            blockEntity.lastConnectionRefresh = level.getGameTime();
-        }
     }
 
     @Override
@@ -55,6 +40,7 @@ public final class EnergyPipeBlockEntity extends BlockEntity {
             return;
         }
 
+        EnergyNetworkManager.get(serverLevel).invalidateEndpoints(worldPosition);
         refreshConnections();
     }
 

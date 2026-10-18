@@ -2,7 +2,7 @@
   "type": "poiesis:alloying",
   "conditions": [{ "type": "forge:mod_loaded", "modid": "enderio" }],
   "materials": [
-    { "tag": "forge:ingots/iron", "count": 1 },
+    { "tags": ["forge:ingots/iron", "forge:dusts/iron"], "count": 1 },
     { "tag": "forge:dusts/coal", "count": 1 },
     { "tag": "forge:obsidian", "count": 1 }
   ],

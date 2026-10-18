@@ -5,18 +5,24 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.FluidStack;
 import org.kdvcs.poiesis.machine.api.MachineComponent;
 import org.kdvcs.poiesis.machine.energy.EnergyComponent;
 import org.kdvcs.poiesis.machine.energy.OperatingPowerPolicy;
 import org.kdvcs.poiesis.machine.energy.PowerAllocation;
 import org.kdvcs.poiesis.machine.fluid.FluidComponent;
+import org.kdvcs.poiesis.machine.fluid.OutputFluidComponent;
 import org.kdvcs.poiesis.machine.inventory.InventoryComponent;
 import org.kdvcs.poiesis.machine.inventory.ItemOutputTransaction;
 import org.kdvcs.poiesis.machine.module.ModuleComponent;
 import org.kdvcs.poiesis.machine.module.ModuleSnapshot;
+import org.kdvcs.poiesis.machine.separator.ElectrodeComponent;
+import org.kdvcs.poiesis.machine.transaction.MachineBatchTransaction;
 import org.kdvcs.poiesis.recipe.ChanceOutput;
 import org.kdvcs.poiesis.recipe.MaterialPlan;
 import org.kdvcs.poiesis.recipe.SeparatorRecipe;
+import org.kdvcs.poiesis.registry.ModItems;
+import org.kdvcs.poiesis.registry.ModFluids;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +32,8 @@ import java.util.function.Consumer;
 public final class SeparatorPoweredProcess implements MachineComponent {
     private final InventoryComponent inventory;
     private final FluidComponent fluid;
+    private final OutputFluidComponent outputFluid;
+    private final ElectrodeComponent electrode;
     private final ModuleComponent modules;
     private final EnergyComponent energy;
     private final OperatingPowerPolicy powerPolicy;
@@ -44,6 +52,8 @@ public final class SeparatorPoweredProcess implements MachineComponent {
     public SeparatorPoweredProcess(
             InventoryComponent inventory,
             FluidComponent fluid,
+            OutputFluidComponent outputFluid,
+            ElectrodeComponent electrode,
             ModuleComponent modules,
             EnergyComponent energy,
             OperatingPowerPolicy powerPolicy,
@@ -51,6 +61,8 @@ public final class SeparatorPoweredProcess implements MachineComponent {
     ) {
         this.inventory = inventory;
         this.fluid = fluid;
+        this.outputFluid = outputFluid;
+        this.electrode = electrode;
         this.modules = modules;
         this.energy = energy;
         this.powerPolicy = powerPolicy;
@@ -94,7 +106,9 @@ public final class SeparatorPoweredProcess implements MachineComponent {
                 recipe.inputs()
         );
 
-        if (consumptionPlan == null || !hasRequiredFluid(recipe)) {
+        if (consumptionPlan == null
+                || !hasRequiredFluid(recipe)
+                || !hasRequiredElectrode(recipe)) {
             pause(ProcessState.IDLE, workingSetter);
             return;
         }
@@ -138,6 +152,7 @@ public final class SeparatorPoweredProcess implements MachineComponent {
 
         if (consumptionPlan == null
                 || !hasRequiredFluid(recipe)
+                || !hasRequiredElectrode(recipe)
                 || !canAcceptPotentialOutputs(recipe)) {
             pause(ProcessState.BLOCKED_OUTPUT, workingSetter);
             return;
@@ -162,6 +177,9 @@ public final class SeparatorPoweredProcess implements MachineComponent {
     private SeparatorRecipe resolveActiveRecipe(ModuleSnapshot snapshot) {
         Optional<SeparatorRecipe> matched = recipeResolver.resolve(snapshot);
         if (matched.isEmpty()) {
+            clearActiveRecipe();
+            progress = 0;
+            maxProgress = 0;
             return null;
         }
 
@@ -183,6 +201,11 @@ public final class SeparatorPoweredProcess implements MachineComponent {
         return recipe.fluid() == null || recipe.fluid().matches(fluid.fluid());
     }
 
+    private boolean hasRequiredElectrode(SeparatorRecipe recipe) {
+        return !ModItems.ELECTROSTATIC_SEPARATION.equals(recipe.requiredCapability())
+                || electrode.hasElectrode();
+    }
+
     private boolean canAcceptPotentialOutputs(SeparatorRecipe recipe) {
         List<ItemStack> potentialOutputs = new ArrayList<>();
         for (ChanceOutput output : recipe.outputs()) {
@@ -191,7 +214,8 @@ public final class SeparatorPoweredProcess implements MachineComponent {
             }
         }
 
-        return planOutputs(potentialOutputs).isPresent();
+        return planOutputs(recipe, potentialOutputs).isPresent()
+                && canAcceptWastewater(recipe);
     }
 
     private Optional<ItemOutputTransaction.Plan> planRolledOutputs(
@@ -208,18 +232,45 @@ public final class SeparatorPoweredProcess implements MachineComponent {
                 rolledOutputs.add(output.stack());
             }
         }
-        return planOutputs(rolledOutputs);
+        return planOutputs(recipe, rolledOutputs);
     }
 
     private Optional<ItemOutputTransaction.Plan> planOutputs(
+            SeparatorRecipe recipe,
             Iterable<ItemStack> outputs
     ) {
+        int outputSlots = isRinsing(recipe)
+                ? SeparatorRecipe.MAX_OUTPUTS - 1
+                : SeparatorRecipe.MAX_OUTPUTS;
         return ItemOutputTransaction.plan(
                 inventory.items(),
                 SeparatorRecipe.MAX_INPUTS,
-                SeparatorRecipe.MAX_INPUTS + SeparatorRecipe.MAX_OUTPUTS,
+                SeparatorRecipe.MAX_INPUTS + outputSlots,
                 outputs
         );
+    }
+
+    private boolean isRinsing(SeparatorRecipe recipe) {
+        return ModItems.RINSING.equals(recipe.requiredCapability());
+    }
+
+    private FluidStack wastewater(SeparatorRecipe recipe) {
+        if (!isRinsing(recipe) || recipe.fluid() == null) {
+            return FluidStack.EMPTY;
+        }
+        return new FluidStack(
+                ModFluids.WASTEWATER.get(),
+                recipe.fluid().amount()
+        );
+    }
+
+    private boolean canAcceptWastewater(SeparatorRecipe recipe) {
+        FluidStack waste = wastewater(recipe);
+        return waste.isEmpty()
+                || outputFluid.tank().fill(
+                waste,
+                IFluidHandler.FluidAction.SIMULATE
+        ) == waste.getAmount();
     }
 
     private boolean commit(
@@ -227,30 +278,59 @@ public final class SeparatorPoweredProcess implements MachineComponent {
             int[] consumptionPlan,
             ItemOutputTransaction.Plan outputPlan
     ) {
-        if (!outputPlan.matches(inventory.items())) {
+        FluidStack waste = wastewater(recipe);
+        if (!outputPlan.matches(inventory.items())
+                || !canAcceptWastewater(recipe)) {
             return false;
         }
 
-        for (int slot = 0; slot < consumptionPlan.length; slot++) {
-            int amount = consumptionPlan[slot];
-            if (amount > 0) {
-                inventory.items().extractItem(slot, amount, false);
+        if (recipe.fluid() != null) {
+            FluidStack simulated = fluid.tank().drain(
+                    recipe.fluid().amount(),
+                    IFluidHandler.FluidAction.SIMULATE
+            );
+            if (!recipe.fluid().matches(simulated)) {
+                return false;
             }
         }
 
-        if (recipe.fluid() != null) {
-            fluid.tank().drain(
-                    recipe.fluid().amount(),
-                    IFluidHandler.FluidAction.EXECUTE
-            );
+        MachineBatchTransaction.Builder transaction = MachineBatchTransaction.builder()
+                .watchItemRange(
+                        inventory.items(),
+                        0,
+                        SeparatorRecipe.MAX_INPUTS + SeparatorRecipe.MAX_OUTPUTS
+                )
+                .watchFluid(fluid.tank())
+                .watchFluid(outputFluid.tank());
+
+        for (int slot = 0; slot < consumptionPlan.length; slot++) {
+            int amount = consumptionPlan[slot];
+            if (amount <= 0) {
+                continue;
+            }
+            final int inputSlot = slot;
+            transaction.mutate(() -> inventory.items()
+                    .extractItem(inputSlot, amount, false)
+                    .getCount() == amount);
         }
 
-        if (!outputPlan.commit(inventory.items())) {
-            throw new IllegalStateException(
-                    "Separator output inventory changed during an atomic commit"
-            );
+        if (recipe.fluid() != null) {
+            transaction.mutate(() -> recipe.fluid().matches(
+                    fluid.tank().drain(
+                            recipe.fluid().amount(),
+                            IFluidHandler.FluidAction.EXECUTE
+                    )
+            ));
         }
-        return true;
+
+        transaction.mutate(() -> outputPlan.commit(inventory.items()));
+        if (!waste.isEmpty()) {
+            transaction.mutate(() -> outputFluid.tank().fill(
+                    waste,
+                    IFluidHandler.FluidAction.EXECUTE
+            ) == waste.getAmount());
+        }
+        return transaction.build().commit();
     }
 
     private void clearActiveRecipe() {

@@ -2,7 +2,6 @@ package org.kdvcs.poiesis.screen;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,18 +12,16 @@ import org.kdvcs.poiesis.network.packet.StartAlloyFactoryPacket;
 import org.kdvcs.poiesis.network.packet.ToggleAlloyFactoryAutoPacket;
 import org.kdvcs.poiesis.recipe.CountedIngredient;
 import org.kdvcs.poiesis.recipe.alloy.AlloyDefinition;
-import org.kdvcs.poiesis.recipe.alloy.AlloyRecipeIndex;
 import org.kdvcs.poiesis.screen.base.AbstractMachineScreen;
+import org.kdvcs.poiesis.screen.model.AlloyFactoryListModel;
+import org.kdvcs.poiesis.screen.model.AlloyFactoryListModel.AlloyFamily;
 import org.kdvcs.poiesis.screen.widget.AutoCraftToggleButton;
 import org.kdvcs.poiesis.screen.widget.SmeltingButton;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public final class AlloyFactoryScreen extends AbstractMachineScreen<AlloyFactoryMenu> {
     private static final int GUI_WIDTH = 256;
@@ -61,20 +58,15 @@ public final class AlloyFactoryScreen extends AbstractMachineScreen<AlloyFactory
     private static final NumberFormat NUMBER_FORMAT = NumberFormat.getIntegerInstance(Locale.US);
 
     private final SmeltingButton[] craftButtons = new SmeltingButton[VISIBLE_ROWS];
-    private final Map<ResourceLocation, ResourceLocation> chosenVariants = new LinkedHashMap<>();
+    private final AlloyFactoryListModel recipeList;
     private AutoCraftToggleButton autoButton;
     private int scrollOffset;
-    private List<AlloyFamily> cachedFamilies = List.of();
-    private long nextRecipeRefreshTick = Long.MIN_VALUE;
-    private List<AlloyFamily> availableCatalog = List.of();
-    private List<AlloyFamily> cachedAvailableFamilies = List.of();
-    private Map<ResourceLocation, Integer> cachedCraftableCounts = Map.of();
-    private long cachedInputSignature = Long.MIN_VALUE;
     private ResourceLocation materialScrollRecipeId;
     private int materialScrollOffset;
 
     public AlloyFactoryScreen(AlloyFactoryMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, GUI_WIDTH, GUI_HEIGHT);
+        recipeList = new AlloyFactoryListModel(menu);
     }
 
     @Override
@@ -111,6 +103,8 @@ public final class AlloyFactoryScreen extends AbstractMachineScreen<AlloyFactory
 
     @Override
     protected void renderMachineContents(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+        drawEnergyBarFrame(graphics, ENERGY_X, ENERGY_Y + ENERGY_HEIGHT - 1);
+        drawBatterySlot(graphics, 8, 82);
         List<AlloyFamily> families = availableFamilies();
         clampScroll(families.size());
         renderHeader(graphics);
@@ -274,7 +268,7 @@ public final class AlloyFactoryScreen extends AbstractMachineScreen<AlloyFactory
     private void select(AlloyDefinition recipe) {
         if (menu.processing()) return;
         menu.setSelectedRecipeId(recipe.recipeId());
-        chosenVariants.put(recipe.familyId(), recipe.recipeId());
+        recipeList.choose(recipe);
         ModNetwork.sendToServer(new SelectAlloyFactoryRecipePacket(menu.machinePos(), recipe.recipeId()));
     }
 
@@ -348,6 +342,23 @@ public final class AlloyFactoryScreen extends AbstractMachineScreen<AlloyFactory
             return;
         }
 
+        if (autoButton != null && autoButton.isMouseOver(mouseX, mouseY)) {
+            graphics.renderComponentTooltip(
+                    font,
+                    List.of(
+                            Component.translatable("gui.poiesis.alloy_factory.auto_smelting"),
+                            Component.translatable(
+                                    menu.autoCrafting()
+                                            ? "gui.poiesis.module_fabricator.auto_on"
+                                            : "gui.poiesis.module_fabricator.auto_off"
+                            )
+                    ),
+                    mouseX,
+                    mouseY
+            );
+            return;
+        }
+
         AlloyFamily family = hoveredFamily(mouseX, mouseY);
         if (family == null) return;
         AlloyDefinition recipe = chosen(family);
@@ -356,9 +367,9 @@ public final class AlloyFactoryScreen extends AbstractMachineScreen<AlloyFactory
             List<Component> tooltip = new ArrayList<>();
             tooltip.add(recipe.result().getHoverName());
             tooltip.add(Component.translatable(
-                    "gui.poiesis.alloy_factory.craftable_count",
-                    cachedCraftableCounts.getOrDefault(recipe.recipeId(), 0)
-            ));
+                     "gui.poiesis.alloy_factory.craftable_count",
+                    craftableOutputCount(recipe)
+             ));
             if (family.variants().size() > 1) {
                 tooltip.add(Component.translatable("gui.poiesis.alloy_factory.switch_variant"));
             }
@@ -377,88 +388,19 @@ public final class AlloyFactoryScreen extends AbstractMachineScreen<AlloyFactory
         }
     }
 
-    private List<AlloyFamily> catalog() {
-        if (minecraft == null || minecraft.level == null) return List.of();
-        long gameTime = minecraft.level.getGameTime();
-        if (gameTime < nextRecipeRefreshTick) {
-            return cachedFamilies;
-        }
-
-        Map<ResourceLocation, LinkedHashMap<ResourceLocation, AlloyDefinition>> grouped = new LinkedHashMap<>();
-        for (AlloyDefinition recipe : AlloyRecipeIndex.discover(minecraft.level)) {
-            ResourceLocation outputId = BuiltInRegistries.ITEM.getKey(recipe.result().getItem());
-            grouped.computeIfAbsent(recipe.familyId(), ignored -> new LinkedHashMap<>())
-                    .putIfAbsent(outputId, recipe);
-        }
-        List<AlloyFamily> result = grouped.entrySet().stream()
-                .map(entry -> new AlloyFamily(entry.getKey(), List.copyOf(entry.getValue().values())))
-                .sorted(Comparator.comparing(value -> value.familyId().toString()))
-                .toList();
-
-        ResourceLocation selected = menu.selectedRecipeId();
-        if (selected != null) {
-            result.stream().flatMap(value -> value.variants().stream())
-                    .filter(value -> value.recipeId().equals(selected))
-                    .findFirst()
-                    .ifPresent(value -> chosenVariants.put(value.familyId(), selected));
-        }
-        cachedFamilies = result;
-        nextRecipeRefreshTick = gameTime + 100L;
-        return cachedFamilies;
-    }
-
     private List<AlloyFamily> availableFamilies() {
-        List<AlloyFamily> catalog = catalog();
-        long inputSignature = inputSignature();
-        if (catalog == availableCatalog && inputSignature == cachedInputSignature) {
-            return cachedAvailableFamilies;
-        }
-
-        Map<ResourceLocation, Integer> counts = new LinkedHashMap<>();
-        List<AlloyFamily> available = catalog.stream()
-                .map(family -> new AlloyFamily(
-                        family.familyId(),
-                        family.variants().stream()
-                                .filter(recipe -> {
-                                    int batches = menu.craftableBatches(recipe);
-                                    counts.put(recipe.recipeId(), batches);
-                                    return batches > 0;
-                                })
-                                .toList()
-                ))
-                .filter(family -> !family.variants().isEmpty())
-                .toList();
-
-        availableCatalog = catalog;
-        cachedInputSignature = inputSignature;
-        cachedCraftableCounts = Map.copyOf(counts);
-        cachedAvailableFamilies = available;
-        return cachedAvailableFamilies;
+        if (minecraft == null) return List.of();
+        return recipeList.availableFamilies(minecraft.level);
     }
 
-    private int craftableBatches(AlloyDefinition recipe) {
-        return cachedCraftableCounts.getOrDefault(recipe.recipeId(), 0);
-    }
-
-    private long inputSignature() {
-        long hash = 1L;
-        for (int slot = 0; slot < 18; slot++) {
-            ItemStack stack = menu.getSlot(slot).getItem();
-            hash = hash * 31L + BuiltInRegistries.ITEM.getId(stack.getItem());
-            hash = hash * 31L + stack.getCount();
-            hash = hash * 31L + (stack.hasTag() ? stack.getTag().hashCode() : 0);
-        }
-        return hash;
+    private String craftableOutputCount(AlloyDefinition recipe) {
+        long batches = recipeList.craftableBatches(recipe);
+        long perBatch = recipe.result().getCount();
+        return NUMBER_FORMAT.format(batches * perBatch);
     }
 
     private AlloyDefinition chosen(AlloyFamily family) {
-        ResourceLocation id = chosenVariants.get(family.familyId());
-        if (id != null) {
-            for (AlloyDefinition variant : family.variants()) {
-                if (variant.recipeId().equals(id)) return variant;
-            }
-        }
-        return family.variants().get(0);
+        return recipeList.chosen(family);
     }
 
     private AlloyFamily visibleFamily(int row) {
@@ -533,6 +475,5 @@ public final class AlloyFactoryScreen extends AbstractMachineScreen<AlloyFactory
     }
 
     private static String number(int value) { return NUMBER_FORMAT.format(Math.max(0, value)); }
-    private record AlloyFamily(ResourceLocation familyId, List<AlloyDefinition> variants) { }
     private record HoveredMaterial(ItemStack stack, CountedIngredient requirement) { }
 }

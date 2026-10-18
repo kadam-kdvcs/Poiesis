@@ -75,6 +75,8 @@ public final class CompounderScreen
             int mouseX,
             int mouseY
     ) {
+        drawEnergyBarFrame(graphics, ENERGY_X, ENERGY_BOTTOM_Y - 1);
+        drawBatterySlot(graphics, CompounderGuiLayout.BATTERY_X, CompounderGuiLayout.BATTERY_Y);
         renderProgress(graphics);
         renderEnergy(graphics);
     }

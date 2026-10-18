@@ -8,6 +8,9 @@ import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -15,30 +18,52 @@ import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.compat.jei.category.CompounderCategory;
 import org.kdvcs.poiesis.compat.jei.category.AdsorptionColumnCategory;
 import org.kdvcs.poiesis.compat.jei.category.GasificationCategory;
+import org.kdvcs.poiesis.compat.jei.category.GasGeneratorCategory;
 import org.kdvcs.poiesis.compat.jei.category.MechanicalProcessingCategory;
+import org.kdvcs.poiesis.compat.jei.category.MicrobialFuelCellCategory;
 import org.kdvcs.poiesis.compat.jei.category.ModuleFabricationCategory;
 import org.kdvcs.poiesis.compat.jei.category.SeparatorCategory;
+import org.kdvcs.poiesis.compat.jei.category.LeacherCategory;
+import org.kdvcs.poiesis.compat.jei.category.GreenhouseCategory;
+import org.kdvcs.poiesis.compat.jei.category.AlloyFactoryCategory;
 import org.kdvcs.poiesis.compat.jei.handler.CompounderGuiHandler;
 import org.kdvcs.poiesis.compat.jei.handler.AdsorptionColumnGuiHandler;
 import org.kdvcs.poiesis.compat.jei.handler.BiomassGasifierGuiHandler;
+import org.kdvcs.poiesis.compat.jei.handler.GasGeneratorGuiHandler;
 import org.kdvcs.poiesis.compat.jei.handler.MechanicalProcessorGuiHandler;
 import org.kdvcs.poiesis.compat.jei.handler.ModuleFabricatorGuiHandler;
+import org.kdvcs.poiesis.compat.jei.handler.MicrobialFuelCellGuiHandler;
 import org.kdvcs.poiesis.compat.jei.handler.SeparatorGuiHandler;
+import org.kdvcs.poiesis.compat.jei.handler.LeacherGuiHandler;
+import org.kdvcs.poiesis.compat.jei.handler.GreenhouseGuiHandler;
+import org.kdvcs.poiesis.compat.jei.handler.AlloyFactoryGuiHandler;
 import org.kdvcs.poiesis.recipe.CompounderRecipe;
 import org.kdvcs.poiesis.recipe.AdsorptionRecipe;
 import org.kdvcs.poiesis.recipe.GasificationRecipe;
+import org.kdvcs.poiesis.recipe.GasGenerationRecipe;
 import org.kdvcs.poiesis.recipe.MechanicalProcessingRecipe;
 import org.kdvcs.poiesis.recipe.ModuleFabricationRecipe;
+import org.kdvcs.poiesis.recipe.MicrobialFuelCellRecipe;
 import org.kdvcs.poiesis.recipe.SeparatorRecipe;
+import org.kdvcs.poiesis.recipe.LeachingRecipe;
+import org.kdvcs.poiesis.recipe.GreenhouseRecipe;
+import org.kdvcs.poiesis.recipe.alloy.AlloyTableRecipe;
 import org.kdvcs.poiesis.registry.ModBlocks;
 import org.kdvcs.poiesis.registry.ModItems;
 import org.kdvcs.poiesis.registry.ModRecipeTypes;
+import org.kdvcs.poiesis.registry.ModMenuTypes;
 import org.kdvcs.poiesis.screen.CompounderScreen;
 import org.kdvcs.poiesis.screen.AdsorptionColumnScreen;
 import org.kdvcs.poiesis.screen.BiomassGasifierScreen;
+import org.kdvcs.poiesis.screen.GasGeneratorScreen;
 import org.kdvcs.poiesis.screen.MechanicalProcessorScreen;
 import org.kdvcs.poiesis.screen.ModuleFabricatorScreen;
+import org.kdvcs.poiesis.screen.MicrobialFuelCellScreen;
 import org.kdvcs.poiesis.screen.SeparatorScreen;
+import org.kdvcs.poiesis.screen.LeacherScreen;
+import org.kdvcs.poiesis.screen.GreenhouseScreen;
+import org.kdvcs.poiesis.screen.AlloyFactoryScreen;
+import org.kdvcs.poiesis.screen.AlloyFactoryMenu;
 
 import java.util.List;
 
@@ -51,6 +76,7 @@ import java.util.List;
  */
 @JeiPlugin
 public final class PoiesisJeiPlugin implements IModPlugin {
+    private static IIngredientManager ingredientManager;
 
     private static final ResourceLocation UID =
             new ResourceLocation(
@@ -61,6 +87,15 @@ public final class PoiesisJeiPlugin implements IModPlugin {
     @Override
     public ResourceLocation getPluginUid() {
         return UID;
+    }
+
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        ingredientManager = jeiRuntime.getIngredientManager();
+    }
+
+    public static IIngredientManager ingredientManager() {
+        return ingredientManager;
     }
 
     @Override
@@ -105,6 +140,21 @@ public final class PoiesisJeiPlugin implements IModPlugin {
         );
         registration.addRecipeCategories(
                 new GasificationCategory(guiHelper)
+        );
+        registration.addRecipeCategories(
+                new GasGeneratorCategory(guiHelper)
+        );
+        registration.addRecipeCategories(
+                new MicrobialFuelCellCategory(guiHelper)
+        );
+        registration.addRecipeCategories(
+                new LeacherCategory(guiHelper)
+        );
+        registration.addRecipeCategories(
+                new GreenhouseCategory(guiHelper)
+        );
+        registration.addRecipeCategories(
+                new AlloyFactoryCategory(guiHelper)
         );
     }
 
@@ -223,6 +273,49 @@ public final class PoiesisJeiPlugin implements IModPlugin {
                 PoiesisJeiRecipeTypes.GASIFICATION,
                 gasificationRecipes
         );
+
+        List<GasGenerationRecipe> gasGenerationRecipes =
+                minecraft.level
+                        .getRecipeManager()
+                        .getAllRecipesFor(ModRecipeTypes.GAS_GENERATION.get());
+        registration.addRecipes(
+                PoiesisJeiRecipeTypes.GAS_GENERATION,
+                gasGenerationRecipes
+        );
+
+        List<MicrobialFuelCellRecipe> microbialFuelCellRecipes =
+                minecraft.level
+                        .getRecipeManager()
+                        .getAllRecipesFor(ModRecipeTypes.MICROBIAL_FUEL_CELL.get());
+        registration.addRecipes(
+                PoiesisJeiRecipeTypes.MICROBIAL_FUEL_CELL,
+                microbialFuelCellRecipes
+        );
+
+        List<LeachingRecipe> leachingRecipes =
+                minecraft.level.getRecipeManager()
+                        .getAllRecipesFor(ModRecipeTypes.LEACHING.get());
+        registration.addRecipes(PoiesisJeiRecipeTypes.LEACHING, leachingRecipes);
+
+        List<GreenhouseRecipe> greenhouseRecipes =
+                minecraft.level.getRecipeManager()
+                        .getAllRecipesFor(ModRecipeTypes.GREENHOUSE.get());
+        registration.addRecipes(PoiesisJeiRecipeTypes.GREENHOUSE, greenhouseRecipes);
+
+        List<AlloyTableRecipe> alloyRecipes =
+                minecraft.level.getRecipeManager()
+                        .getAllRecipesFor(ModRecipeTypes.ALLOYING.get())
+                        .stream()
+                        .filter(recipe -> !recipe.getResultItem(
+                                minecraft.level.registryAccess()
+                        ).isEmpty())
+                        .filter(recipe -> recipe.inputs().stream()
+                                .allMatch(input -> input.ingredient().getItems().length > 0))
+                        .toList();
+        registration.addRecipes(
+                PoiesisJeiRecipeTypes.ALLOYING,
+                alloyRecipes
+        );
     }
 
     private static void registerEarlyObtainmentInfo(
@@ -289,6 +382,16 @@ public final class PoiesisJeiPlugin implements IModPlugin {
                 PoiesisJeiRecipeTypes.WET_SEPARATING
         );
 
+        registration.addRecipeCatalyst(
+                ModItems.RINSING_MODULE.get(),
+                PoiesisJeiRecipeTypes.RINSING_SEPARATING
+        );
+
+        registration.addRecipeCatalyst(
+                ModItems.ELECTROSTATIC_SEPARATION_MODULE.get(),
+                PoiesisJeiRecipeTypes.ELECTROSTATIC_SEPARATING
+        );
+
         for (ModuleFabricationJeiMode mode
                 : ModuleFabricationJeiMode.values()) {
             registration.addRecipeCatalyst(
@@ -305,6 +408,41 @@ public final class PoiesisJeiPlugin implements IModPlugin {
         registration.addRecipeCatalyst(
                 ModBlocks.BIOMASS_GASIFIER.get(),
                 PoiesisJeiRecipeTypes.GASIFICATION
+        );
+        registration.addRecipeCatalyst(
+                ModBlocks.GAS_GENERATOR.get(),
+                PoiesisJeiRecipeTypes.GAS_GENERATION
+        );
+        registration.addRecipeCatalyst(
+                ModBlocks.MICROBIAL_FUEL_CELL.get(),
+                PoiesisJeiRecipeTypes.MICROBIAL_FUEL_CELL
+        );
+        registration.addRecipeCatalyst(
+                ModBlocks.LEACHER.get(),
+                PoiesisJeiRecipeTypes.LEACHING
+        );
+        registration.addRecipeCatalyst(
+                ModBlocks.GREENHOUSE.get(),
+                PoiesisJeiRecipeTypes.GREENHOUSE
+        );
+        registration.addRecipeCatalyst(
+                ModBlocks.ALLOY_FACTORY.get(),
+                PoiesisJeiRecipeTypes.ALLOYING
+        );
+    }
+
+    @Override
+    public void registerRecipeTransferHandlers(
+            IRecipeTransferRegistration registration
+    ) {
+        registration.addRecipeTransferHandler(
+                AlloyFactoryMenu.class,
+                ModMenuTypes.ALLOY_FACTORY.get(),
+                PoiesisJeiRecipeTypes.ALLOYING,
+                AlloyFactoryMenu.FIRST_INPUT_MENU_SLOT,
+                AlloyFactoryMenu.INPUT_MENU_SLOT_COUNT,
+                AlloyFactoryMenu.PLAYER_INVENTORY_MENU_SLOT,
+                AlloyFactoryMenu.PLAYER_INVENTORY_SLOT_COUNT
         );
     }
 
@@ -340,6 +478,31 @@ public final class PoiesisJeiPlugin implements IModPlugin {
         registration.addGuiContainerHandler(
                 BiomassGasifierScreen.class,
                 new BiomassGasifierGuiHandler()
+        );
+
+        registration.addGuiContainerHandler(
+                GasGeneratorScreen.class,
+                new GasGeneratorGuiHandler()
+        );
+
+        registration.addGuiContainerHandler(
+                MicrobialFuelCellScreen.class,
+                new MicrobialFuelCellGuiHandler()
+        );
+
+        registration.addGuiContainerHandler(
+                LeacherScreen.class,
+                new LeacherGuiHandler()
+        );
+
+        registration.addGuiContainerHandler(
+                GreenhouseScreen.class,
+                new GreenhouseGuiHandler()
+        );
+
+        registration.addGuiContainerHandler(
+                AlloyFactoryScreen.class,
+                new AlloyFactoryGuiHandler()
         );
     }
 }

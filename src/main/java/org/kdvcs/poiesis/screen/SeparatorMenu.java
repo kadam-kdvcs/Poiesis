@@ -19,24 +19,27 @@ import org.kdvcs.poiesis.machine.module.ModuleComponent;
 import org.kdvcs.poiesis.machine.module.ModuleKind;
 import org.kdvcs.poiesis.registry.ModBlocks;
 import org.kdvcs.poiesis.registry.ModMenuTypes;
+import org.kdvcs.poiesis.registry.ModItems;
 import org.kdvcs.poiesis.screen.layout.SeparatorGuiLayout;
 import org.kdvcs.poiesis.screen.menu.AbstractMachineMenu;
 import org.kdvcs.poiesis.screen.slot.BatterySlot;
 import org.kdvcs.poiesis.screen.slot.ModuleSlot;
 import org.kdvcs.poiesis.screen.slot.OutputSlot;
+import org.kdvcs.poiesis.tag.ModTags;
 
 public final class SeparatorMenu extends AbstractMachineMenu {
     private static final int FIRST_INPUT_MENU_SLOT = 0;
     private static final int INPUT_MENU_SLOT_END = 2;
     private static final int OUTPUT_MENU_SLOT_START = 2;
     private static final int OUTPUT_MENU_SLOT_END = 6;
-    private static final int SPECIALIZATION_MODULE_MENU_SLOT = 6;
-    private static final int FIRST_PERFORMANCE_MENU_SLOT = 7;
-    private static final int PERFORMANCE_MENU_SLOT_END = 9;
-    private static final int BATTERY_MENU_SLOT = 9;
-    private static final int MACHINE_SLOT_COUNT = 10;
+    private static final int ELECTRODE_MENU_SLOT = 6;
+    private static final int SPECIALIZATION_MODULE_MENU_SLOT = 7;
+    private static final int FIRST_PERFORMANCE_MENU_SLOT = 8;
+    private static final int PERFORMANCE_MENU_SLOT_END = 10;
+    private static final int BATTERY_MENU_SLOT = 10;
+    private static final int MACHINE_SLOT_COUNT = 11;
 
-    public static final int DATA_COUNT = 11;
+    public static final int DATA_COUNT = 22;
 
     private final SeparatorBlockEntity blockEntity;
 
@@ -88,13 +91,44 @@ public final class SeparatorMenu extends AbstractMachineMenu {
         ));
 
         for (int index = 0; index < SeparatorBlockEntity.DEFINITION.outputSlots(); index++) {
+            final int outputIndex = index;
             addSlot(new OutputSlot(
                     inventory,
                     SeparatorBlockEntity.DEFINITION.inputSlots() + index,
                     SeparatorGuiLayout.OUTPUT_X[index],
                     SeparatorGuiLayout.OUTPUT_Y[index]
-            ));
+            ) {
+                @Override
+                public boolean isActive() {
+                    return outputIndex != SeparatorBlockEntity.DEFINITION.outputSlots() - 1
+                            || !SeparatorMenu.this.rinsingModuleInstalled();
+                }
+            });
         }
+
+        var electrode = blockEntity.runtime().electrode().items();
+        addSlot(new SlotItemHandler(
+                electrode,
+                0,
+                SeparatorGuiLayout.FLUID_X,
+                SeparatorGuiLayout.FLUID_Y
+        ) {
+            @Override
+            public boolean isActive() {
+                return SeparatorMenu.this.electrodeSlotVisible();
+            }
+
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return SeparatorMenu.this.electrodeSlotEnabled()
+                        && super.mayPlace(stack);
+            }
+
+            @Override
+            public int getMaxStackSize() {
+                return 1;
+            }
+        });
 
         var modules = blockEntity.runtime().modules().items();
         addSlot(new ModuleSlot(
@@ -102,7 +136,9 @@ public final class SeparatorMenu extends AbstractMachineMenu {
                 ModuleComponent.PROCESS_SLOT,
                 SeparatorGuiLayout.SPECIALIZATION_X,
                 SeparatorGuiLayout.SPECIALIZATION_Y,
-                ModuleKind.PROCESS
+                ModuleKind.PROCESS,
+                stack -> !isFluidSpecializationModule(stack)
+                        || blockEntity.runtime().electrode().isEmpty()
         ));
         addSlot(new ModuleSlot(
                 modules,
@@ -154,6 +190,12 @@ public final class SeparatorMenu extends AbstractMachineMenu {
             return true;
         }
 
+        if (stack.is(ModTags.Items.ELECTRODES)
+                && electrodeSlotEnabled()
+                && moveToMachineSlot(stack, ELECTRODE_MENU_SLOT)) {
+            return true;
+        }
+
         return moveToMachineSlots(stack, FIRST_INPUT_MENU_SLOT, INPUT_MENU_SLOT_END);
     }
 
@@ -169,21 +211,42 @@ public final class SeparatorMenu extends AbstractMachineMenu {
 
     public int progress() { return dataValue(0); }
     public int maxProgress() { return dataValue(1); }
-    public int energy() { return dataValue(2) & 0xFFFF; }
-    public int capacity() { return dataValue(3) & 0xFFFF; }
+    public int energy() { return int32DataValue(2, 13); }
+    public int capacity() { return int32DataValue(3, 14); }
     public int activeEnergyPerTick() { return dataValue(4); }
     public int activeVoltage() { return dataValue(5); }
     public int stateOrdinal() { return dataValue(6); }
-    public int fluidAmount() { return dataValue(7) & 0xFFFF; }
-    public int fluidCapacity() { return dataValue(8) & 0xFFFF; }
+    public int fluidAmount() { return int32DataValue(7, 15); }
+    public int fluidCapacity() { return int32DataValue(8, 16); }
+    public int wastewaterAmount() { return int32DataValue(17, 20); }
+    public int wastewaterCapacity() { return int32DataValue(18, 21); }
     public boolean fluidSlotEnabled() { return dataValue(10) != 0; }
+    public boolean electrodeSlotEnabled() { return dataValue(11) != 0; }
+    public boolean electrodeSlotVisible() { return dataValue(12) != 0; }
+    public boolean rinsingModuleInstalled() { return blockEntity.runtime().rinsingModuleInstalled(); }
+    public ItemStack electrodeStack() { return getSlot(ELECTRODE_MENU_SLOT).getItem(); }
 
     public FluidStack fluidStack() {
-        Fluid fluid = BuiltInRegistries.FLUID.byId(dataValue(9) & 0xFFFF);
-        if (fluid == null || fluid == Fluids.EMPTY || fluidAmount() <= 0) {
+        return fluidStack(dataValue(9), fluidAmount());
+    }
+
+    public FluidStack wastewaterStack() {
+        return fluidStack(dataValue(19), wastewaterAmount());
+    }
+
+    private static FluidStack fluidStack(int registryId, int amount) {
+        Fluid fluid = BuiltInRegistries.FLUID.byId(registryId & 0xFFFF);
+        if (fluid == null || fluid == Fluids.EMPTY || amount <= 0) {
             return FluidStack.EMPTY;
         }
-        return new FluidStack(fluid, fluidAmount());
+        return new FluidStack(fluid, amount);
+    }
+
+
+    private static boolean isFluidSpecializationModule(ItemStack stack) {
+        return stack.getItem() instanceof MachineModuleItem module
+                && (module.capabilities().contains(ModItems.WET_SEPARATION)
+                || module.capabilities().contains(ModItems.RINSING));
     }
 
     private static SeparatorBlockEntity requireBlockEntity(

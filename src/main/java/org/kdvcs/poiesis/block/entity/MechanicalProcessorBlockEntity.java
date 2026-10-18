@@ -20,6 +20,7 @@ import org.kdvcs.poiesis.registry.ModBlockEntities;
 import org.kdvcs.poiesis.registry.ModRecipeTypes;
 import org.kdvcs.poiesis.registry.ModSounds;
 import org.kdvcs.poiesis.screen.MechanicalProcessorMenu;
+import org.kdvcs.poiesis.screen.menu.MenuDataCodec;
 
 public final class MechanicalProcessorBlockEntity
         extends AbstractMachineBlockEntity<MaterialMachineRuntime<MechanicalProcessingRecipe>> {
@@ -46,6 +47,8 @@ public final class MechanicalProcessorBlockEntity
                 case 5 -> runtime().process().activeVoltage();
                 case 6 -> runtime().process().state().ordinal();
                 case 7 -> runtime().modules().currentMode().ordinal();
+                case 8 -> MenuDataCodec.highWord(runtime().energy().stored());
+                case 9 -> MenuDataCodec.highWord(runtime().energy().capacity());
                 default -> 0;
             };
         }
@@ -56,7 +59,7 @@ public final class MechanicalProcessorBlockEntity
 
         @Override
         public int getCount() {
-            return 8;
+            return 10;
         }
     };
 

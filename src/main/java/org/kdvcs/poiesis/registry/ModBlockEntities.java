@@ -9,12 +9,16 @@ import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.block.entity.AdsorptionColumnControllerBlockEntity;
 import org.kdvcs.poiesis.block.entity.AlloyFactoryBlockEntity;
 import org.kdvcs.poiesis.block.entity.BiomassGasifierBlockEntity;
+import org.kdvcs.poiesis.block.entity.GasGeneratorBlockEntity;
 import org.kdvcs.poiesis.block.entity.CompounderBlockEntity;
 import org.kdvcs.poiesis.block.entity.EnergyPipeBlockEntity;
 import org.kdvcs.poiesis.block.entity.FluidPipeBlockEntity;
 import org.kdvcs.poiesis.block.entity.FluidDistributorBlockEntity;
 import org.kdvcs.poiesis.block.entity.ItemPipeBlockEntity;
+import org.kdvcs.poiesis.block.entity.LeacherBlockEntity;
+import org.kdvcs.poiesis.block.entity.GreenhouseBlockEntity;
 import org.kdvcs.poiesis.block.entity.MechanicalProcessorBlockEntity;
+import org.kdvcs.poiesis.block.entity.MicrobialFuelCellBlockEntity;
 import org.kdvcs.poiesis.block.entity.ModuleFabricatorBlockEntity;
 import org.kdvcs.poiesis.block.entity.SeparatorBlockEntity;
 
@@ -33,17 +37,39 @@ public final class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<SeparatorBlockEntity>> SEPARATOR =
             BLOCK_ENTITIES.register("separator", () ->
                     BlockEntityType.Builder.of(SeparatorBlockEntity::new, ModBlocks.SEPARATOR.get()).build(null));
+    public static final RegistryObject<BlockEntityType<LeacherBlockEntity>> LEACHER =
+            BLOCK_ENTITIES.register("leacher", () ->
+                    BlockEntityType.Builder.of(LeacherBlockEntity::new, ModBlocks.LEACHER.get()).build(null));
     public static final RegistryObject<BlockEntityType<BiomassGasifierBlockEntity>> BIOMASS_GASIFIER =
             BLOCK_ENTITIES.register("biomass_gasifier", () ->
                     BlockEntityType.Builder.of(
                             BiomassGasifierBlockEntity::new,
                             ModBlocks.BIOMASS_GASIFIER.get()
                     ).build(null));
+    public static final RegistryObject<BlockEntityType<GasGeneratorBlockEntity>> GAS_GENERATOR =
+            BLOCK_ENTITIES.register("gas_generator", () ->
+                    BlockEntityType.Builder.of(
+                            GasGeneratorBlockEntity::new,
+                            ModBlocks.GAS_GENERATOR.get()
+                    ).build(null));
+    public static final RegistryObject<BlockEntityType<MicrobialFuelCellBlockEntity>>
+            MICROBIAL_FUEL_CELL =
+            BLOCK_ENTITIES.register("microbial_fuel_cell", () ->
+                    BlockEntityType.Builder.of(
+                            MicrobialFuelCellBlockEntity::new,
+                            ModBlocks.MICROBIAL_FUEL_CELL.get()
+                    ).build(null));
     public static final RegistryObject<BlockEntityType<AlloyFactoryBlockEntity>> ALLOY_FACTORY =
             BLOCK_ENTITIES.register("alloy_factory", () ->
                     BlockEntityType.Builder.of(
                             AlloyFactoryBlockEntity::new,
                             ModBlocks.ALLOY_FACTORY.get()
+                    ).build(null));
+    public static final RegistryObject<BlockEntityType<GreenhouseBlockEntity>> GREENHOUSE =
+            BLOCK_ENTITIES.register("greenhouse", () ->
+                    BlockEntityType.Builder.of(
+                            GreenhouseBlockEntity::new,
+                            ModBlocks.GREENHOUSE.get()
                     ).build(null));
     public static final RegistryObject<BlockEntityType<EnergyPipeBlockEntity>> ENERGY_PIPE =
             BLOCK_ENTITIES.register("energy_pipe", () ->

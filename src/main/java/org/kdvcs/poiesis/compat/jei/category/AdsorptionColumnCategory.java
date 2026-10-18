@@ -25,7 +25,8 @@ import java.util.List;
 /** Compact JEI rendering of the same process geometry used by the machine GUI. */
 public final class AdsorptionColumnCategory
         implements IRecipeCategory<AdsorptionRecipe> {
-    private static final int ORIGIN_X = 35;
+    // The process span is 106px wide inside a 118px category background.
+    private static final int ORIGIN_X = 38;
     private static final int ORIGIN_Y = 8;
     private static final int WIDTH = 118;
     private static final int HEIGHT = 69;

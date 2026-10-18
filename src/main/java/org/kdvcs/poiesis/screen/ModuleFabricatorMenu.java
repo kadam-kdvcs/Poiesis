@@ -40,7 +40,7 @@ public final class ModuleFabricatorMenu
     private static final int BATTERY_MENU_SLOT = 11;
 
     private static final int MACHINE_SLOT_COUNT = 12;
-    private static final int DATA_COUNT = 7;
+    private static final int DATA_COUNT = 9;
 
     private static final int BATTERY_SLOT_X = 14;
     private static final int BATTERY_SLOT_Y = 77;
@@ -223,11 +223,11 @@ public final class ModuleFabricatorMenu
     }
 
     public int energy() {
-        return dataValue(2);
+        return int32DataValue(2, 7);
     }
 
     public int capacity() {
-        return dataValue(3);
+        return int32DataValue(3, 8);
     }
 
     public int activeEnergyPerTick() {

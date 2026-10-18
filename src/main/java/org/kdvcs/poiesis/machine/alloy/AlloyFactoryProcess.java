@@ -96,7 +96,11 @@ public final class AlloyFactoryProcess implements MachineComponent {
             cancel(workingSetter, changed);
             return;
         }
-        if (!hasMaterials(active) || planResult(active).isEmpty()) {
+        if (!hasMaterials(active)) {
+            cancel(workingSetter, changed);
+            return;
+        }
+        if (planResult(active).isEmpty()) {
             workingSetter.accept(false);
             activeEnergyPerTick = 0;
             return;

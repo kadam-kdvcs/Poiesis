@@ -4,7 +4,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import org.kdvcs.poiesis.machine.api.MachineContext;
 import org.kdvcs.poiesis.machine.definition.MachineDefinition;
 import org.kdvcs.poiesis.machine.energy.VoltageOverclockPolicy;
-import org.kdvcs.poiesis.machine.fluid.AdsorptionOutputFluidComponent;
+import org.kdvcs.poiesis.machine.fluid.OutputFluidComponent;
 import org.kdvcs.poiesis.machine.process.AdsorptionColumnProcess;
 import org.kdvcs.poiesis.machine.io.RelativeSide;
 import org.kdvcs.poiesis.machine.io.AutoIoDirection;
@@ -18,7 +18,7 @@ import java.util.function.IntSupplier;
 public final class AdsorptionColumnRuntime extends MachineRuntime {
     private final BooleanSupplier formed;
     private final IntSupplier bedCount;
-    private final AdsorptionOutputFluidComponent outputFluid;
+    private final OutputFluidComponent outputFluid;
     private final AdsorptionColumnProcess process;
 
     public AdsorptionColumnRuntime(
@@ -33,8 +33,8 @@ public final class AdsorptionColumnRuntime extends MachineRuntime {
         this.bedCount = bedCount;
 
         outputFluid = addComponent(
-                AdsorptionOutputFluidComponent.class,
-                new AdsorptionOutputFluidComponent(
+                OutputFluidComponent.class,
+                new OutputFluidComponent(
                         definition.fluid().capacity(),
                         owner::markPersistentDirty
                 )
@@ -84,7 +84,7 @@ public final class AdsorptionColumnRuntime extends MachineRuntime {
         }
     }
 
-    public AdsorptionOutputFluidComponent outputFluid() {
+    public OutputFluidComponent outputFluid() {
         return outputFluid;
     }
 

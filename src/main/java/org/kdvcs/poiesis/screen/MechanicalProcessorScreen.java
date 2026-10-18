@@ -88,6 +88,8 @@ public final class MechanicalProcessorScreen
                 int mouseX,
                 int mouseY
         ) {
+                drawEnergyBarFrame(graphics, ENERGY_X, ENERGY_BOTTOM_Y - 1);
+                drawBatterySlot(graphics, 8, 59);
                 renderProgress(graphics);
                 renderEnergy(graphics);
         }

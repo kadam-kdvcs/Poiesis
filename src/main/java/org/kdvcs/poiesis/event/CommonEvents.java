@@ -7,6 +7,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +15,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.TickEvent;
@@ -24,6 +29,9 @@ import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.registry.ModBlocks;
 import org.kdvcs.poiesis.registry.ModCrops;
 import org.kdvcs.poiesis.registry.ModItems;
+import org.kdvcs.poiesis.transport.network.energy.EnergyNetworkManager;
+import org.kdvcs.poiesis.transport.network.fluid.FluidNetworkManager;
+import org.kdvcs.poiesis.transport.network.item.ItemNetworkManager;
 
 @Mod.EventBusSubscriber(modid = Poiesis.MOD_ID)
 public final class CommonEvents {
@@ -37,7 +45,7 @@ public final class CommonEvents {
     }
 
     @SubscribeEvent
-    public static void onLivingDamage(net.minecraftforge.event.entity.living.LivingDamageEvent event) {
+    public static void onLivingDamage(LivingDamageEvent event) {
         DamageSource source = event.getSource();
         if (!source.is(DamageTypeTags.IS_FIRE)) {
             return;
@@ -90,14 +98,48 @@ public final class CommonEvents {
         food.setExhaustion(Math.max(0.0F, food.getExhaustionLevel() - 0.006F));
     }
 
+    @SubscribeEvent
+    public static void onLevelTick(TickEvent.LevelTickEvent event) {
+        if (event.phase != TickEvent.Phase.END || !(event.level instanceof ServerLevel level)) {
+            return;
+        }
+        EnergyNetworkManager.get(level).tickAll(level);
+        FluidNetworkManager.get(level).tickAll(level);
+        ItemNetworkManager.get(level).tickAll(level);
+    }
+
+    @SubscribeEvent
+    public static void onBlockToolModification(
+            BlockEvent.BlockToolModificationEvent event
+    ) {
+        if (event.getToolAction() != ToolActions.AXE_STRIP) {
+            return;
+        }
+
+        BlockState state = event.getState();
+        BlockState stripped = null;
+        if (state.is(ModBlocks.ALDER_LOG.get())) {
+            stripped = ModBlocks.STRIPPED_ALDER_LOG.get().defaultBlockState();
+        } else if (state.is(ModBlocks.ALDER_WOOD.get())) {
+            stripped = ModBlocks.STRIPPED_ALDER_WOOD.get().defaultBlockState();
+        }
+
+        if (stripped != null) {
+            event.setFinalState(stripped.setValue(
+                    RotatedPillarBlock.AXIS,
+                    state.getValue(RotatedPillarBlock.AXIS)
+            ));
+        }
+    }
+
     private static boolean wearsCompleteHeatResistantSteelSet(LivingEntity entity) {
-        return entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD)
+        return entity.getItemBySlot(EquipmentSlot.HEAD)
                         .is(ModItems.HEAT_RESISTANT_STEEL_HELMET.get())
-                && entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST)
+                && entity.getItemBySlot(EquipmentSlot.CHEST)
                         .is(ModItems.HEAT_RESISTANT_STEEL_CHESTPLATE.get())
-                && entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.LEGS)
+                && entity.getItemBySlot(EquipmentSlot.LEGS)
                         .is(ModItems.HEAT_RESISTANT_STEEL_LEGGINGS.get())
-                && entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET)
+                && entity.getItemBySlot(EquipmentSlot.FEET)
                         .is(ModItems.HEAT_RESISTANT_STEEL_BOOTS.get());
     }
 

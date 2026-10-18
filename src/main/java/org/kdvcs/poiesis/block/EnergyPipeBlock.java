@@ -8,20 +8,20 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import org.kdvcs.poiesis.block.entity.EnergyPipeBlockEntity;
-import org.kdvcs.poiesis.registry.ModBlockEntities;
 
 public final class EnergyPipeBlock extends BaseEntityBlock {
     public static final int TRANSFER_RATE = 4_000;
@@ -46,6 +46,7 @@ public final class EnergyPipeBlock extends BaseEntityBlock {
                 .strength(1.5F, 3.0F)
                 .sound(SoundType.METAL)
                 .requiresCorrectToolForDrops()
+                .pushReaction(PushReaction.BLOCK)
                 .noOcclusion());
         registerDefaultState(stateDefinition.any()
                 .setValue(NORTH, false)
@@ -71,16 +72,6 @@ public final class EnergyPipeBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new EnergyPipeBlockEntity(pos, state);
-    }
-
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (level.isClientSide) {
-            return null;
-        }
-
-        return createTickerHelper(type, ModBlockEntities.ENERGY_PIPE.get(), EnergyPipeBlockEntity::serverTick);
     }
 
     @Override
@@ -117,6 +108,16 @@ public final class EnergyPipeBlock extends BaseEntityBlock {
 
     @Override
     public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type) {
+        return false;
+    }
+
+    @Override
+    public boolean canBeReplaced(BlockState state, Fluid fluid) {
+        return false;
+    }
+
+    @Override
+    public boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
         return false;
     }
 }

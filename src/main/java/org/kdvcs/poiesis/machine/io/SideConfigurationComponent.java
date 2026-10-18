@@ -168,6 +168,15 @@ public final class SideConfigurationComponent
                     continue;
                 }
 
+                // MFC used the generic INPUT mode before chamber-specific
+                // routing was introduced. Preserve those saved sides as
+                // anode inputs when loading an existing world.
+                if (!channelSpec.allowedModes().contains(parsed)
+                        && parsed == SideIoMode.INPUT
+                        && channelSpec.allowedModes().contains(SideIoMode.INPUT_ANODE)) {
+                    parsed = SideIoMode.INPUT_ANODE;
+                }
+
                 if (channelSpec.allowedModes().contains(parsed)) {
                     channelModes.put(side, parsed);
                 }

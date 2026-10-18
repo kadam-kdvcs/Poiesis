@@ -4,7 +4,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
-public final class OutputSlot
+public class OutputSlot
         extends SlotItemHandler {
 
     public OutputSlot(

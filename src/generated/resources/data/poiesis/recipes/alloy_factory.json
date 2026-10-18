@@ -3,25 +3,28 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "poiesis:machine_unit"
+      "item": "poiesis:heat_resistant_steel_block"
     },
     "A": {
       "item": "minecraft:blast_furnace"
     },
     "B": {
-      "item": "poiesis:albichrome_casing"
+      "item": "poiesis:heavy_machine_casing"
     },
     "C": {
       "item": "poiesis:control_element"
     },
-    "H": {
-      "item": "poiesis:heat_resistant_steel_ingot"
+    "Q": {
+      "item": "minecraft:diamond"
+    },
+    "Z": {
+      "item": "poiesis:machine_unit"
     }
   },
   "pattern": [
-    "HAH",
+    "QAQ",
     "#B#",
-    "HCH"
+    "ZCZ"
   ],
   "result": {
     "item": "poiesis:alloy_factory"

@@ -10,11 +10,16 @@ import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.screen.AdsorptionColumnMenu;
 import org.kdvcs.poiesis.screen.AlloyFactoryMenu;
 import org.kdvcs.poiesis.screen.BiomassGasifierMenu;
+import org.kdvcs.poiesis.screen.GasGeneratorMenu;
 import org.kdvcs.poiesis.screen.CompounderMenu;
 import org.kdvcs.poiesis.screen.MechanicalProcessorMenu;
+import org.kdvcs.poiesis.screen.MicrobialFuelCellMenu;
+import org.kdvcs.poiesis.screen.LeacherMenu;
 import org.kdvcs.poiesis.screen.ModuleFabricatorMenu;
 import org.kdvcs.poiesis.screen.SeparatorMenu;
 import org.kdvcs.poiesis.screen.config.MachineSideConfigMenu;
+import org.kdvcs.poiesis.screen.FeedbackMenu;
+import org.kdvcs.poiesis.screen.GreenhouseMenu;
 
 public final class ModMenuTypes {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Poiesis.MOD_ID);
@@ -29,6 +34,8 @@ public final class ModMenuTypes {
 
     public static final RegistryObject<MenuType<SeparatorMenu>> SEPARATOR =
             MENUS.register("separator", () -> IForgeMenuType.create(SeparatorMenu::new));
+    public static final RegistryObject<MenuType<LeacherMenu>> LEACHER =
+            MENUS.register("leacher", () -> IForgeMenuType.create(LeacherMenu::new));
 
     public static final RegistryObject<MenuType<AdsorptionColumnMenu>> ADSORPTION_COLUMN =
             MENUS.register("adsorption_column", () -> IForgeMenuType.create(AdsorptionColumnMenu::new));
@@ -36,11 +43,23 @@ public final class ModMenuTypes {
     public static final RegistryObject<MenuType<BiomassGasifierMenu>> BIOMASS_GASIFIER =
             MENUS.register("biomass_gasifier", () -> IForgeMenuType.create(BiomassGasifierMenu::new));
 
+    public static final RegistryObject<MenuType<GasGeneratorMenu>> GAS_GENERATOR =
+            MENUS.register("gas_generator", () -> IForgeMenuType.create(GasGeneratorMenu::new));
+
+    public static final RegistryObject<MenuType<MicrobialFuelCellMenu>> MICROBIAL_FUEL_CELL =
+            MENUS.register("microbial_fuel_cell", () ->
+                    IForgeMenuType.create(MicrobialFuelCellMenu::new));
+
     public static final RegistryObject<MenuType<AlloyFactoryMenu>> ALLOY_FACTORY =
             MENUS.register("alloy_factory", () -> IForgeMenuType.create(AlloyFactoryMenu::new));
 
+    public static final RegistryObject<MenuType<GreenhouseMenu>> GREENHOUSE =
+            MENUS.register("greenhouse", () -> IForgeMenuType.create(GreenhouseMenu::new));
+
     public static final RegistryObject<MenuType<MachineSideConfigMenu>> MACHINE_SIDE_CONFIG =
             MENUS.register("machine_side_config", () -> IForgeMenuType.create(MachineSideConfigMenu::new));
+    public static final RegistryObject<MenuType<FeedbackMenu>> FEEDBACK =
+            MENUS.register("feedback", () -> IForgeMenuType.create(FeedbackMenu::new));
     private ModMenuTypes() { }
     public static void register(IEventBus eventBus) { MENUS.register(eventBus); }
 }

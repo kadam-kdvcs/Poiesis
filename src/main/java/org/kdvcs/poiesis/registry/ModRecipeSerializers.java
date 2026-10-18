@@ -9,7 +9,11 @@ import org.kdvcs.poiesis.Poiesis;
 import org.kdvcs.poiesis.recipe.AdsorptionRecipeSerializer;
 import org.kdvcs.poiesis.recipe.CompounderRecipeSerializer;
 import org.kdvcs.poiesis.recipe.GasificationRecipeSerializer;
+import org.kdvcs.poiesis.recipe.GasGenerationRecipeSerializer;
+import org.kdvcs.poiesis.recipe.GreenhouseRecipeSerializer;
 import org.kdvcs.poiesis.recipe.MechanicalProcessingRecipeSerializer;
+import org.kdvcs.poiesis.recipe.MicrobialFuelCellRecipeSerializer;
+import org.kdvcs.poiesis.recipe.LeachingRecipeSerializer;
 import org.kdvcs.poiesis.recipe.ModuleFabricationRecipeSerializer;
 import org.kdvcs.poiesis.recipe.SeparatorRecipeSerializer;
 import org.kdvcs.poiesis.recipe.alloy.AlloyTableRecipe;
@@ -27,10 +31,21 @@ public final class ModRecipeSerializers {
             RECIPE_SERIALIZERS.register("separating", SeparatorRecipeSerializer::new);
     public static final RegistryObject<RecipeSerializer<?>> ADSORPTION =
             RECIPE_SERIALIZERS.register("adsorption", AdsorptionRecipeSerializer::new);
+    public static final RegistryObject<RecipeSerializer<?>> LEACHING =
+            RECIPE_SERIALIZERS.register("leaching", LeachingRecipeSerializer::new);
     public static final RegistryObject<RecipeSerializer<?>> GASIFICATION =
             RECIPE_SERIALIZERS.register("gasification", GasificationRecipeSerializer::new);
+    public static final RegistryObject<RecipeSerializer<?>> GAS_GENERATION =
+            RECIPE_SERIALIZERS.register("gas_generation", GasGenerationRecipeSerializer::new);
+    public static final RegistryObject<RecipeSerializer<?>> MICROBIAL_FUEL_CELL =
+            RECIPE_SERIALIZERS.register(
+                    "microbial_fuel_cell",
+                    MicrobialFuelCellRecipeSerializer::new
+            );
     public static final RegistryObject<RecipeSerializer<AlloyTableRecipe>> ALLOYING =
             RECIPE_SERIALIZERS.register("alloying", AlloyTableRecipeSerializer::new);
+    public static final RegistryObject<RecipeSerializer<?>> GREENHOUSE =
+            RECIPE_SERIALIZERS.register("greenhouse", GreenhouseRecipeSerializer::new);
     private ModRecipeSerializers() { }
     public static void register(IEventBus eventBus) { RECIPE_SERIALIZERS.register(eventBus); }
 }

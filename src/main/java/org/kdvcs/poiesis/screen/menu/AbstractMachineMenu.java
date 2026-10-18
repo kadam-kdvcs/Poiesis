@@ -294,6 +294,14 @@ public abstract class AbstractMachineMenu
         return data.get(index);
     }
 
+    protected final int unsignedDataValue(int index) {
+        return MenuDataCodec.unsignedWord(data, index);
+    }
+
+    protected final int int32DataValue(int lowIndex, int highIndex) {
+        return MenuDataCodec.int32(data, lowIndex, highIndex);
+    }
+
     protected final <E extends Enum<E>> E enumValue(
             int dataIndex,
             E[] values,

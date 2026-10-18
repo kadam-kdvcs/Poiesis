@@ -4,6 +4,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.kdvcs.poiesis.network.ModNetwork;
@@ -12,13 +13,12 @@ import org.kdvcs.poiesis.network.packet.StartModuleFabricationPacket;
 import org.kdvcs.poiesis.network.packet.ToggleModuleFabricatorAutoPacket;
 import org.kdvcs.poiesis.recipe.CountedIngredient;
 import org.kdvcs.poiesis.recipe.ModuleFabricationRecipe;
-import org.kdvcs.poiesis.registry.ModRecipeTypes;
 import org.kdvcs.poiesis.screen.base.AbstractMachineScreen;
+import org.kdvcs.poiesis.screen.model.ModuleRecipeListModel;
 import org.kdvcs.poiesis.screen.widget.AutoCraftToggleButton;
 import org.kdvcs.poiesis.screen.widget.FabricationButton;
 
 import java.text.NumberFormat;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -108,6 +108,7 @@ public final class ModuleFabricatorScreen
 
     private final FabricationButton[] fabricateButtons =
             new FabricationButton[VISIBLE_ROWS];
+    private final ModuleRecipeListModel recipeList = new ModuleRecipeListModel();
 
     private AutoCraftToggleButton autoButton;
     private int scrollOffset;
@@ -181,6 +182,8 @@ public final class ModuleFabricatorScreen
             int mouseX,
             int mouseY
     ) {
+        drawEnergyBarFrame(graphics, ENERGY_X, ENERGY_Y + ENERGY_HEIGHT - 1);
+        drawBatterySlot(graphics, 14, 77);
         renderHeader(graphics);
 
         List<ModuleFabricationRecipe> recipes = availableRecipes();
@@ -638,7 +641,7 @@ public final class ModuleFabricatorScreen
         );
 
         int maxTextWidth = DISPLAY_CONTENT_WIDTH - 12;
-        List<net.minecraft.util.FormattedCharSequence> lines =
+        List<FormattedCharSequence> lines =
                 font.split(text, maxTextWidth);
 
         int totalHeight = lines.size() * font.lineHeight;
@@ -648,7 +651,7 @@ public final class ModuleFabricatorScreen
                 + (DISPLAY_CONTENT_HEIGHT - totalHeight) / 2;
 
         for (int i = 0; i < lines.size(); i++) {
-            net.minecraft.util.FormattedCharSequence line = lines.get(i);
+            FormattedCharSequence line = lines.get(i);
             int lineWidth = font.width(line);
 
             int x = leftPos
@@ -688,12 +691,7 @@ public final class ModuleFabricatorScreen
             return List.of();
         }
 
-        return minecraft.level.getRecipeManager()
-                .getAllRecipesFor(ModRecipeTypes.MODULE_FABRICATION.get())
-                .stream()
-                .filter(recipe -> recipe.moduleBase().ingredient().test(base))
-                .sorted(Comparator.comparing(recipe -> recipe.getId().toString()))
-                .toList();
+        return recipeList.recipes(minecraft.level, base);
     }
 
     private void clampScroll(int recipeCount) {

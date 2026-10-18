@@ -13,6 +13,7 @@ import org.kdvcs.poiesis.compat.mekanism.MekanismAlbichromeCompat;
 import org.kdvcs.poiesis.registry.ModItems;
 
 import java.util.Set;
+import java.util.Map;
 
 /**
  * Convention-based item model generation.
@@ -39,6 +40,19 @@ public final class ModItemModelProvider extends ItemModelProvider {
             "albichrome_crystal"
     );
 
+    private static final Set<String> FLUID_BUCKETS = Set.of(
+            "refined_albichrome_slurry_bucket",
+            "chromium_bearing_waste_bucket",
+            "nutrient_solution_bucket",
+            "organic_nutrient_solution_bucket",
+            "vitamin_solution_bucket",
+            "wastewater_bucket"
+    );
+
+    private static final Set<String> VANILLA_TEXTURE_ITEMS = Set.of(
+            "feedback_letter"
+    );
+
     public ModItemModelProvider(
             PackOutput output,
             ExistingFileHelper existingFileHelper
@@ -61,6 +75,11 @@ public final class ModItemModelProvider extends ItemModelProvider {
             }
 
             String name = registered.getId().getPath();
+            if (FLUID_BUCKETS.contains(name)) {
+                withExistingParent(name, GENERATED)
+                        .texture("layer0", modLoc("item/" + name));
+                continue;
+            }
             ResourceLocation parent = HANDHELD_ITEMS.contains(name)
                     ? HANDHELD
                     : GENERATED;
@@ -68,6 +87,10 @@ public final class ModItemModelProvider extends ItemModelProvider {
             ResourceLocation texture = MEKANISM_ALBICHROME_ITEMS.contains(name)
                     ? modLoc("item/mek/" + name)
                     : modLoc("item/" + name);
+
+            if (VANILLA_TEXTURE_ITEMS.contains(name)) {
+                texture = new ResourceLocation("minecraft", "item/paper");
+            }
 
             withExistingParent(name, parent)
                     .texture("layer0", texture);

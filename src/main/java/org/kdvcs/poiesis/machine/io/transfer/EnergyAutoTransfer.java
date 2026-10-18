@@ -69,6 +69,57 @@ public final class EnergyAutoTransfer {
         }
     }
 
+    /** Pushes at most {@code maximumTotal} FE across all configured output sides. */
+    public static void pushEnergy(
+            MachineContext owner,
+            EnergyComponent energy,
+            SideConfigurationComponent configuration,
+            int maximumTotal
+    ) {
+        Level level = owner.level();
+        if (level == null || level.isClientSide || maximumTotal <= 0) {
+            return;
+        }
+
+        int remaining = maximumTotal;
+        for (RelativeSide relativeSide : RelativeSide.values()) {
+            if (remaining <= 0) {
+                break;
+            }
+            if (!configuration.allowsOutput(IoChannel.ENERGY, relativeSide)) {
+                continue;
+            }
+
+            Direction worldSide = relativeSide.toWorldSide(owner.facing());
+            BlockEntity neighbor = level.getBlockEntity(owner.pos().relative(worldSide));
+            if (neighbor == null) {
+                continue;
+            }
+
+            IEnergyStorage destination = neighbor.getCapability(
+                    ForgeCapabilities.ENERGY,
+                    worldSide.getOpposite()
+            ).resolve().orElse(null);
+            if (destination == null || !destination.canReceive()) {
+                continue;
+            }
+
+            int available = energy.view().extractEnergy(remaining, true);
+            int accepted = destination.receiveEnergy(available, true);
+            int transfer = Math.min(available, accepted);
+            if (transfer <= 0) {
+                continue;
+            }
+
+            int extracted = energy.view().extractEnergy(transfer, false);
+            int received = destination.receiveEnergy(extracted, false);
+            if (received < extracted) {
+                energy.produce(extracted - received, false);
+            }
+            remaining -= received;
+        }
+    }
+
     private static IEnergyStorage neighborEnergyStorage(
             Level level,
             BlockPos machinePos,

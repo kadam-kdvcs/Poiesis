@@ -7,6 +7,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -38,8 +39,12 @@ public final class ModBlockLootTables extends BlockLootSubProvider {
         dropSelf(ModBlocks.MODULE_FABRICATOR.get());
         dropSelf(ModBlocks.COMPOUNDER.get());
         dropSelf(ModBlocks.SEPARATOR.get());
+        dropSelf(ModBlocks.LEACHER.get());
         dropSelf(ModBlocks.BIOMASS_GASIFIER.get());
+        dropSelf(ModBlocks.GAS_GENERATOR.get());
+        dropSelf(ModBlocks.MICROBIAL_FUEL_CELL.get());
         dropSelf(ModBlocks.ALLOY_FACTORY.get());
+        dropSelf(ModBlocks.GREENHOUSE.get());
         dropSelf(ModBlocks.ADSORPTION_COLUMN_CONTROLLER.get());
         dropSelf(ModBlocks.ADSORPTION_BED.get());
         dropSelf(ModBlocks.FLUID_DISTRIBUTOR.get());
@@ -50,6 +55,32 @@ public final class ModBlockLootTables extends BlockLootSubProvider {
         dropSelf(ModBlocks.HEAT_RESISTANT_STEEL_BLOCK.get());
         dropSelf(ModBlocks.RAW_ALBICHROME_BLOCK.get());
         dropSelf(ModBlocks.HEAVY_MACHINE_CASING.get());
+        dropSelf(ModBlocks.GRAPHITE_BLOCK.get());
+        dropSelf(ModBlocks.PLAIN_CONCRETE.get());
+        dropSelf(ModBlocks.PLAIN_CONCRETE_POWDER.get());
+        dropSelf(ModBlocks.ALDER_LOG.get());
+        dropSelf(ModBlocks.ALDER_WOOD.get());
+        dropSelf(ModBlocks.STRIPPED_ALDER_LOG.get());
+        dropSelf(ModBlocks.STRIPPED_ALDER_WOOD.get());
+        dropSelf(ModBlocks.ALDER_PLANKS.get());
+        dropSelf(ModBlocks.ALDER_ROOT.get());
+        dropSelf(ModBlocks.ALDER_STAIRS.get());
+        dropSelf(ModBlocks.ALDER_SLAB.get());
+        dropSelf(ModBlocks.ALDER_FENCE.get());
+        dropSelf(ModBlocks.ALDER_FENCE_GATE.get());
+        dropSelf(ModBlocks.ALDER_BUTTON.get());
+        add(ModBlocks.ALDER_DOOR.get(), block -> createDoorTable(block));
+        dropSelf(ModBlocks.ALDER_TRAPDOOR.get());
+        dropSelf(ModBlocks.ALDER_SAPLING.get());
+        add(
+                ModBlocks.ALDER_LEAVES.get(),
+                block -> createLeavesDrops(
+                        block,
+                        ModBlocks.ALDER_SAPLING.get(),
+                        NORMAL_LEAVES_SAPLING_CHANCES
+                )
+        );
+        dropPottedContents(ModBlocks.POTTED_ALDER_SAPLING.get());
 
         add(
                 ModBlocks.ALBICHROME_ORE.get(),
@@ -175,6 +206,7 @@ public final class ModBlockLootTables extends BlockLootSubProvider {
     protected Iterable<Block> getKnownBlocks() {
         return ModBlocks.BLOCKS.getEntries()
                 .stream()
-                .map(RegistryObject::get)::iterator;
+                .map(RegistryObject::get)
+                .filter(block -> !(block instanceof LiquidBlock))::iterator;
     }
 }

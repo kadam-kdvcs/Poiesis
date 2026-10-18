@@ -19,6 +19,10 @@ public final class EnergyNetwork {
     private final Set<BlockPos> pipes;
     private long lastTransferTick = Long.MIN_VALUE;
     private int sinkRotation;
+    private List<EnergyEndpoint> cachedSources = List.of();
+    private List<EnergyEndpoint> cachedSinks = List.of();
+    private long endpointCacheExpires = Long.MIN_VALUE;
+    private boolean endpointsDirty = true;
 
     public EnergyNetwork(long id, Set<BlockPos> pipes) {
         this.id = id;
@@ -35,6 +39,10 @@ public final class EnergyNetwork {
 
     public int transferLimit() {
         return EnergyPipeBlock.TRANSFER_RATE;
+    }
+
+    public void invalidateEndpoints() {
+        endpointsDirty = true;
     }
 
     public void tick(ServerLevel level) {
@@ -122,7 +130,16 @@ public final class EnergyNetwork {
             List<EnergyEndpoint> sources,
             List<EnergyEndpoint> sinks
     ) {
+        long gameTime = level.getGameTime();
+        if (!endpointsDirty && gameTime < endpointCacheExpires) {
+            sources.addAll(cachedSources);
+            sinks.addAll(cachedSinks);
+            return;
+        }
+
         Set<EnergyEndpoint> visited = new LinkedHashSet<>();
+        List<EnergyEndpoint> discoveredSources = new ArrayList<>();
+        List<EnergyEndpoint> discoveredSinks = new ArrayList<>();
 
         for (BlockPos pipePos : pipes) {
             for (Direction direction : Direction.values()) {
@@ -145,14 +162,21 @@ public final class EnergyNetwork {
                 }
 
                 if (storage.canExtract()) {
-                    sources.add(endpoint);
+                    discoveredSources.add(endpoint);
                 }
 
                 if (storage.canReceive()) {
-                    sinks.add(endpoint);
+                    discoveredSinks.add(endpoint);
                 }
             }
         }
+
+        cachedSources = List.copyOf(discoveredSources);
+        cachedSinks = List.copyOf(discoveredSinks);
+        endpointCacheExpires = gameTime + 100L;
+        endpointsDirty = false;
+        sources.addAll(cachedSources);
+        sinks.addAll(cachedSinks);
     }
 
     private IEnergyStorage resolveStorage(ServerLevel level, EnergyEndpoint endpoint) {

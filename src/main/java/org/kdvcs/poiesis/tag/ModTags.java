@@ -1,11 +1,13 @@
 package org.kdvcs.poiesis.tag;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.biome.Biome;
 import org.kdvcs.poiesis.Poiesis;
 
 public final class ModTags {
@@ -29,6 +31,10 @@ public final class ModTags {
                 forgeBlockTag(
                         "storage_blocks/heat_resistant_steel"
                 );
+
+        public static final TagKey<Block> ALDER_LOGS =
+                modBlockTag("alder_logs");
+
 
     }
 
@@ -69,6 +75,15 @@ public final class ModTags {
                         "dusts/heat_resistant_steel"
                 );
 
+        public static final TagKey<Item> DUSTS_GRAPHITE =
+                forgeItemTag("dusts/graphite");
+
+        public static final TagKey<Item> PLATES_GRAPHITE =
+                forgeItemTag("plates/graphite");
+
+        public static final TagKey<Item> ELECTRODES =
+                modItemTag("electrodes");
+
         public static final TagKey<Item> INGOTS_HEAT_RESISTANT_STEEL =
                 forgeItemTag(
                         "ingots/heat_resistant_steel"
@@ -104,6 +119,7 @@ public final class ModTags {
                         "storage_blocks/heat_resistant_steel"
                 );
 
+
         public static final TagKey<Item> MACHINE_CASING_MATERIALS =
                 modItemTag(
                         "machine_casing_materials"
@@ -119,6 +135,28 @@ public final class ModTags {
                         "storage_blocks/raw_albichrome"
                 );
 
+        public static final TagKey<Item> COLORED_CONCRETE_POWDER =
+                modItemTag("colored_concrete_powder");
+
+        public static final TagKey<Item> COLORED_CONCRETE =
+                modItemTag("colored_concrete");
+
+        public static final TagKey<Item> COLORED_WOOL =
+                modItemTag("colored_wool");
+
+        public static final TagKey<Item> ALDER_LOGS =
+                modItemTag("alder_logs");
+
+    }
+
+    public static final class Biomes {
+        public static final TagKey<Biome> HAS_ALDER_TREES = TagKey.create(
+                Registries.BIOME,
+                new ResourceLocation(Poiesis.MOD_ID, "has_alder_trees")
+        );
+
+        private Biomes() {
+        }
     }
 
 
